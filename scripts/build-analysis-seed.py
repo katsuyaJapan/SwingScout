@@ -4,6 +4,7 @@ from pathlib import Path
 from zoneinfo import ZoneInfo
 
 ROOT=Path(__file__).resolve().parents[1]
+POST_EARNINGS_SAFE_DAYS=45
 raw=json.loads((ROOT/"public/data/jpx-snapshot.json").read_text())
 sector_proxy=json.loads((ROOT/"public/data/sector-data.json").read_text())
 with tempfile.NamedTemporaryFile(suffix='.xls') as f:
@@ -147,19 +148,22 @@ top += [x for x in rows if x['code'] not in top_codes][:30-len(top)]
 top.sort(key=lambda x:x['score'],reverse=True)
 with concurrent.futures.ThreadPoolExecutor(max_workers=8) as ex: secondary=dict(ex.map(secondary_earnings,top))
 secondary_coverage=sum(bool(result['checked']) for result in secondary.values())
+secondary_future_dates=0; secondary_recently_reported=0
 for row in top:
   jpx_date=row.get('earningsDate'); evidence=[]
   if jpx_date: evidence.append({'name':'JPX','date':jpx_date})
   elif row.get('earningsStatus')=='UNDECIDED': evidence.append({'name':'JPX','status':'UNDECIDED'})
   result=secondary.get(row['code'],{}); evidence.extend(result.get('dates',[])); dates=sorted({x['date'] for x in evidence if x.get('date')})
   recent_reported=max((x['date'] for x in result.get('reported',[])),default=None)
-  recently_reported=bool(recent_reported and (datetime.datetime.strptime(raw['asOf'],'%Y%m%d')-datetime.datetime.strptime(recent_reported,'%Y%m%d')).days<=10)
+  recently_reported=bool(recent_reported and 0 <= (datetime.datetime.strptime(raw['asOf'],'%Y%m%d')-datetime.datetime.strptime(recent_reported,'%Y%m%d')).days <= POST_EARNINGS_SAFE_DAYS)
   row['earningsSources']=evidence; row['earningsCheckedSources']=['JPX',*result.get('checked',[])]; row['earningsSourceErrors']=result.get('errors',[])
   flags=[x for x in row['riskFlags'] if x not in ('EARNINGS_UNCONFIRMED','EARNINGS_DATE_UNDECIDED','EARNINGS_DATE_CONFLICT')]
   if dates:
+    secondary_future_dates+=1
     row['earningsDate']=dates[0]; row['earningsStatus']='CONFIRMED_MULTI_SOURCE'; row['checks']['earningsDate']=True
     if len(dates)>1: flags.append('EARNINGS_DATE_CONFLICT')
   elif recently_reported:
+    secondary_recently_reported+=1
     row['earningsDate']=None; row['earningsStatus']='RECENTLY_REPORTED'; row['lastEarningsDate']=recent_reported
   elif row.get('earningsStatus')=='UNDECIDED': flags.append('EARNINGS_DATE_UNDECIDED')
   else: flags.append('EARNINGS_UNCONFIRMED')
@@ -174,6 +178,6 @@ quote_dates=[q["date"] for q in quotes.values() if q]
 quote_date_set=set(quote_dates)
 quotes_complete=len(quotes)==len(top) and all(quotes.get(x['code']) for x in top) and len(quote_date_set)==1
 supplemental_date=next(iter(quote_date_set)) if quotes_complete else raw["asOf"]
-seed={"source":raw["source"],"asOf":raw["asOf"],"supplementalDate":supplemental_date,"supplementalComplete":quotes_complete,"supplementalQuotes":quotes,"listed":len(raw["securities"]),"latestCoverage":raw["quality"]["coverage"][-1],"historyReady":history,"liquid":liquid,"primary":len(rows),"files":raw["quality"]["files"],"failures":raw["quality"]["failures"],"earningsQuality":{"files":len(earnings_urls),"rows":earnings_rows,"confirmed":len(earnings),"undecided":sum(x=='UNDECIDED' for x in earnings_status.values()),"secondaryCoverage":secondary_coverage,"secondaryTotal":len(top),"failures":earnings_failures},"sectorSignals":sectors[:10],"sectorOutflows":outflows[:10],"sectorOutflowAsOf":sector_proxy.get('asOf',raw["asOf"]),"technicalCandidates":top,"excludedExtended":excluded[:10]}
+seed={"source":raw["source"],"asOf":raw["asOf"],"supplementalDate":supplemental_date,"supplementalComplete":quotes_complete,"supplementalQuotes":quotes,"listed":len(raw["securities"]),"latestCoverage":raw["quality"]["coverage"][-1],"historyReady":history,"liquid":liquid,"primary":len(rows),"files":raw["quality"]["files"],"failures":raw["quality"]["failures"],"earningsQuality":{"files":len(earnings_urls),"rows":earnings_rows,"confirmed":len(earnings),"undecided":sum(x=='UNDECIDED' for x in earnings_status.values()),"secondaryCoverage":secondary_coverage,"secondaryTotal":len(top),"secondaryResolved":secondary_future_dates+secondary_recently_reported,"secondaryFutureDates":secondary_future_dates,"secondaryRecentlyReported":secondary_recently_reported,"postEarningsSafeDays":POST_EARNINGS_SAFE_DAYS,"failures":earnings_failures},"sectorSignals":sectors[:10],"sectorOutflows":outflows[:10],"sectorOutflowAsOf":sector_proxy.get('asOf',raw["asOf"]),"technicalCandidates":top,"excludedExtended":excluded[:10]}
 (ROOT/"public/data/analysis-seed.json").write_text(json.dumps(seed,ensure_ascii=False,separators=(",",":")))
 print(json.dumps({"size":(ROOT/"public/data/analysis-seed.json").stat().st_size,"primary":len(rows),"top":len(top),"supplementalDate":seed["supplementalDate"],"quotes":sum(q is not None for q in quotes.values())}))
