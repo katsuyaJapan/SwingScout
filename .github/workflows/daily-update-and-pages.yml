@@ -1,0 +1,81 @@
+name: SwingScout daily update and Pages
+
+on:
+  schedule:
+    - cron: "10 7 * * 1-5" # 16:10 JST
+    - cron: "10 8 * * 1-5" # 17:10 JST retry
+    - cron: "10 9 * * 1-5" # 18:10 JST final retry
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: swingscout-daily
+  cancel-in-progress: false
+
+jobs:
+  update-and-publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install data dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y poppler-utils
+          python -m pip install --disable-pip-version-check xlrd openpyxl
+          npm ci
+      - name: Fetch, screen and build static site
+        id: refresh
+        continue-on-error: true
+        run: |
+          python scripts/build-jpx-snapshot.py
+          node scripts/fetch-sector-data.mjs
+          python scripts/build-analysis-seed.py
+          python scripts/generate-static-data.py
+          npm run test:data
+          npm run build
+      - name: Preserve last good data on failure
+        if: steps.refresh.outcome == 'failure'
+        env:
+          SWINGSCOUT_FAILURE_MESSAGE: 日次更新に失敗したため、前回正常データを表示しています。
+        run: python scripts/write-failure-status.py
+      - name: Commit update state
+        run: |
+          git config user.name "swing-scout-bot"
+          git config user.email "swing-scout-bot@users.noreply.github.com"
+          if [ "${{ steps.refresh.outcome }}" = "success" ]; then
+            git add public/data/latest.json public/data/history.json public/data/status.json
+          else
+            git add public/data/status.json
+          fi
+          git diff --cached --quiet || git commit -m "data: daily SwingScout refresh"
+          git push
+      - name: Build last-good site after refresh failure
+        if: steps.refresh.outcome == 'failure'
+        run: npm run build
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+      - name: Deploy GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+      - name: Mark data job failed after publishing fallback
+        if: steps.refresh.outcome == 'failure'
+        run: exit 1
