@@ -4,7 +4,34 @@
   "history": [
     {
       "asOf": "20260819",
-      "candidates": []
+      "candidates": [
+        {
+          "code": "3315",
+          "name": "日本コークス",
+          "close": 100.0,
+          "entry": "99円〜101円（現在値付近）",
+          "targetPrice": 109,
+          "targetPrice1": 106,
+          "targetPrice2": 109,
+          "invalidation": "97円割れ",
+          "currentClose": 100.0,
+          "changePct": 0.0,
+          "targetReached": false
+        },
+        {
+          "code": "1333",
+          "name": "Ｕｍｉｏｓ",
+          "close": 1300.5,
+          "entry": "1,297円〜1,305円（現在値付近）",
+          "targetPrice": 1380,
+          "targetPrice1": 1378,
+          "targetPrice2": 1380,
+          "invalidation": "1,256円割れ",
+          "currentClose": 1300.5,
+          "changePct": 0.0,
+          "targetReached": false
+        }
+      ]
     },
     {
       "asOf": "20260814",
