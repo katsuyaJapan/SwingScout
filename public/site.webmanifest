@@ -1,0 +1,13 @@
+{
+  "name": "SWING SCOUT｜日本株・先回り候補",
+  "short_name": "SWING SCOUT",
+  "description": "日本株の資金循環・初動・出口警戒を確認するスイングトレード分析ツール",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#07110e",
+  "theme_color": "#07110e",
+  "icons": [
+    { "src": "/app-icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" },
+    { "src": "/apple-touch-icon.png", "sizes": "180x180", "type": "image/png" }
+  ]
+}

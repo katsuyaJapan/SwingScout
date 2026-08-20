@@ -1,0 +1,54 @@
+{
+  "currentAsOf": "20260819",
+  "retentionDays": 30,
+  "history": [
+    {
+      "asOf": "20260819",
+      "candidates": []
+    },
+    {
+      "asOf": "20260814",
+      "candidates": [
+        {
+          "code": "2331",
+          "name": "ＡＬＳＯＫ",
+          "close": 1168.5,
+          "entry": "1,166円〜1,173円（現在値付近）",
+          "targetPrice": 1243,
+          "targetPrice1": 1228,
+          "targetPrice2": 1243,
+          "invalidation": "1,122円割れ",
+          "currentClose": 1175.5,
+          "changePct": 0.6,
+          "targetReached": false
+        },
+        {
+          "code": "2730",
+          "name": "エディオン",
+          "close": 2513.0,
+          "entry": "2,507円〜2,521円（現在値付近）",
+          "targetPrice": 2683,
+          "targetPrice1": 2606,
+          "targetPrice2": 2683,
+          "invalidation": "2,422円割れ",
+          "currentClose": 2507.0,
+          "changePct": -0.2,
+          "targetReached": false
+        },
+        {
+          "code": "4922",
+          "name": "コーセーＨＤ",
+          "close": 5747.0,
+          "entry": "5,730円〜5,780円（現在値〜前日高値抜け）",
+          "targetPrice": 6174,
+          "targetPrice1": 6039,
+          "targetPrice2": 6174,
+          "invalidation": "5,572円割れ",
+          "currentClose": 5758.0,
+          "changePct": 0.2,
+          "targetReached": false
+        }
+      ]
+    }
+  ]
+}

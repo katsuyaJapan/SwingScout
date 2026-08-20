@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title">
+  <title id="title">SWING SCOUT</title>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#102c22"/><stop offset="1" stop-color="#07110e"/></linearGradient>
+    <linearGradient id="mint" x1="0" y1="1" x2="1" y2="0"><stop stop-color="#42e59c"/><stop offset="1" stop-color="#b6ff77"/></linearGradient>
+  </defs>
+  <rect x="20" y="20" width="472" height="472" rx="112" fill="url(#bg)" stroke="#315746" stroke-width="16"/>
+  <path d="M112 306 190 228l58 48 116-132" fill="none" stroke="url(#mint)" stroke-width="36" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="m321 144 55-10-7 56" fill="none" stroke="#b6ff77" stroke-width="30" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M117 181a164 164 0 0 1 262-45" fill="none" stroke="#42e59c" stroke-opacity=".42" stroke-width="15" stroke-linecap="round"/>
+  <path d="m112 167 5 42 40-14" fill="#42e59c" fill-opacity=".72"/>
+  <text x="256" y="402" text-anchor="middle" fill="#eff9f4" font-family="Arial, sans-serif" font-size="78" font-weight="800" letter-spacing="12">SS</text>
+</svg>
