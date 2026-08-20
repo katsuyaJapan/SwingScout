@@ -2,7 +2,7 @@
   "version": 20,
   "asOf": "20260819",
   "officialAsOf": "20260819",
-  "generatedAt": "2026-08-20T16:54:05.810784+00:00",
+  "generatedAt": "2026-08-20T23:08:28.946114+00:00",
   "cached": false,
   "priceStatus": "JPX_CONFIRMED",
   "status": "READY",
@@ -157,11 +157,10 @@
       "earningsSources": [],
       "earningsCheckedSources": [
         "JPX",
+        "Yahoo!ファイナンス",
         "株予報"
       ],
-      "earningsSourceErrors": [
-        "Yahoo!ファイナンス: HTTP Error 500: Internal Server Error"
-      ],
+      "earningsSourceErrors": [],
       "lastEarningsDate": "20260807",
       "entryLower": 99,
       "entryUpper": 101,
@@ -323,11 +322,10 @@
       "earningsSources": [],
       "earningsCheckedSources": [
         "JPX",
+        "Yahoo!ファイナンス",
         "株予報"
       ],
-      "earningsSourceErrors": [
-        "Yahoo!ファイナンス: HTTP Error 500: Internal Server Error"
-      ],
+      "earningsSourceErrors": [],
       "lastEarningsDate": "20260804",
       "entryLower": 1297,
       "entryUpper": 1305,
@@ -459,167 +457,167 @@
   ],
   "sectorOutflows": [
     {
-      "name": "非鉄金属",
-      "score": 91,
+      "name": "その他金融業",
+      "score": 62,
       "level": "流出強め",
       "action": "新規停止・利益保護",
-      "return1": -6.2,
-      "return5": -3.52,
-      "return20": 8.4,
-      "breadthChange": -20.0,
-      "turnoverRatio": 1.1,
+      "return1": 0.04,
+      "return5": -4.05,
+      "return20": -5.52,
+      "breadthChange": -25.0,
+      "turnoverRatio": 1.09,
       "reasons": [
-        "1日 -6.2%",
-        "5日 -3.5%",
-        "広がり -20.0pt"
+        "5日 -4.0%",
+        "広がり -25.0pt",
+        "上昇モメンタム失速"
       ]
     },
     {
       "name": "電気機器",
-      "score": 88,
+      "score": 62,
       "level": "流出強め",
       "action": "新規停止・利益保護",
-      "return1": -3.78,
-      "return5": -6.13,
-      "return20": 9.11,
+      "return1": 1.47,
+      "return5": -4.2,
+      "return20": 10.68,
       "breadthChange": -27.5,
       "turnoverRatio": 0.96,
       "reasons": [
-        "1日 -3.8%",
-        "5日 -6.1%",
-        "広がり -27.5pt"
-      ]
-    },
-    {
-      "name": "ゴム製品",
-      "score": 84,
-      "level": "流出強め",
-      "action": "新規停止・利益保護",
-      "return1": -2.23,
-      "return5": -6.25,
-      "return20": 2.79,
-      "breadthChange": -36.4,
-      "turnoverRatio": 0.83,
-      "reasons": [
-        "1日 -2.2%",
-        "5日 -6.3%",
-        "広がり -36.4pt"
-      ]
-    },
-    {
-      "name": "繊維製品",
-      "score": 80,
-      "level": "流出強め",
-      "action": "新規停止・利益保護",
-      "return1": -3.08,
-      "return5": -4.45,
-      "return20": 5.4,
-      "breadthChange": -6.2,
-      "turnoverRatio": 1.08,
-      "reasons": [
-        "1日 -3.1%",
-        "5日 -4.5%",
-        "広がり -6.2pt"
-      ]
-    },
-    {
-      "name": "機械",
-      "score": 78,
-      "level": "流出強め",
-      "action": "新規停止・利益保護",
-      "return1": -4.24,
-      "return5": -6.32,
-      "return20": -6.41,
-      "breadthChange": -23.2,
-      "turnoverRatio": 0.93,
-      "reasons": [
-        "1日 -4.2%",
-        "5日 -6.3%",
-        "広がり -23.2pt"
-      ]
-    },
-    {
-      "name": "精密機器",
-      "score": 76,
-      "level": "流出強め",
-      "action": "新規停止・利益保護",
-      "return1": -2.24,
-      "return5": -1.49,
-      "return20": 10.48,
-      "breadthChange": -22.6,
-      "turnoverRatio": 1.14,
-      "reasons": [
-        "1日 -2.2%",
-        "5日 -1.5%",
-        "広がり -22.6pt"
-      ]
-    },
-    {
-      "name": "化学",
-      "score": 76,
-      "level": "流出強め",
-      "action": "新規停止・利益保護",
-      "return1": -2.47,
-      "return5": -6.58,
-      "return20": -4.61,
-      "breadthChange": -19.5,
-      "turnoverRatio": 0.88,
-      "reasons": [
-        "1日 -2.5%",
-        "5日 -6.6%",
-        "広がり -19.5pt"
+        "5日 -4.2%",
+        "広がり -27.5pt",
+        "上昇モメンタム失速"
       ]
     },
     {
       "name": "銀行業",
-      "score": 68,
+      "score": 61,
       "level": "流出強め",
       "action": "新規停止・利益保護",
-      "return1": -4.71,
-      "return5": -3.97,
-      "return20": -3.37,
+      "return1": -0.5,
+      "return5": -6.85,
+      "return20": -6.03,
       "breadthChange": -2.9,
       "turnoverRatio": 1.09,
       "reasons": [
-        "1日 -4.7%",
-        "5日 -4.0%",
+        "1日 -0.5%",
+        "5日 -6.8%",
         "広がり -2.9pt"
       ]
     },
     {
       "name": "保険業",
-      "score": 68,
-      "level": "流出強め",
-      "action": "新規停止・利益保護",
-      "return1": -2.14,
-      "return5": -3.27,
-      "return20": -2.86,
+      "score": 58,
+      "level": "流出開始",
+      "action": "逆指値引き上げ",
+      "return1": -0.95,
+      "return5": -3.29,
+      "return20": -4.98,
       "breadthChange": -10.0,
       "turnoverRatio": 1.07,
       "reasons": [
-        "1日 -2.1%",
+        "1日 -1.0%",
         "5日 -3.3%",
         "広がり -10.0pt"
       ]
     },
     {
-      "name": "その他金融業",
-      "score": 68,
-      "level": "流出強め",
-      "action": "新規停止・利益保護",
-      "return1": -2.02,
-      "return5": -2.68,
-      "return20": -5.19,
-      "breadthChange": -25.0,
-      "turnoverRatio": 1.09,
+      "name": "繊維製品",
+      "score": 57,
+      "level": "流出開始",
+      "action": "逆指値引き上げ",
+      "return1": 1.12,
+      "return5": -3.45,
+      "return20": 6.35,
+      "breadthChange": -6.2,
+      "turnoverRatio": 1.08,
       "reasons": [
-        "1日 -2.0%",
-        "5日 -2.7%",
-        "広がり -25.0pt"
+        "5日 -3.5%",
+        "広がり -6.2pt",
+        "上昇モメンタム失速"
+      ]
+    },
+    {
+      "name": "非鉄金属",
+      "score": 53,
+      "level": "流出開始",
+      "action": "逆指値引き上げ",
+      "return1": 3.11,
+      "return5": -2.09,
+      "return20": 8.08,
+      "breadthChange": -20.0,
+      "turnoverRatio": 1.1,
+      "reasons": [
+        "5日 -2.1%",
+        "広がり -20.0pt",
+        "上昇モメンタム失速"
+      ]
+    },
+    {
+      "name": "機械",
+      "score": 51,
+      "level": "流出開始",
+      "action": "逆指値引き上げ",
+      "return1": 3.45,
+      "return5": -3.39,
+      "return20": -3.08,
+      "breadthChange": -23.2,
+      "turnoverRatio": 0.93,
+      "reasons": [
+        "5日 -3.4%",
+        "広がり -23.2pt",
+        "上昇モメンタム失速"
+      ]
+    },
+    {
+      "name": "化学",
+      "score": 51,
+      "level": "流出開始",
+      "action": "逆指値引き上げ",
+      "return1": 1.41,
+      "return5": -3.44,
+      "return20": -2.34,
+      "breadthChange": -19.5,
+      "turnoverRatio": 0.88,
+      "reasons": [
+        "5日 -3.4%",
+        "広がり -19.5pt",
+        "上昇モメンタム失速"
+      ]
+    },
+    {
+      "name": "ゴム製品",
+      "score": 51,
+      "level": "流出開始",
+      "action": "逆指値引き上げ",
+      "return1": 2.14,
+      "return5": -2.19,
+      "return20": 6.36,
+      "breadthChange": -36.4,
+      "turnoverRatio": 0.83,
+      "reasons": [
+        "5日 -2.2%",
+        "広がり -36.4pt",
+        "上昇モメンタム失速"
+      ]
+    },
+    {
+      "name": "金属製品",
+      "score": 48,
+      "level": "流出開始",
+      "action": "逆指値引き上げ",
+      "return1": 0.26,
+      "return5": -3.13,
+      "return20": -2.3,
+      "breadthChange": -7.4,
+      "turnoverRatio": 1.08,
+      "reasons": [
+        "5日 -3.1%",
+        "広がり -7.4pt",
+        "上昇モメンタム失速"
       ]
     }
   ],
-  "sectorOutflowAsOf": "2026-08-19",
+  "sectorOutflowAsOf": "2026-08-20",
   "excludedExtended": [
     {
       "code": "6226",
@@ -2259,11 +2257,10 @@
       "earningsSources": [],
       "earningsCheckedSources": [
         "JPX",
+        "Yahoo!ファイナンス",
         "株予報"
       ],
-      "earningsSourceErrors": [
-        "Yahoo!ファイナンス: HTTP Error 500: Internal Server Error"
-      ],
+      "earningsSourceErrors": [],
       "lastEarningsDate": "20260807",
       "entryLower": 1334,
       "entryUpper": 1342,
@@ -2427,11 +2424,10 @@
       "earningsSources": [],
       "earningsCheckedSources": [
         "JPX",
+        "Yahoo!ファイナンス",
         "株予報"
       ],
-      "earningsSourceErrors": [
-        "Yahoo!ファイナンス: HTTP Error 500: Internal Server Error"
-      ],
+      "earningsSourceErrors": [],
       "lastEarningsDate": "20260807",
       "entryLower": 99,
       "entryUpper": 101,
@@ -2596,11 +2592,10 @@
       "earningsSources": [],
       "earningsCheckedSources": [
         "JPX",
+        "Yahoo!ファイナンス",
         "株予報"
       ],
-      "earningsSourceErrors": [
-        "Yahoo!ファイナンス: HTTP Error 500: Internal Server Error"
-      ],
+      "earningsSourceErrors": [],
       "lastEarningsDate": "20260806",
       "entryLower": 1282,
       "entryUpper": 1289,
@@ -2765,11 +2760,10 @@
       "earningsSources": [],
       "earningsCheckedSources": [
         "JPX",
+        "Yahoo!ファイナンス",
         "株予報"
       ],
-      "earningsSourceErrors": [
-        "Yahoo!ファイナンス: HTTP Error 500: Internal Server Error"
-      ],
+      "earningsSourceErrors": [],
       "lastEarningsDate": "20260807",
       "entryLower": 4116,
       "entryUpper": 4138,
@@ -2936,11 +2930,10 @@
       "earningsSources": [],
       "earningsCheckedSources": [
         "JPX",
+        "Yahoo!ファイナンス",
         "株予報"
       ],
-      "earningsSourceErrors": [
-        "Yahoo!ファイナンス: HTTP Error 500: Internal Server Error"
-      ],
+      "earningsSourceErrors": [],
       "lastEarningsDate": "20260804",
       "entryLower": 2591,
       "entryUpper": 2605,
@@ -3104,11 +3097,10 @@
       "earningsSources": [],
       "earningsCheckedSources": [
         "JPX",
+        "Yahoo!ファイナンス",
         "株予報"
       ],
-      "earningsSourceErrors": [
-        "Yahoo!ファイナンス: HTTP Error 500: Internal Server Error"
-      ],
+      "earningsSourceErrors": [],
       "lastEarningsDate": "20260713",
       "entryLower": 4446,
       "entryUpper": 4469,
@@ -3270,11 +3262,10 @@
       "earningsSources": [],
       "earningsCheckedSources": [
         "JPX",
+        "Yahoo!ファイナンス",
         "株予報"
       ],
-      "earningsSourceErrors": [
-        "Yahoo!ファイナンス: HTTP Error 500: Internal Server Error"
-      ],
+      "earningsSourceErrors": [],
       "lastEarningsDate": "20260807",
       "entryLower": 1274,
       "entryUpper": 1281,
@@ -3439,11 +3430,10 @@
       "earningsSources": [],
       "earningsCheckedSources": [
         "JPX",
+        "Yahoo!ファイナンス",
         "株予報"
       ],
-      "earningsSourceErrors": [
-        "Yahoo!ファイナンス: HTTP Error 500: Internal Server Error"
-      ],
+      "earningsSourceErrors": [],
       "lastEarningsDate": "20260807",
       "entryLower": 2998,
       "entryUpper": 3015,
@@ -3608,11 +3598,10 @@
       "earningsSources": [],
       "earningsCheckedSources": [
         "JPX",
+        "Yahoo!ファイナンス",
         "株予報"
       ],
-      "earningsSourceErrors": [
-        "Yahoo!ファイナンス: HTTP Error 500: Internal Server Error"
-      ],
+      "earningsSourceErrors": [],
       "lastEarningsDate": "20260806",
       "entryLower": 4157,
       "entryUpper": 4179,
@@ -3774,11 +3763,10 @@
       "earningsSources": [],
       "earningsCheckedSources": [
         "JPX",
+        "Yahoo!ファイナンス",
         "株予報"
       ],
-      "earningsSourceErrors": [
-        "Yahoo!ファイナンス: HTTP Error 500: Internal Server Error"
-      ],
+      "earningsSourceErrors": [],
       "lastEarningsDate": "20260804",
       "entryLower": 1297,
       "entryUpper": 1305,
@@ -3944,11 +3932,10 @@
       "earningsSources": [],
       "earningsCheckedSources": [
         "JPX",
+        "Yahoo!ファイナンス",
         "株予報"
       ],
-      "earningsSourceErrors": [
-        "Yahoo!ファイナンス: HTTP Error 500: Internal Server Error"
-      ],
+      "earningsSourceErrors": [],
       "lastEarningsDate": "20260807",
       "entryLower": 4740,
       "entryUpper": 4765,
@@ -4114,11 +4101,10 @@
       "earningsSources": [],
       "earningsCheckedSources": [
         "JPX",
+        "Yahoo!ファイナンス",
         "株予報"
       ],
-      "earningsSourceErrors": [
-        "Yahoo!ファイナンス: HTTP Error 500: Internal Server Error"
-      ],
+      "earningsSourceErrors": [],
       "lastEarningsDate": "20260812",
       "entryLower": 2046,
       "entryUpper": 2058,
@@ -4138,11 +4124,11 @@
     "level": "CAUTION",
     "title": "地合い警戒",
     "message": "指数が弱いため、エントリー下限割れでの逆張りは避け、ポジションを抑えてください。",
-    "asOf": "2026-08-19",
-    "topix1d": -3.16,
-    "topix5d": -3.36,
-    "nikkei1d": -3.15,
-    "nikkei5d": -3.3
+    "asOf": "2026-08-20",
+    "topix1d": 1.29,
+    "topix5d": -2.89,
+    "nikkei1d": 1.27,
+    "nikkei5d": -3.18
   },
   "funnel": {
     "listed": 4104,
