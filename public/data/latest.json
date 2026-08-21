@@ -2,7 +2,7 @@
   "version": 20,
   "asOf": "20260821",
   "officialAsOf": "20260820",
-  "generatedAt": "2026-08-21T10:04:45.284254+00:00",
+  "generatedAt": "2026-08-21T10:58:48.157613+00:00",
   "cached": false,
   "priceStatus": "PROVISIONAL",
   "status": "READY",
@@ -159,11 +159,10 @@
       "earningsSources": [],
       "earningsCheckedSources": [
         "JPX",
+        "Yahoo!ファイナンス",
         "株予報"
       ],
-      "earningsSourceErrors": [
-        "Yahoo!ファイナンス: HTTP Error 500: Internal Server Error"
-      ],
+      "earningsSourceErrors": [],
       "lastEarningsDate": "20260803",
       "provisional": true,
       "priceDate": "20260821",
@@ -330,11 +329,10 @@
       "earningsSources": [],
       "earningsCheckedSources": [
         "JPX",
+        "Yahoo!ファイナンス",
         "株予報"
       ],
-      "earningsSourceErrors": [
-        "Yahoo!ファイナンス: HTTP Error 500: Internal Server Error"
-      ],
+      "earningsSourceErrors": [],
       "lastEarningsDate": "20260813",
       "provisional": true,
       "priceDate": "20260821",
@@ -499,11 +497,10 @@
       "earningsSources": [],
       "earningsCheckedSources": [
         "JPX",
+        "Yahoo!ファイナンス",
         "株予報"
       ],
-      "earningsSourceErrors": [
-        "Yahoo!ファイナンス: HTTP Error 500: Internal Server Error"
-      ],
+      "earningsSourceErrors": [],
       "lastEarningsDate": "20260730",
       "provisional": true,
       "priceDate": "20260821",
@@ -671,11 +668,10 @@
       "earningsSources": [],
       "earningsCheckedSources": [
         "JPX",
+        "Yahoo!ファイナンス",
         "株予報"
       ],
-      "earningsSourceErrors": [
-        "Yahoo!ファイナンス: HTTP Error 500: Internal Server Error"
-      ],
+      "earningsSourceErrors": [],
       "lastEarningsDate": "20260724",
       "provisional": true,
       "priceDate": "20260821",
@@ -844,11 +840,10 @@
       "earningsSources": [],
       "earningsCheckedSources": [
         "JPX",
+        "Yahoo!ファイナンス",
         "株予報"
       ],
-      "earningsSourceErrors": [
-        "Yahoo!ファイナンス: HTTP Error 500: Internal Server Error"
-      ],
+      "earningsSourceErrors": [],
       "lastEarningsDate": "20260806",
       "provisional": true,
       "priceDate": "20260821",
@@ -1016,11 +1011,10 @@
       "earningsSources": [],
       "earningsCheckedSources": [
         "JPX",
+        "Yahoo!ファイナンス",
         "株予報"
       ],
-      "earningsSourceErrors": [
-        "Yahoo!ファイナンス: HTTP Error 500: Internal Server Error"
-      ],
+      "earningsSourceErrors": [],
       "lastEarningsDate": "20260804",
       "provisional": true,
       "priceDate": "20260821",
@@ -2953,11 +2947,10 @@
       "earningsSources": [],
       "earningsCheckedSources": [
         "JPX",
+        "Yahoo!ファイナンス",
         "株予報"
       ],
-      "earningsSourceErrors": [
-        "Yahoo!ファイナンス: HTTP Error 500: Internal Server Error"
-      ],
+      "earningsSourceErrors": [],
       "lastEarningsDate": "20260805",
       "provisional": true,
       "priceDate": "20260821",
@@ -3125,11 +3118,10 @@
       "earningsSources": [],
       "earningsCheckedSources": [
         "JPX",
+        "Yahoo!ファイナンス",
         "株予報"
       ],
-      "earningsSourceErrors": [
-        "Yahoo!ファイナンス: HTTP Error 500: Internal Server Error"
-      ],
+      "earningsSourceErrors": [],
       "lastEarningsDate": "20260729",
       "provisional": true,
       "priceDate": "20260821",
@@ -3295,11 +3287,10 @@
       "earningsSources": [],
       "earningsCheckedSources": [
         "JPX",
+        "Yahoo!ファイナンス",
         "株予報"
       ],
-      "earningsSourceErrors": [
-        "Yahoo!ファイナンス: HTTP Error 500: Internal Server Error"
-      ],
+      "earningsSourceErrors": [],
       "lastEarningsDate": "20260724",
       "provisional": true,
       "priceDate": "20260821",
@@ -3467,11 +3458,10 @@
       "earningsSources": [],
       "earningsCheckedSources": [
         "JPX",
+        "Yahoo!ファイナンス",
         "株予報"
       ],
-      "earningsSourceErrors": [
-        "Yahoo!ファイナンス: HTTP Error 500: Internal Server Error"
-      ],
+      "earningsSourceErrors": [],
       "lastEarningsDate": "20260803",
       "provisional": true,
       "priceDate": "20260821",
@@ -3639,11 +3629,10 @@
       "earningsSources": [],
       "earningsCheckedSources": [
         "JPX",
+        "Yahoo!ファイナンス",
         "株予報"
       ],
-      "earningsSourceErrors": [
-        "Yahoo!ファイナンス: HTTP Error 500: Internal Server Error"
-      ],
+      "earningsSourceErrors": [],
       "lastEarningsDate": "20260806",
       "provisional": true,
       "priceDate": "20260821",
@@ -3811,11 +3800,10 @@
       "earningsSources": [],
       "earningsCheckedSources": [
         "JPX",
+        "Yahoo!ファイナンス",
         "株予報"
       ],
-      "earningsSourceErrors": [
-        "Yahoo!ファイナンス: HTTP Error 500: Internal Server Error"
-      ],
+      "earningsSourceErrors": [],
       "lastEarningsDate": "20260708",
       "provisional": true,
       "priceDate": "20260821",
@@ -3983,11 +3971,10 @@
       "earningsSources": [],
       "earningsCheckedSources": [
         "JPX",
+        "Yahoo!ファイナンス",
         "株予報"
       ],
-      "earningsSourceErrors": [
-        "Yahoo!ファイナンス: HTTP Error 500: Internal Server Error"
-      ],
+      "earningsSourceErrors": [],
       "lastEarningsDate": "20260807",
       "provisional": true,
       "priceDate": "20260821",
@@ -4154,11 +4141,10 @@
       "earningsSources": [],
       "earningsCheckedSources": [
         "JPX",
+        "Yahoo!ファイナンス",
         "株予報"
       ],
-      "earningsSourceErrors": [
-        "Yahoo!ファイナンス: HTTP Error 500: Internal Server Error"
-      ],
+      "earningsSourceErrors": [],
       "lastEarningsDate": "20260813",
       "provisional": true,
       "priceDate": "20260821",
@@ -4326,11 +4312,10 @@
       "earningsSources": [],
       "earningsCheckedSources": [
         "JPX",
+        "Yahoo!ファイナンス",
         "株予報"
       ],
-      "earningsSourceErrors": [
-        "Yahoo!ファイナンス: HTTP Error 500: Internal Server Error"
-      ],
+      "earningsSourceErrors": [],
       "lastEarningsDate": "20260730",
       "provisional": true,
       "priceDate": "20260821",
@@ -4498,15 +4483,18 @@
         {
           "name": "JPX",
           "date": "20260831"
+        },
+        {
+          "name": "Yahoo!ファイナンス",
+          "date": "20260831"
         }
       ],
       "earningsCheckedSources": [
         "JPX",
+        "Yahoo!ファイナンス",
         "株予報"
       ],
-      "earningsSourceErrors": [
-        "Yahoo!ファイナンス: HTTP Error 500: Internal Server Error"
-      ],
+      "earningsSourceErrors": [],
       "provisional": true,
       "priceDate": "20260821",
       "entryLower": 2033,
@@ -4674,11 +4662,10 @@
       "earningsSources": [],
       "earningsCheckedSources": [
         "JPX",
+        "Yahoo!ファイナンス",
         "株予報"
       ],
-      "earningsSourceErrors": [
-        "Yahoo!ファイナンス: HTTP Error 500: Internal Server Error"
-      ],
+      "earningsSourceErrors": [],
       "lastEarningsDate": "20260812",
       "provisional": true,
       "priceDate": "20260821",
@@ -4846,11 +4833,10 @@
       "earningsSources": [],
       "earningsCheckedSources": [
         "JPX",
+        "Yahoo!ファイナンス",
         "株予報"
       ],
-      "earningsSourceErrors": [
-        "Yahoo!ファイナンス: HTTP Error 500: Internal Server Error"
-      ],
+      "earningsSourceErrors": [],
       "lastEarningsDate": "20260806",
       "provisional": true,
       "priceDate": "20260821",
@@ -5017,11 +5003,10 @@
       "earningsSources": [],
       "earningsCheckedSources": [
         "JPX",
+        "Yahoo!ファイナンス",
         "株予報"
       ],
-      "earningsSourceErrors": [
-        "Yahoo!ファイナンス: HTTP Error 500: Internal Server Error"
-      ],
+      "earningsSourceErrors": [],
       "lastEarningsDate": "20260804",
       "provisional": true,
       "priceDate": "20260821",
@@ -5186,11 +5171,10 @@
       "earningsSources": [],
       "earningsCheckedSources": [
         "JPX",
+        "Yahoo!ファイナンス",
         "株予報"
       ],
-      "earningsSourceErrors": [
-        "Yahoo!ファイナンス: HTTP Error 500: Internal Server Error"
-      ],
+      "earningsSourceErrors": [],
       "lastEarningsDate": "20260730",
       "provisional": true,
       "priceDate": "20260821",
@@ -5354,11 +5338,10 @@
       "earningsSources": [],
       "earningsCheckedSources": [
         "JPX",
+        "Yahoo!ファイナンス",
         "株予報"
       ],
-      "earningsSourceErrors": [
-        "Yahoo!ファイナンス: HTTP Error 500: Internal Server Error"
-      ],
+      "earningsSourceErrors": [],
       "lastEarningsDate": "20260713",
       "provisional": true,
       "priceDate": "20260821",
@@ -5524,11 +5507,10 @@
       "earningsSources": [],
       "earningsCheckedSources": [
         "JPX",
+        "Yahoo!ファイナンス",
         "株予報"
       ],
-      "earningsSourceErrors": [
-        "Yahoo!ファイナンス: HTTP Error 500: Internal Server Error"
-      ],
+      "earningsSourceErrors": [],
       "lastEarningsDate": "20260806",
       "provisional": true,
       "priceDate": "20260821",
@@ -5694,11 +5676,10 @@
       "earningsSources": [],
       "earningsCheckedSources": [
         "JPX",
+        "Yahoo!ファイナンス",
         "株予報"
       ],
-      "earningsSourceErrors": [
-        "Yahoo!ファイナンス: HTTP Error 500: Internal Server Error"
-      ],
+      "earningsSourceErrors": [],
       "lastEarningsDate": "20260804",
       "provisional": true,
       "priceDate": "20260821",
@@ -5866,11 +5847,10 @@
       "earningsSources": [],
       "earningsCheckedSources": [
         "JPX",
+        "Yahoo!ファイナンス",
         "株予報"
       ],
-      "earningsSourceErrors": [
-        "Yahoo!ファイナンス: HTTP Error 500: Internal Server Error"
-      ],
+      "earningsSourceErrors": [],
       "lastEarningsDate": "20260728",
       "provisional": true,
       "priceDate": "20260821",
@@ -6036,11 +6016,10 @@
       "earningsSources": [],
       "earningsCheckedSources": [
         "JPX",
+        "Yahoo!ファイナンス",
         "株予報"
       ],
-      "earningsSourceErrors": [
-        "Yahoo!ファイナンス: HTTP Error 500: Internal Server Error"
-      ],
+      "earningsSourceErrors": [],
       "lastEarningsDate": "20260731",
       "provisional": true,
       "priceDate": "20260821",
@@ -6207,11 +6186,10 @@
       "earningsSources": [],
       "earningsCheckedSources": [
         "JPX",
+        "Yahoo!ファイナンス",
         "株予報"
       ],
-      "earningsSourceErrors": [
-        "Yahoo!ファイナンス: HTTP Error 500: Internal Server Error"
-      ],
+      "earningsSourceErrors": [],
       "lastEarningsDate": "20260730",
       "provisional": true,
       "priceDate": "20260821",
@@ -6378,11 +6356,10 @@
       "earningsSources": [],
       "earningsCheckedSources": [
         "JPX",
+        "Yahoo!ファイナンス",
         "株予報"
       ],
-      "earningsSourceErrors": [
-        "Yahoo!ファイナンス: HTTP Error 500: Internal Server Error"
-      ],
+      "earningsSourceErrors": [],
       "lastEarningsDate": "20260807",
       "provisional": true,
       "priceDate": "20260821",
@@ -6548,11 +6525,10 @@
       "earningsSources": [],
       "earningsCheckedSources": [
         "JPX",
+        "Yahoo!ファイナンス",
         "株予報"
       ],
-      "earningsSourceErrors": [
-        "Yahoo!ファイナンス: HTTP Error 500: Internal Server Error"
-      ],
+      "earningsSourceErrors": [],
       "lastEarningsDate": "20260814",
       "provisional": true,
       "priceDate": "20260821",
@@ -6718,11 +6694,10 @@
       "earningsSources": [],
       "earningsCheckedSources": [
         "JPX",
+        "Yahoo!ファイナンス",
         "株予報"
       ],
-      "earningsSourceErrors": [
-        "Yahoo!ファイナンス: HTTP Error 500: Internal Server Error"
-      ],
+      "earningsSourceErrors": [],
       "lastEarningsDate": "20260807",
       "provisional": true,
       "priceDate": "20260821",
@@ -6890,11 +6865,10 @@
       "earningsSources": [],
       "earningsCheckedSources": [
         "JPX",
+        "Yahoo!ファイナンス",
         "株予報"
       ],
-      "earningsSourceErrors": [
-        "Yahoo!ファイナンス: HTTP Error 500: Internal Server Error"
-      ],
+      "earningsSourceErrors": [],
       "lastEarningsDate": "20260806",
       "provisional": true,
       "priceDate": "20260821",
@@ -7062,11 +7036,10 @@
       "earningsSources": [],
       "earningsCheckedSources": [
         "JPX",
+        "Yahoo!ファイナンス",
         "株予報"
       ],
-      "earningsSourceErrors": [
-        "Yahoo!ファイナンス: HTTP Error 500: Internal Server Error"
-      ],
+      "earningsSourceErrors": [],
       "lastEarningsDate": "20260807",
       "provisional": true,
       "priceDate": "20260821",
@@ -7234,11 +7207,10 @@
       "earningsSources": [],
       "earningsCheckedSources": [
         "JPX",
+        "Yahoo!ファイナンス",
         "株予報"
       ],
-      "earningsSourceErrors": [
-        "Yahoo!ファイナンス: HTTP Error 500: Internal Server Error"
-      ],
+      "earningsSourceErrors": [],
       "lastEarningsDate": "20260807",
       "provisional": true,
       "priceDate": "20260821",
@@ -7406,11 +7378,10 @@
       "earningsSources": [],
       "earningsCheckedSources": [
         "JPX",
+        "Yahoo!ファイナンス",
         "株予報"
       ],
-      "earningsSourceErrors": [
-        "Yahoo!ファイナンス: HTTP Error 500: Internal Server Error"
-      ],
+      "earningsSourceErrors": [],
       "lastEarningsDate": "20260710",
       "provisional": true,
       "priceDate": "20260821",
@@ -7578,11 +7549,10 @@
       "earningsSources": [],
       "earningsCheckedSources": [
         "JPX",
+        "Yahoo!ファイナンス",
         "株予報"
       ],
-      "earningsSourceErrors": [
-        "Yahoo!ファイナンス: HTTP Error 500: Internal Server Error"
-      ],
+      "earningsSourceErrors": [],
       "lastEarningsDate": "20260713",
       "provisional": true,
       "priceDate": "20260821",
@@ -7751,11 +7721,10 @@
       "earningsSources": [],
       "earningsCheckedSources": [
         "JPX",
+        "Yahoo!ファイナンス",
         "株予報"
       ],
-      "earningsSourceErrors": [
-        "Yahoo!ファイナンス: HTTP Error 500: Internal Server Error"
-      ],
+      "earningsSourceErrors": [],
       "lastEarningsDate": "20260730",
       "provisional": true,
       "priceDate": "20260821",
@@ -7922,11 +7891,10 @@
       "earningsSources": [],
       "earningsCheckedSources": [
         "JPX",
+        "Yahoo!ファイナンス",
         "株予報"
       ],
-      "earningsSourceErrors": [
-        "Yahoo!ファイナンス: HTTP Error 500: Internal Server Error"
-      ],
+      "earningsSourceErrors": [],
       "lastEarningsDate": "20260807",
       "provisional": true,
       "priceDate": "20260821",
