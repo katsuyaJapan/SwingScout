@@ -4,15 +4,19 @@ on:
   push:
     branches:
       - main
+    paths-ignore:
+      - "public/data/**"
   schedule:
     # 当日引け後: Yahoo補完が全候補で同期できた場合は暫定更新
     - cron: "10 7 * * 1-5" # 16:10 JST
     - cron: "10 8 * * 1-5" # 17:10 JST retry
     - cron: "10 9 * * 1-5" # 18:10 JST final after-close retry
-    # JPX公式日報は翌営業日掲載のため、寄り前に完全データを再取得
-    - cron: "10 22 * * 0-4" # 07:10 JST next business day
-    - cron: "10 23 * * 0-4" # 08:10 JST retry
-    - cron: "40 23 * * 0-4" # 08:40 JST final pre-open retry
+    # JPX公式日報の掲載を軽量確認。未掲載なら全銘柄処理を起動しない。
+    - cron: "30 22 * * 0-4" # 07:30 JST next business day
+    - cron: "0 23 * * 0-4"  # 08:00 JST retry
+    - cron: "20 23 * * 0-4" # 08:20 JST retry
+    - cron: "35 23 * * 0-4" # 08:35 JST retry
+    - cron: "45 23 * * 0-4" # 08:45 JST final pre-open retry
   workflow_dispatch:
 
 permissions:
@@ -42,13 +46,28 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - name: Install data dependencies
+      - name: Check JPX publication freshness
+        id: freshness
+        shell: bash
+        run: |
+          case "${{ github.event.schedule }}" in
+            "30 22 * * 0-4"|"0 23 * * 0-4"|"20 23 * * 0-4"|"35 23 * * 0-4"|"45 23 * * 0-4")
+              python scripts/check_jpx_freshness.py --mark-waiting
+              ;;
+            *)
+              echo "refresh_required=true" >> "$GITHUB_OUTPUT"
+              ;;
+          esac
+      - name: Install app dependencies
+        run: npm ci
+      - name: Install full data dependencies
+        if: steps.freshness.outputs.refresh_required == 'true'
         run: |
           sudo apt-get update
           sudo apt-get install -y poppler-utils
           python -m pip install --disable-pip-version-check xlrd openpyxl
-          npm ci
-      - name: Fetch, screen and build static site
+      - name: Fetch, screen and generate data
+        if: steps.freshness.outputs.refresh_required == 'true'
         id: refresh
         continue-on-error: true
         run: |
@@ -57,7 +76,6 @@ jobs:
           python scripts/build-analysis-seed.py
           python scripts/generate-static-data.py
           npm run test:data
-          npm run build
       - name: Preserve last good data on failure
         if: steps.refresh.outcome == 'failure'
         env:
@@ -67,15 +85,16 @@ jobs:
         run: |
           git config user.name "swing-scout-bot"
           git config user.email "swing-scout-bot@users.noreply.github.com"
-          if [ "${{ steps.refresh.outcome }}" = "success" ]; then
+          if [ "${{ steps.freshness.outputs.refresh_required }}" != "true" ]; then
+            git add public/data/status.json
+          elif [ "${{ steps.refresh.outcome }}" = "success" ]; then
             git add public/data/latest.json public/data/history.json public/data/status.json
           else
             git add public/data/status.json
           fi
           git diff --cached --quiet || git commit -m "data: daily SwingScout refresh"
           git push
-      - name: Build last-good site after refresh failure
-        if: steps.refresh.outcome == 'failure'
+      - name: Build static site
         run: npm run build
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
