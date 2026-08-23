@@ -152,12 +152,12 @@ const earningsDisplay = (candidate: Candidate) => {
   if (candidate.earningsDate) {
     return {
       className: "okText",
-      text: `${dateText(candidate.earningsDate)}（あと${candidate.earningsDays}営業日）・安全圏`,
+      text: `${dateText(candidate.earningsDate)}（あと${candidate.earningsDays}営業日）・🟢 選定可`,
     };
   }
   if (candidate.earningsStatus === "RECENTLY_REPORTED") {
     const reported = candidate.lastEarningsDate ? `${dateText(candidate.lastEarningsDate)}発表済み` : "直近決算発表済み";
-    return { className: "okText", text: `${reported}・安全圏` };
+    return { className: "okText", text: `${reported}・🟢 選定可` };
   }
   return { className: "pending", text: "決算日を確認中" };
 };
