@@ -33,6 +33,7 @@ type Candidate = {
   earningsSources?: Array<{ name: string; date?: string; status?: string }>;
   earningsCheckedSources?: string[];
   earningsDays?: number | null;
+  lastEarningsDate?: string | null;
   rightsRecordDate?: string;
   exRightsDate?: string;
   rightsExitDeadline?: string;
@@ -130,6 +131,36 @@ const labels: Record<string, string> = {
 };
 const dateText = (d: string) =>
   d.length === 8 ? `${d.slice(0, 4)}/${d.slice(4, 6)}/${d.slice(6)}` : d;
+const earningsDisplay = (candidate: Candidate) => {
+  const flags = new Set(candidate.riskFlags ?? []);
+
+  if (flags.has("EARNINGS_WITHIN_3_DAYS")) {
+    return {
+      className: "danger",
+      text: `⚠️ ${dateText(candidate.earningsDate ?? "")}（あと${candidate.earningsDays}営業日・選定対象外）`,
+    };
+  }
+  if (flags.has("EARNINGS_DATE_UNDECIDED")) {
+    return { className: "danger", text: "⚠️ 決算日未定・選定対象外" };
+  }
+  if (flags.has("EARNINGS_DATE_CONFLICT")) {
+    return { className: "danger", text: "⚠️ 確認元で日付不一致・選定対象外" };
+  }
+  if (flags.has("EARNINGS_UNCONFIRMED")) {
+    return { className: "danger", text: "⚠️ 決算日を確認できず・選定対象外" };
+  }
+  if (candidate.earningsDate) {
+    return {
+      className: "okText",
+      text: `${dateText(candidate.earningsDate)}（あと${candidate.earningsDays}営業日）・安全圏`,
+    };
+  }
+  if (candidate.earningsStatus === "RECENTLY_REPORTED") {
+    const reported = candidate.lastEarningsDate ? `${dateText(candidate.lastEarningsDate)}発表済み` : "直近決算発表済み";
+    return { className: "okText", text: `${reported}・安全圏` };
+  }
+  return { className: "pending", text: "決算日を確認中" };
+};
 const timeText = (d: string) =>
   new Intl.DateTimeFormat("ja-JP", {
     timeZone: "Asia/Tokyo",
@@ -374,17 +405,9 @@ export default function Home() {
                       {c.targetPrice1 != null && <small>第1目標 ¥{c.targetPrice1.toLocaleString()} / 第2目標 ¥{(c.targetPrice2 ?? c.targetPrice)?.toLocaleString()}</small>}
                     </div>
                     <div>
-                      <dt>決算予定</dt>
-                      <dd
-                        className={
-                          c.riskFlags?.includes("EARNINGS_UNCONFIRMED")
-                            ? "pending"
-                            : "okText"
-                        }
-                      >
-                        {c.earningsDate
-                          ? `${dateText(c.earningsDate)}（あと${c.earningsDays}営業日）`
-                          : "日付未確認"}
+                      <dt>決算</dt>
+                      <dd className={earningsDisplay(c).className}>
+                        {earningsDisplay(c).text}
                         {!!c.earningsCheckedSources?.length && <small>確認元：{c.earningsCheckedSources.join("・")}</small>}
                       </dd>
                     </div>
@@ -394,22 +417,6 @@ export default function Home() {
                         {c.riskFlags?.includes("LOW_LIQUIDITY")
                           ? "注意：売買代金少なめ"
                           : "基準通過"}
-                      </dd>
-                    </div>
-                    <div>
-                      <dt>決算リスク</dt>
-                      <dd
-                        className={
-                          c.riskFlags?.includes("EARNINGS_WITHIN_3_DAYS")
-                            ? "danger"
-                            : "pending"
-                        }
-                      >
-                        {c.riskFlags?.includes("EARNINGS_WITHIN_3_DAYS")
-                          ? `⚠️ 決算まで${c.earningsDays}営業日`
-                          : c.earningsDate
-                            ? "3営業日超・候補可"
-                            : "日付未確認"}
                       </dd>
                     </div>
                     <div className={c.riskFlags?.includes("EX_RIGHTS_WITHIN_3_DAYS") ? "rightsRisk dangerBox" : "rightsRisk"}>
