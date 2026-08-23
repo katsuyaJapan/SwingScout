@@ -39,6 +39,9 @@ type Candidate = {
   rightsExitDeadline?: string;
   rightsReason?: string;
   exRightsDays?: number | null;
+  rightsStatus?: string;
+  rightsSources?: Array<{ name: string; date?: string; status?: string }>;
+  rightsCheckedSources?: string[];
   riskFlags?: string[];
   lastSelectedDate?: string;
 };
@@ -75,6 +78,7 @@ type Analysis = {
   finalCandidates: Candidate[];
   continuedCandidates?: Candidate[];
   excludedEarnings?: Candidate[];
+  excludedRights?: Candidate[];
   sectorSignals?: Sector[];
   sectorOutflows?: SectorOutflow[];
   sectorOutflowAsOf?: string;
@@ -93,6 +97,7 @@ type Analysis = {
     provisionalTotal?: number;
     fundamental: string;
     earningsDate: string;
+    rightsDate?: string;
     tdnet: string;
   };
   sources: Array<{ name: string; asOf: string; status: string }>;
@@ -160,6 +165,12 @@ const earningsDisplay = (candidate: Candidate) => {
     return { className: "okText", text: `${reported}・🟢 選定可` };
   }
   return { className: "pending", text: "決算日を確認中" };
+};
+const rightsRiskText = (candidate: Candidate) => {
+  if (candidate.riskFlags?.includes("RIGHTS_DATE_CONFLICT")) return "⚠️ 情報源間で権利日が不一致";
+  if (candidate.riskFlags?.includes("RIGHTS_RECENT_DISCLOSURE")) return "⚠️ 権利関連の直近開示あり・要確認";
+  if (candidate.riskFlags?.includes("EX_RIGHTS_WITHIN_3_DAYS")) return `⚠️ 権利落ちまで${candidate.exRightsDays}営業日`;
+  return "権利情報を確認できず";
 };
 const timeText = (d: string) =>
   new Intl.DateTimeFormat("ja-JP", {
@@ -419,15 +430,16 @@ export default function Home() {
                           : "基準通過"}
                       </dd>
                     </div>
-                    <div className={c.riskFlags?.includes("EX_RIGHTS_WITHIN_3_DAYS") ? "rightsRisk dangerBox" : "rightsRisk"}>
+                    <div className={c.riskFlags?.some(flag => ["EX_RIGHTS_WITHIN_3_DAYS", "RIGHTS_DATE_CONFLICT", "RIGHTS_RECENT_DISCLOSURE"].includes(flag)) ? "rightsRisk dangerBox" : "rightsRisk"}>
                       <dt>権利落ち回避</dt>
                       {c.exRightsDate ? (
                         <dd>
                           <b>{dateText(c.rightsExitDeadline ?? "")}までに売却</b>
                           <small>{c.rightsReason}・権利落日 {dateText(c.exRightsDate)}</small>
+                          {!!c.rightsCheckedSources?.length && <small>確認元：{c.rightsCheckedSources.join("・")}</small>}
                         </dd>
                       ) : (
-                        <dd className="pending">直近のJPX権利落情報なし</dd>
+                        <dd className="okText">直近の権利落ち情報なし<small>確認元：{c.rightsCheckedSources?.join("・") ?? "JPX"}</small></dd>
                       )}
                     </div>
                   </dl>
@@ -472,6 +484,26 @@ export default function Home() {
                   <div key={c.code}>
                     <b>{c.name} <em>{c.code}</em></b>
                     <span>{c.riskFlags?.includes("EARNINGS_DATE_UNDECIDED") ? `⚠️ 決算日未定${c.earningsPeriod ? `・${c.earningsPeriod}` : ""}` : `⚠️ ${dateText(c.earningsDate ?? "")}・あと${c.earningsDays}営業日`}{c.earningsSources?.length ? `（${[...new Set(c.earningsSources.map(x=>x.name))].join("・")}）` : ""}</span>
+                  </div>
+                ))}
+              </div>
+            </section>
+          )}
+          {!!data.excludedRights?.length && (
+            <section className="card earningsExcluded">
+              <div className="cardHead">
+                <div>
+                  <small>RIGHTS RISK FILTER</small>
+                  <h3>権利落ちリスクのため除外</h3>
+                </div>
+                <span className="ng">{data.excludedRights.length}銘柄</span>
+              </div>
+              <p className="muted">権利落ちまで3営業日以内、権利日の不一致、または基準日・株主優待に関する直近開示がある銘柄は、安全確認のため候補から除外します。</p>
+              <div className="excludedList">
+                {data.excludedRights.map((c) => (
+                  <div key={c.code}>
+                    <b>{c.name} <em>{c.code}</em></b>
+                    <span>{rightsRiskText(c)}{c.exRightsDate ? `・権利落日 ${dateText(c.exRightsDate)}` : ""}</span>
                   </div>
                 ))}
               </div>
@@ -577,9 +609,9 @@ export default function Home() {
                   <dd className="pending">{data.quality.fundamental}</dd>
                 </div>
                 <div>
-                  <dt>決算予定・TDnet</dt>
+                  <dt>決算・権利確認</dt>
                   <dd className="pending">
-                    {data.quality.earningsDate} / {data.quality.tdnet}
+                    {data.quality.earningsDate} / {data.quality.rightsDate} / {data.quality.tdnet}
                   </dd>
                 </div>
               </dl>
