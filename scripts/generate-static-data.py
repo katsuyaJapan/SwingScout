@@ -163,10 +163,13 @@ def main() -> None:
 
     quality = SEED.get("earningsQuality", {})
     earnings_ok = quality.get("secondaryCoverage", 0) >= math.ceil(max(1, quality.get("secondaryTotal", 30)) * .8)
-    gate = not SEED.get("failures") and earnings_ok and SEED.get("latestCoverage", 0) >= 3800 and SEED.get("historyReady", 0) >= 3000 and (effective_date == SEED["asOf"] or quotes_complete)
+    rights_quality = SEED.get("rightsQuality", {})
+    rights_threshold = math.ceil(max(1, rights_quality.get("secondaryTotal", 30)) * .8)
+    rights_ok = rights_quality.get("jpxRows", 0) >= 1 and rights_quality.get("secondaryCoverage", 0) >= rights_threshold and rights_quality.get("disclosureCoverage", 0) >= rights_threshold
+    gate = not SEED.get("failures") and earnings_ok and rights_ok and SEED.get("latestCoverage", 0) >= 3800 and SEED.get("historyReady", 0) >= 3000 and (effective_date == SEED["asOf"] or quotes_complete)
     history_days = sorted(old_history.get("history", []), key=lambda x: x["asOf"], reverse=True)
     recent_codes = {c["code"] for day in history_days[:5] if day.get("asOf", "") < effective_date for c in day.get("candidates", [])}
-    hard_flags = {"EARNINGS_WITHIN_3_DAYS", "EARNINGS_DATE_UNDECIDED", "EARNINGS_DATE_CONFLICT", "EARNINGS_UNCONFIRMED", "EX_RIGHTS_WITHIN_3_DAYS", "ENTRY_RISK_TOO_WIDE", "RISK_REWARD_LOW"}
+    hard_flags = {"EARNINGS_WITHIN_3_DAYS", "EARNINGS_DATE_UNDECIDED", "EARNINGS_DATE_CONFLICT", "EARNINGS_UNCONFIRMED", "EX_RIGHTS_WITHIN_3_DAYS", "RIGHTS_DATE_CONFLICT", "RIGHTS_RECENT_DISCLOSURE", "ENTRY_RISK_TOO_WIDE", "RISK_REWARD_LOW"}
     eligible = [x for x in refreshed if not hard_flags.intersection(x.get("riskFlags", []))]
     continued = [{**x, "lastSelectedDate": next((d["asOf"] for d in history_days if any(c["code"] == x["code"] for c in d.get("candidates", []))), None)} for x in eligible if x["code"] in recent_codes]
     final = diversified([x for x in eligible if x["code"] not in recent_codes]) if gate else []
@@ -175,16 +178,18 @@ def main() -> None:
         "version": VERSION, "asOf": effective_date, "officialAsOf": SEED["asOf"], "generatedAt": generated, "cached": False,
         "priceStatus": "PROVISIONAL" if effective_date > SEED["asOf"] else "JPX_CONFIRMED",
         "status": "READY" if gate else "ANALYSIS_HELD",
-        "message": f"過去5営業日の重複を除外し、仕込み候補を{len(final)}銘柄選定しました。" if gate else "価格日または決算照合の品質条件を満たさないため、前回正常データを維持します。",
+        "message": f"過去5営業日の重複を除外し、仕込み候補を{len(final)}銘柄選定しました。" if gate else "価格日・決算・権利照合の品質条件を満たさないため、前回正常データを維持します。",
         "finalCandidates": final, "continuedCandidates": continued,
         "excludedEarnings": [x for x in refreshed if {"EARNINGS_WITHIN_3_DAYS", "EARNINGS_DATE_UNDECIDED", "EARNINGS_UNCONFIRMED"}.intersection(x.get("riskFlags", []))],
+        "excludedRights": [x for x in refreshed if {"EX_RIGHTS_WITHIN_3_DAYS", "RIGHTS_DATE_CONFLICT", "RIGHTS_RECENT_DISCLOSURE"}.intersection(x.get("riskFlags", []))],
         "sectorSignals": SEED.get("sectorSignals", []), "sectorOutflows": SEED.get("sectorOutflows", []), "sectorOutflowAsOf": SEED.get("sectorOutflowAsOf"),
         "excludedExtended": SEED.get("excludedExtended", []), "technicalCandidates": refreshed if gate else [], "marketRegime": market_regime(),
         "funnel": {"listed": SEED.get("listed", 0), "latestPrice": SEED.get("latestCoverage", 0), "historyReady": SEED.get("historyReady", 0), "liquid": SEED.get("liquid", 0), "primary": SEED.get("primary", 0), "detailReview": min(10, len(eligible)), "final": len(final)},
-        "quality": {"passed": gate, "files": SEED.get("files", 0), "failures": len(SEED.get("failures", [])), "latestCoverage": SEED.get("latestCoverage", 0), "priceDate": effective_date, "officialPriceDate": SEED["asOf"], "provisionalCount": sum(bool(x.get("provisional")) for x in refreshed), "provisionalTotal": len(refreshed), "fundamental": "任意・未確認", "earningsDate": f"決算判定 {quality.get('secondaryResolved', 0)}/{quality.get('secondaryTotal', 0)}（外部ページ取得 {quality.get('secondaryCoverage', 0)}/{quality.get('secondaryTotal', 0)}）", "tdnet": "発表済み資料は企業IRで確認"},
+        "quality": {"passed": gate, "files": SEED.get("files", 0), "failures": len(SEED.get("failures", [])), "latestCoverage": SEED.get("latestCoverage", 0), "priceDate": effective_date, "officialPriceDate": SEED["asOf"], "provisionalCount": sum(bool(x.get("provisional")) for x in refreshed), "provisionalTotal": len(refreshed), "fundamental": "任意・未確認", "earningsDate": f"決算判定 {quality.get('secondaryResolved', 0)}/{quality.get('secondaryTotal', 0)}（外部ページ取得 {quality.get('secondaryCoverage', 0)}/{quality.get('secondaryTotal', 0)}）", "rightsDate": f"権利判定 JPX {rights_quality.get('jpxRows', 0)}件・Yahoo照合 {rights_quality.get('secondaryCoverage', 0)}/{rights_quality.get('secondaryTotal', 0)}・TDnet確認 {rights_quality.get('disclosureCoverage', 0)}/{rights_quality.get('secondaryTotal', 0)}", "tdnet": "基準日・株主優待変更の直近開示を確認"},
         "sources": [
             {"name": "JPX 東京証券取引所日報・上場銘柄一覧", "asOf": SEED["asOf"], "status": "公式値・33業種"},
             {"name": "JPX・Yahoo!ファイナンス・株予報 決算日", "asOf": effective_date, "status": "複数ソース照合済み" if earnings_ok else "照合不足"},
+            {"name": "JPX・Yahoo!ファイナンス・TDnet 権利情報", "asOf": effective_date, "status": "複数ソース照合済み" if rights_ok else "照合不足"},
             {"name": "Yahoo!ファイナンス前日終値スナップショット", "asOf": effective_date, "status": f"完全同期 {len(supplemental)}/{len(candidate_rows)}" if quotes_complete else "不完全・未使用"},
         ],
     }
