@@ -16,7 +16,8 @@ class StaticDataTest(unittest.TestCase):
             self.assertFalse(set(row.get("riskFlags", [])) & {
                 "EARNINGS_WITHIN_3_DAYS", "EARNINGS_DATE_UNDECIDED",
                 "EARNINGS_DATE_CONFLICT", "EARNINGS_UNCONFIRMED",
-                "EX_RIGHTS_WITHIN_3_DAYS", "ENTRY_RISK_TOO_WIDE", "RISK_REWARD_LOW",
+                "EX_RIGHTS_WITHIN_3_DAYS", "RIGHTS_DATE_CONFLICT",
+                "RIGHTS_RECENT_DISCLOSURE", "ENTRY_RISK_TOO_WIDE", "RISK_REWARD_LOW",
             })
             self.assertLessEqual(row["targetPrice1"], row["targetPrice2"])
 
