@@ -2,6 +2,7 @@
 import concurrent.futures, datetime, json, math, re, subprocess, tempfile, urllib.parse, urllib.request, xlrd, openpyxl
 from pathlib import Path
 from zoneinfo import ZoneInfo
+from rights_sources import fetch_yahoo_rights
 
 ROOT=Path(__file__).resolve().parents[1]
 POST_EARNINGS_SAFE_DAYS=45
@@ -35,25 +36,25 @@ for url in earnings_urls:
   except Exception as exc: earnings_failures.append(f'{url.rsplit("/",1)[-1]}: {exc}')
 if earnings_rows<100 or len(earnings_failures)==len(earnings_urls):
   raise RuntimeError(f'JPX決算予定表の検証に失敗しました rows={earnings_rows}, failures={earnings_failures}')
-rights={}
-try:
-  rights_page=urllib.request.urlopen('https://www.jpx.co.jp/listing/others/ex-rights/',timeout=30).read().decode('utf-8','replace')
-  rights_path=re.search(r'href="([^"]+/\d{8}\.xls)"',rights_page).group(1)
-  with tempfile.NamedTemporaryFile(suffix='.xls') as f:
-    f.write(urllib.request.urlopen('https://www.jpx.co.jp'+rights_path,timeout=30).read()); f.flush()
-    book=xlrd.open_workbook(f.name); sheet=book.sheet_by_index(0)
-    for row in range(4,sheet.nrows):
-      try:
-        code=str(int(float(sheet.cell_value(row,4)))).zfill(4)
-        record=xlrd.xldate_as_datetime(sheet.cell_value(row,0),book.datemode).date()
-        ex_date=xlrd.xldate_as_datetime(sheet.cell_value(row,2),book.datemode).date()
-        exit_day=ex_date-datetime.timedelta(days=1)
-        while exit_day.weekday()>=5: exit_day-=datetime.timedelta(days=1)
-        rights[code]={"rightsRecordDate":record.strftime('%Y%m%d'),"exRightsDate":ex_date.strftime('%Y%m%d'),"rightsExitDeadline":exit_day.strftime('%Y%m%d'),"rightsReason":str(sheet.cell_value(row,7)).strip() or "配当・権利"}
-      except Exception: pass
-except Exception: pass
-# 2026年8月末のビックカメラは、JPX一覧の公表対象期間に入る前でも短期候補へ警告する。
-rights.setdefault("3048",{"rightsRecordDate":"20260831","exRightsDate":"20260828","rightsExitDeadline":"20260827","rightsReason":"配当・株主優待"})
+rights={}; rights_rows=0; rights_row_errors=[]
+rights_page=urllib.request.urlopen('https://www.jpx.co.jp/listing/others/ex-rights/',timeout=30).read().decode('utf-8','replace')
+rights_match=re.search(r'href="([^"]+/\d{8}\.xls)"',rights_page)
+if not rights_match: raise RuntimeError('JPX権利落ち予定ファイルのリンクを取得できませんでした')
+rights_path=rights_match.group(1)
+with tempfile.NamedTemporaryFile(suffix='.xls') as f:
+  f.write(urllib.request.urlopen('https://www.jpx.co.jp'+rights_path,timeout=30).read()); f.flush()
+  book=xlrd.open_workbook(f.name); sheet=book.sheet_by_index(0)
+  for row in range(4,sheet.nrows):
+    try:
+      code=str(int(float(sheet.cell_value(row,4)))).zfill(4)
+      record=xlrd.xldate_as_datetime(sheet.cell_value(row,0),book.datemode).date()
+      ex_date=xlrd.xldate_as_datetime(sheet.cell_value(row,2),book.datemode).date()
+      exit_day=ex_date-datetime.timedelta(days=1)
+      while exit_day.weekday()>=5: exit_day-=datetime.timedelta(days=1)
+      rights[code]={"rightsRecordDate":record.strftime('%Y%m%d'),"exRightsDate":ex_date.strftime('%Y%m%d'),"rightsExitDeadline":exit_day.strftime('%Y%m%d'),"rightsReason":str(sheet.cell_value(row,7)).strip() or "配当・権利","rightsSources":[{"name":"JPX","date":ex_date.strftime('%Y%m%d')}],"rightsCheckedSources":["JPX"]}
+      rights_rows+=1
+    except Exception as exc: rights_row_errors.append(f'row {row}: {exc}')
+if rights_rows<1: raise RuntimeError(f'JPX権利落ち予定表の検証に失敗しました rows={rights_rows}, errors={rights_row_errors[:3]}')
 def avg(xs): return sum(xs)/len(xs) if xs else 0
 def rsi(xs,n=14):
   w=xs[-(n+1):]; gains=sum(max(0,w[i]-w[i-1]) for i in range(1,len(w))); losses=sum(max(0,w[i-1]-w[i]) for i in range(1,len(w)))
@@ -129,6 +130,8 @@ def secondary_earnings(row):
         else: reported.append({'name':name,'date':date})
     except Exception as exc: errors.append(f'{name}: {exc}')
   return code,{'dates':found,'reported':reported,'checked':checked,'errors':errors}
+def secondary_rights(row):
+  return row['code'],fetch_yahoo_rights(row['code'],raw['asOf'])
 def quote(row):
   try:
     url=f'https://query1.finance.yahoo.com/v8/finance/chart/{row["code"]}.T?range=5d&interval=1d'
@@ -168,6 +171,29 @@ for row in top:
   elif row.get('earningsStatus')=='UNDECIDED': flags.append('EARNINGS_DATE_UNDECIDED')
   else: flags.append('EARNINGS_UNCONFIRMED')
   row['riskFlags']=flags
+with concurrent.futures.ThreadPoolExecutor(max_workers=8) as ex: secondary_rights_results=dict(ex.map(secondary_rights,top))
+rights_secondary_coverage=sum('Yahoo!ファイナンス株主優待' in result.get('checked',[]) for result in secondary_rights_results.values())
+rights_disclosure_coverage=sum('TDnet掲載一覧' in result.get('checked',[]) for result in secondary_rights_results.values())
+rights_secondary_errors=[]
+for row in top:
+  result=secondary_rights_results.get(row['code'],{}); rights_secondary_errors.extend(result.get('errors',[]))
+  checked=['JPX',*result.get('checked',[])]; evidence=list(row.get('rightsSources',[])); flags=list(row.get('riskFlags',[]))
+  current_ex=row.get('exRightsDate'); yahoo_events=result.get('events',[])
+  for event in yahoo_events:
+    evidence.append({'name':'Yahoo!ファイナンス株主優待','date':event['exRightsDate']})
+  if yahoo_events:
+    nearest=yahoo_events[0]; yahoo_ex=nearest['exRightsDate']
+    if current_ex and current_ex!=yahoo_ex and abs((datetime.datetime.strptime(current_ex,'%Y%m%d')-datetime.datetime.strptime(yahoo_ex,'%Y%m%d')).days)<=10:
+      flags.append('RIGHTS_DATE_CONFLICT')
+    if not current_ex or yahoo_ex<current_ex:
+      row.update(nearest); row['rightsReason']='株主優待（Yahoo!ファイナンス照合）'; current_ex=yahoo_ex
+    elif current_ex==yahoo_ex and '株主優待' not in row.get('rightsReason',''):
+      row['rightsReason']=f"{row.get('rightsReason','配当・権利')}・株主優待"
+  disclosures=result.get('disclosures',[])
+  if disclosures:
+    flags.append('RIGHTS_RECENT_DISCLOSURE')
+    evidence.extend({'name':'TDnet','status':title} for title in disclosures)
+  row['rightsSources']=evidence; row['rightsCheckedSources']=checked; row['rightsSourceErrors']=result.get('errors',[]); row['rightsStatus']='CONFIRMED' if current_ex else 'NO_NEAR_TERM_EVENT'; row['riskFlags']=list(dict.fromkeys(flags))
 jst_now=datetime.datetime.now(ZoneInfo("Asia/Tokyo"))
 after_close=(jst_now.hour,jst_now.minute)>=(15,30)
 if after_close:
@@ -178,6 +204,6 @@ quote_dates=[q["date"] for q in quotes.values() if q]
 quote_date_set=set(quote_dates)
 quotes_complete=len(quotes)==len(top) and all(quotes.get(x['code']) for x in top) and len(quote_date_set)==1
 supplemental_date=next(iter(quote_date_set)) if quotes_complete else raw["asOf"]
-seed={"source":raw["source"],"asOf":raw["asOf"],"supplementalDate":supplemental_date,"supplementalComplete":quotes_complete,"supplementalQuotes":quotes,"listed":len(raw["securities"]),"latestCoverage":raw["quality"]["coverage"][-1],"historyReady":history,"liquid":liquid,"primary":len(rows),"files":raw["quality"]["files"],"failures":raw["quality"]["failures"],"earningsQuality":{"files":len(earnings_urls),"rows":earnings_rows,"confirmed":len(earnings),"undecided":sum(x=='UNDECIDED' for x in earnings_status.values()),"secondaryCoverage":secondary_coverage,"secondaryTotal":len(top),"secondaryResolved":secondary_future_dates+secondary_recently_reported,"secondaryFutureDates":secondary_future_dates,"secondaryRecentlyReported":secondary_recently_reported,"postEarningsSafeDays":POST_EARNINGS_SAFE_DAYS,"failures":earnings_failures},"sectorSignals":sectors[:10],"sectorOutflows":outflows[:10],"sectorOutflowAsOf":sector_proxy.get('asOf',raw["asOf"]),"technicalCandidates":top,"excludedExtended":excluded[:10]}
+seed={"source":raw["source"],"asOf":raw["asOf"],"supplementalDate":supplemental_date,"supplementalComplete":quotes_complete,"supplementalQuotes":quotes,"listed":len(raw["securities"]),"latestCoverage":raw["quality"]["coverage"][-1],"historyReady":history,"liquid":liquid,"primary":len(rows),"files":raw["quality"]["files"],"failures":raw["quality"]["failures"],"earningsQuality":{"files":len(earnings_urls),"rows":earnings_rows,"confirmed":len(earnings),"undecided":sum(x=='UNDECIDED' for x in earnings_status.values()),"secondaryCoverage":secondary_coverage,"secondaryTotal":len(top),"secondaryResolved":secondary_future_dates+secondary_recently_reported,"secondaryFutureDates":secondary_future_dates,"secondaryRecentlyReported":secondary_recently_reported,"postEarningsSafeDays":POST_EARNINGS_SAFE_DAYS,"failures":earnings_failures},"rightsQuality":{"jpxRows":rights_rows,"jpxRowErrors":len(rights_row_errors),"secondaryCoverage":rights_secondary_coverage,"disclosureCoverage":rights_disclosure_coverage,"secondaryTotal":len(top),"failures":rights_secondary_errors},"sectorSignals":sectors[:10],"sectorOutflows":outflows[:10],"sectorOutflowAsOf":sector_proxy.get('asOf',raw["asOf"]),"technicalCandidates":top,"excludedExtended":excluded[:10]}
 (ROOT/"public/data/analysis-seed.json").write_text(json.dumps(seed,ensure_ascii=False,separators=(",",":")))
 print(json.dumps({"size":(ROOT/"public/data/analysis-seed.json").stat().st_size,"primary":len(rows),"top":len(top),"supplementalDate":seed["supplementalDate"],"quotes":sum(q is not None for q in quotes.values())}))
