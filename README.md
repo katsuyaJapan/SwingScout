@@ -11,6 +11,8 @@ ChatGPT Sites / Work / agent executionを日次運用から外した、GitHub Ac
 5. Reactの静的サイトをGitHub Pagesへ公開
 6. ブラウザは生成済みJSONを読むだけで、閲覧時に銘柄スキャンを行わない
 
+流動性は、直近20日平均売買代金3億円以上、かつ20日のうち15日以上で売買代金1億円以上を必須条件とします。出来高比は、この流動性条件を通過した銘柄の初動予兆として使用します。
+
 更新処理に失敗した場合は`latest.json`と`history.json`を変更せず、`status.json`だけを失敗状態へ更新します。公開サイトは最後に成功したデータを表示し続けます。
 
 ## Data sources

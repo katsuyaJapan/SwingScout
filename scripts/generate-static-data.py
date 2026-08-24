@@ -169,7 +169,7 @@ def main() -> None:
     gate = not SEED.get("failures") and earnings_ok and rights_ok and SEED.get("latestCoverage", 0) >= 3800 and SEED.get("historyReady", 0) >= 3000 and (effective_date == SEED["asOf"] or quotes_complete)
     history_days = sorted(old_history.get("history", []), key=lambda x: x["asOf"], reverse=True)
     recent_codes = {c["code"] for day in history_days[:5] if day.get("asOf", "") < effective_date for c in day.get("candidates", [])}
-    hard_flags = {"EARNINGS_WITHIN_3_DAYS", "EARNINGS_DATE_UNDECIDED", "EARNINGS_DATE_CONFLICT", "EARNINGS_UNCONFIRMED", "EX_RIGHTS_WITHIN_3_DAYS", "RIGHTS_DATE_CONFLICT", "RIGHTS_RECENT_DISCLOSURE", "ENTRY_RISK_TOO_WIDE", "RISK_REWARD_LOW"}
+    hard_flags = {"EARNINGS_WITHIN_3_DAYS", "EARNINGS_DATE_UNDECIDED", "EARNINGS_DATE_CONFLICT", "EARNINGS_UNCONFIRMED", "EX_RIGHTS_WITHIN_3_DAYS", "RIGHTS_DATE_CONFLICT", "RIGHTS_RECENT_DISCLOSURE", "LOW_LIQUIDITY", "ENTRY_RISK_TOO_WIDE", "RISK_REWARD_LOW"}
     eligible = [x for x in refreshed if not hard_flags.intersection(x.get("riskFlags", []))]
     continued = [{**x, "lastSelectedDate": next((d["asOf"] for d in history_days if any(c["code"] == x["code"] for c in d.get("candidates", []))), None)} for x in eligible if x["code"] in recent_codes]
     final = diversified([x for x in eligible if x["code"] not in recent_codes]) if gate else []
