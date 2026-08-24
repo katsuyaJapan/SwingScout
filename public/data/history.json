@@ -1,7 +1,38 @@
 {
-  "currentAsOf": "20260824",
+  "currentAsOf": "20260821",
   "retentionDays": 30,
   "history": [
+    {
+      "asOf": "20260821",
+      "candidates": [
+        {
+          "code": "9007",
+          "name": "小田急",
+          "close": 1775.0,
+          "entry": "1,771円〜1,781円（現在値〜前日高値抜け）",
+          "targetPrice": 1901,
+          "targetPrice1": 1855,
+          "targetPrice2": 1901,
+          "invalidation": "1,690円割れ",
+          "currentClose": 1775.0,
+          "changePct": 0.0,
+          "targetReached": false
+        },
+        {
+          "code": "9551",
+          "name": "メタウォーター",
+          "close": 3110.0,
+          "entry": "3,103円〜3,120円（現在値付近）",
+          "targetPrice": 3335,
+          "targetPrice1": 3335,
+          "targetPrice2": 3335,
+          "invalidation": "3,020円割れ",
+          "currentClose": 3110.0,
+          "changePct": 0.0,
+          "targetReached": false
+        }
+      ]
+    },
     {
       "asOf": "20260824",
       "candidates": [
@@ -14,8 +45,8 @@
           "targetPrice1": 1652,
           "targetPrice2": 1669,
           "invalidation": "1,504円割れ",
-          "currentClose": 1570.5,
-          "changePct": 0.0,
+          "currentClose": 1565.0,
+          "changePct": -0.4,
           "targetReached": false
         },
         {
@@ -27,52 +58,8 @@
           "targetPrice1": 3335,
           "targetPrice2": 3335,
           "invalidation": "3,020円割れ",
-          "currentClose": 3120.0,
-          "changePct": 0.0,
-          "targetReached": false
-        }
-      ]
-    },
-    {
-      "asOf": "20260821",
-      "candidates": [
-        {
-          "code": "9031",
-          "name": "西鉄",
-          "close": 3143.0,
-          "entry": "3,136円〜3,153円（現在値付近）",
-          "targetPrice": 3357,
-          "targetPrice1": 3258,
-          "targetPrice2": 3357,
-          "invalidation": "2,993円割れ",
-          "currentClose": 3106.0,
-          "changePct": -1.2,
-          "targetReached": false
-        },
-        {
-          "code": "5013",
-          "name": "ユシロ",
-          "close": 3040.0,
-          "entry": "3,033円〜3,050円（現在値付近）",
-          "targetPrice": 3271,
-          "targetPrice1": 3185,
-          "targetPrice2": 3271,
-          "invalidation": "2,974円割れ",
-          "currentClose": 3040.0,
-          "changePct": 0.0,
-          "targetReached": false
-        },
-        {
-          "code": "3150",
-          "name": "グリムス",
-          "close": 2529.0,
-          "entry": "2,523円〜2,537円（現在値付近）",
-          "targetPrice": 2649,
-          "targetPrice1": 2646,
-          "targetPrice2": 2649,
-          "invalidation": "2,462円割れ",
-          "currentClose": 2529.0,
-          "changePct": 0.0,
+          "currentClose": 3110.0,
+          "changePct": -0.3,
           "targetReached": false
         }
       ]
@@ -102,8 +89,8 @@
           "targetPrice1": 1346,
           "targetPrice2": 1385,
           "invalidation": "1,248円割れ",
-          "currentClose": 1291.5,
-          "changePct": -0.8,
+          "currentClose": 1305.0,
+          "changePct": 0.2,
           "targetReached": false
         },
         {
@@ -115,8 +102,8 @@
           "targetPrice1": 1350,
           "targetPrice2": 1356,
           "invalidation": "1,268円割れ",
-          "currentClose": 1340.5,
-          "changePct": 2.9,
+          "currentClose": 1331.0,
+          "changePct": 2.1,
           "targetReached": false
         }
       ]
@@ -133,8 +120,8 @@
           "targetPrice1": 106,
           "targetPrice2": 109,
           "invalidation": "97円割れ",
-          "currentClose": 101.0,
-          "changePct": 1.0,
+          "currentClose": 102.0,
+          "changePct": 2.0,
           "targetReached": false
         },
         {
@@ -146,8 +133,8 @@
           "targetPrice1": 1378,
           "targetPrice2": 1380,
           "invalidation": "1,256円割れ",
-          "currentClose": 1300.5,
-          "changePct": 0.0,
+          "currentClose": 1311.0,
+          "changePct": 0.8,
           "targetReached": false
         }
       ]
