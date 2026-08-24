@@ -1,7 +1,38 @@
 {
-  "currentAsOf": "20260821",
+  "currentAsOf": "20260824",
   "retentionDays": 30,
   "history": [
+    {
+      "asOf": "20260824",
+      "candidates": [
+        {
+          "code": "9006",
+          "name": "京急",
+          "close": 1570.5,
+          "entry": "1,567円〜1,576円（現在値付近）",
+          "targetPrice": 1669,
+          "targetPrice1": 1652,
+          "targetPrice2": 1669,
+          "invalidation": "1,504円割れ",
+          "currentClose": 1570.5,
+          "changePct": 0.0,
+          "targetReached": false
+        },
+        {
+          "code": "9551",
+          "name": "メタウォーター",
+          "close": 3120.0,
+          "entry": "3,113円〜3,130円（現在値付近）",
+          "targetPrice": 3335,
+          "targetPrice1": 3335,
+          "targetPrice2": 3335,
+          "invalidation": "3,020円割れ",
+          "currentClose": 3120.0,
+          "changePct": 0.0,
+          "targetReached": false
+        }
+      ]
+    },
     {
       "asOf": "20260821",
       "candidates": [
@@ -14,8 +45,8 @@
           "targetPrice1": 3258,
           "targetPrice2": 3357,
           "invalidation": "2,993円割れ",
-          "currentClose": 3143.0,
-          "changePct": 0.0,
+          "currentClose": 3106.0,
+          "changePct": -1.2,
           "targetReached": false
         },
         {
@@ -71,8 +102,8 @@
           "targetPrice1": 1346,
           "targetPrice2": 1385,
           "invalidation": "1,248円割れ",
-          "currentClose": 1305.0,
-          "changePct": 0.2,
+          "currentClose": 1291.5,
+          "changePct": -0.8,
           "targetReached": false
         },
         {
@@ -84,8 +115,8 @@
           "targetPrice1": 1350,
           "targetPrice2": 1356,
           "invalidation": "1,268円割れ",
-          "currentClose": 1331.0,
-          "changePct": 2.1,
+          "currentClose": 1340.5,
+          "changePct": 2.9,
           "targetReached": false
         }
       ]
@@ -102,8 +133,8 @@
           "targetPrice1": 106,
           "targetPrice2": 109,
           "invalidation": "97円割れ",
-          "currentClose": 102.0,
-          "changePct": 2.0,
+          "currentClose": 101.0,
+          "changePct": 1.0,
           "targetReached": false
         },
         {
@@ -115,8 +146,8 @@
           "targetPrice1": 1378,
           "targetPrice2": 1380,
           "invalidation": "1,256円割れ",
-          "currentClose": 1311.0,
-          "changePct": 0.8,
+          "currentClose": 1300.5,
+          "changePct": 0.0,
           "targetReached": false
         }
       ]
