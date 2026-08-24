@@ -64,12 +64,12 @@ universe=[]; history=0; liquid=0
 for s in raw["securities"]:
   c=[x for x in s["c"] if x is not None][-250:]; v=[x for x in s["v"] if x is not None][-250:]; t=[x for x in s["t"] if x is not None][-250:]
   if len(c)<200 or len(v)<20 or len(t)<20: continue
-  history+=1; at=avg(t[-20:])
-  if at<100_000_000: continue
+  history+=1; turnover20=t[-20:]; at=avg(turnover20); active_days=sum(value>=100_000_000 for value in turnover20)
+  if at<300_000_000 or active_days<15: continue
   sector,market=master.get(s['code'],('その他製品','未分類'))
   if 'ETF' in market or 'REIT' in market or 'ファンド' in market: continue
   liquid+=1; close=c[-1]; ma5=avg(c[-5:]); ma25=avg(c[-25:]); ma75=avg(c[-75:]); high=max(c[-20:]); rs=rsi(c); ret5=(close/c[-6]-1)*100; ret20=(close/c[-21]-1)*100; d25=(close/ma25-1)*100; vr=avg(v[-5:])/avg(v[-20:]); low=min(c[-10:])
-  universe.append({'code':s['code'],'name':s['name'],'sector':sector,'close':close,'c':c,'v':v,'t':t,'ma5':ma5,'ma25':ma25,'ma75':ma75,'high20':high,'rsi':rs,'ret5':ret5,'ret20':ret20,'d25':d25,'vr':vr,'low':low,'at':at})
+  universe.append({'code':s['code'],'name':s['name'],'sector':sector,'close':close,'c':c,'v':v,'t':t,'ma5':ma5,'ma25':ma25,'ma75':ma75,'high20':high,'rsi':rs,'ret5':ret5,'ret20':ret20,'d25':d25,'vr':vr,'low':low,'at':at,'activeDays':active_days})
 sector_groups={}
 for x in universe: sector_groups.setdefault(x['sector'],[]).append(x)
 sectors=[]
@@ -110,7 +110,7 @@ for x in universe:
   if volume_score>=9: reasons.append(f"出来高比 {x['vr']:.2f}倍")
   if headroom_score>=5: reasons.append(f"20日高値まで {headroom:.1f}%")
   earnings_flag=[] if x['code'] in earnings else (["EARNINGS_DATE_UNDECIDED"] if earnings_status.get(x['code'])=='UNDECIDED' else ["EARNINGS_UNCONFIRMED"])
-  item={"code":x['code'],"name":x['name'],"sector":x['sector'],"sectorPhase":sec['phase'],"sectorScore":sec['score'],"close":x['close'],"score":round(score,3),"displayScore":round(score),"technical":round(individual,3),"liquidity":round(liquidity_score,3),"scoreBreakdown":{"sector":round(sec['score']*.30,2),"deviation":round(deviation_score,2),"rsi":round(rsi_score,2),"volume":round(volume_score,2),"headroom":round(headroom_score,2),"trend":round(trend_score,2),"risk":round(risk_score,2),"liquidity":round(liquidity_score,2),"penalty":round(penalty,2)},"setup":"初動候補" if x['vr']>=1.05 and x['ret5']>0 else "先回り候補","entry":f"{round(min(x['close'],x['ma5'])):,}円付近まで","invalidation":f"{round(x['low']):,}円割れ","reasons":reasons[:3],"riskFlags":(["LOW_LIQUIDITY"] if x['at']<300_000_000 else [])+earnings_flag,"earningsDate":earnings.get(x['code']),"earningsStatus":earnings_status.get(x['code'],'UNCONFIRMED'),"earningsPeriod":earnings_period.get(x['code']),"earningsDays":None,**rights.get(x['code'],{}),"metrics":{"closes":x['c'][-76:],"volumes":x['v'][-20:],"avgTurnover":x['at']},"checks":{"price":True,"history":True,"liquidity":True,"fundamental":False,"earningsDate":x['code'] in earnings,"disclosure":False}}
+  item={"code":x['code'],"name":x['name'],"sector":x['sector'],"sectorPhase":sec['phase'],"sectorScore":sec['score'],"close":x['close'],"score":round(score,3),"displayScore":round(score),"technical":round(individual,3),"liquidity":round(liquidity_score,3),"scoreBreakdown":{"sector":round(sec['score']*.30,2),"deviation":round(deviation_score,2),"rsi":round(rsi_score,2),"volume":round(volume_score,2),"headroom":round(headroom_score,2),"trend":round(trend_score,2),"risk":round(risk_score,2),"liquidity":round(liquidity_score,2),"penalty":round(penalty,2)},"setup":"初動候補" if x['vr']>=1.05 and x['ret5']>0 else "先回り候補","entry":f"{round(min(x['close'],x['ma5'])):,}円付近まで","invalidation":f"{round(x['low']):,}円割れ","reasons":reasons[:3],"riskFlags":earnings_flag,"earningsDate":earnings.get(x['code']),"earningsStatus":earnings_status.get(x['code'],'UNCONFIRMED'),"earningsPeriod":earnings_period.get(x['code']),"earningsDays":None,**rights.get(x['code'],{}),"metrics":{"closes":x['c'][-76:],"volumes":x['v'][-20:],"avgTurnover":x['at'],"activeTurnoverDays":x['activeDays']},"checks":{"price":True,"history":True,"liquidity":True,"fundamental":False,"earningsDate":x['code'] in earnings,"disclosure":False}}
   if penalty>=15: excluded.append({**item,'excludeReason':'5日上昇・25日線乖離・過熱のいずれか'})
   elif individual>=35 and sec['score']>=50: rows.append(item)
 rows.sort(key=lambda x:x['score'],reverse=True); excluded.sort(key=lambda x:x['score'],reverse=True)
