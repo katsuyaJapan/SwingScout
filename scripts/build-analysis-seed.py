@@ -3,6 +3,7 @@ import concurrent.futures, datetime, json, math, re, subprocess, tempfile, urlli
 from pathlib import Path
 from zoneinfo import ZoneInfo
 from rights_sources import fetch_yahoo_rights
+from volume_signals import analyze_volume_supply_demand
 
 ROOT=Path(__file__).resolve().parents[1]
 POST_EARNINGS_SAFE_DAYS=45
@@ -62,14 +63,15 @@ def rsi(xs,n=14):
 def triangle(value, center, half_width, maximum): return max(0.0, maximum*(1-abs(value-center)/half_width))
 universe=[]; history=0; liquid=0
 for s in raw["securities"]:
-  c=[x for x in s["c"] if x is not None][-250:]; v=[x for x in s["v"] if x is not None][-250:]; t=[x for x in s["t"] if x is not None][-250:]
+  aligned=[row for row in zip(s["c"],s["v"],s["t"],s.get("o",[None]*len(s["c"])),s.get("h",[None]*len(s["c"])),s.get("l",[None]*len(s["c"]))) if row[0] is not None and row[1] is not None and row[2] is not None][-250:]
+  c=[row[0] for row in aligned]; v=[row[1] for row in aligned]; t=[row[2] for row in aligned]; o=[row[3] for row in aligned]; h=[row[4] for row in aligned]; l=[row[5] for row in aligned]
   if len(c)<200 or len(v)<20 or len(t)<20: continue
   history+=1; turnover20=t[-20:]; at=avg(turnover20); active_days=sum(value>=100_000_000 for value in turnover20)
   if at<300_000_000 or active_days<15: continue
   sector,market=master.get(s['code'],('その他製品','未分類'))
   if 'ETF' in market or 'REIT' in market or 'ファンド' in market: continue
-  liquid+=1; close=c[-1]; ma5=avg(c[-5:]); ma25=avg(c[-25:]); ma75=avg(c[-75:]); high=max(c[-20:]); rs=rsi(c); ret5=(close/c[-6]-1)*100; ret20=(close/c[-21]-1)*100; d25=(close/ma25-1)*100; vr=avg(v[-5:])/avg(v[-20:]); low=min(c[-10:])
-  universe.append({'code':s['code'],'name':s['name'],'sector':sector,'close':close,'c':c,'v':v,'t':t,'ma5':ma5,'ma25':ma25,'ma75':ma75,'high20':high,'rsi':rs,'ret5':ret5,'ret20':ret20,'d25':d25,'vr':vr,'low':low,'at':at,'activeDays':active_days})
+  liquid+=1; close=c[-1]; ma5=avg(c[-5:]); ma25=avg(c[-25:]); ma75=avg(c[-75:]); high20=max(c[-20:]); rs=rsi(c); ret5=(close/c[-6]-1)*100; ret20=(close/c[-21]-1)*100; d25=(close/ma25-1)*100; vr=avg(v[-5:])/avg(v[-20:]); low10=min(c[-10:]); volume=analyze_volume_supply_demand(c,v,h,l,ma25)
+  universe.append({'code':s['code'],'name':s['name'],'sector':sector,'close':close,'c':c,'v':v,'t':t,'o':o,'h':h,'l':l,'ma5':ma5,'ma25':ma25,'ma75':ma75,'high20':high20,'rsi':rs,'ret5':ret5,'ret20':ret20,'d25':d25,'vr':vr,'low':low10,'at':at,'activeDays':active_days,**volume})
 sector_groups={}
 for x in universe: sector_groups.setdefault(x['sector'],[]).append(x)
 sectors=[]
@@ -99,18 +101,18 @@ outflows.sort(key=lambda x:x['score'],reverse=True)
 rows=[]; excluded=[]
 for x in universe:
   sec=sector_score[x['sector']]; reasons=[]
-  deviation_score=triangle(x['d25'],1.5,5.0,17.0); rsi_score=triangle(x['rsi'],51.0,17.0,15.0); volume_score=triangle(x['vr'],1.18,.65,14.0)
+  deviation_score=triangle(x['d25'],1.5,5.0,17.0); rsi_score=triangle(x['rsi'],51.0,17.0,15.0); volume_score=x['volumeScore']; close_location_score=x['closeLocationScore']
   headroom=(x['high20']/x['close']-1)*100; headroom_score=triangle(headroom,6.0,7.0,9.0); trend_score=max(0,min(6,3+(x['ma5']/x['ma25']-1)*100*1.5))
   risk_width=max(0,(x['close']/x['low']-1)*100); risk_score=max(0,6-abs(risk_width-4)*1.2); liquidity_score=max(0,min(8,2+math.log10(max(x['at'],1)/100_000_000)*3))
-  individual=deviation_score+rsi_score+volume_score+headroom_score+trend_score+risk_score+liquidity_score
+  individual=deviation_score+rsi_score+volume_score+close_location_score+headroom_score+trend_score+risk_score+liquidity_score
   penalty=max(0,x['ret5']-5)*2.5+max(0,x['d25']-6)*3+(12 if x['rsi']>70 else 0)+(8 if x['close']>=x['high20'] and x['ret5']>5 else 0)
   score=max(0,min(100,sec['score']*.30+individual-penalty));
   if deviation_score>=12: reasons.append(f"25日線乖離 {x['d25']:+.1f}%")
   if rsi_score>=10: reasons.append(f"RSI {x['rsi']:.0f}で過熱前")
-  if volume_score>=9: reasons.append(f"出来高比 {x['vr']:.2f}倍")
+  if x['volumeSignal']=='GREEN': reasons.append(x['volumeSupplyDemand'])
   if headroom_score>=5: reasons.append(f"20日高値まで {headroom:.1f}%")
   earnings_flag=[] if x['code'] in earnings else (["EARNINGS_DATE_UNDECIDED"] if earnings_status.get(x['code'])=='UNDECIDED' else ["EARNINGS_UNCONFIRMED"])
-  item={"code":x['code'],"name":x['name'],"sector":x['sector'],"sectorPhase":sec['phase'],"sectorScore":sec['score'],"close":x['close'],"score":round(score,3),"displayScore":round(score),"technical":round(individual,3),"liquidity":round(liquidity_score,3),"scoreBreakdown":{"sector":round(sec['score']*.30,2),"deviation":round(deviation_score,2),"rsi":round(rsi_score,2),"volume":round(volume_score,2),"headroom":round(headroom_score,2),"trend":round(trend_score,2),"risk":round(risk_score,2),"liquidity":round(liquidity_score,2),"penalty":round(penalty,2)},"setup":"初動候補" if x['vr']>=1.05 and x['ret5']>0 else "先回り候補","entry":f"{round(min(x['close'],x['ma5'])):,}円付近まで","invalidation":f"{round(x['low']):,}円割れ","reasons":reasons[:3],"riskFlags":earnings_flag,"earningsDate":earnings.get(x['code']),"earningsStatus":earnings_status.get(x['code'],'UNCONFIRMED'),"earningsPeriod":earnings_period.get(x['code']),"earningsDays":None,**rights.get(x['code'],{}),"metrics":{"closes":x['c'][-76:],"volumes":x['v'][-20:],"avgTurnover":x['at'],"activeTurnoverDays":x['activeDays']},"checks":{"price":True,"history":True,"liquidity":True,"fundamental":False,"earningsDate":x['code'] in earnings,"disclosure":False}}
+  item={"code":x['code'],"name":x['name'],"sector":x['sector'],"sectorPhase":sec['phase'],"sectorScore":sec['score'],"close":x['close'],"score":round(score,3),"displayScore":round(score),"technical":round(individual,3),"liquidity":round(liquidity_score,3),"relativeVolume":x['relativeVolume'],"volumeSignal":x['volumeSignal'],"volumePhase":x['volumePhase'],"volumeSupplyDemand":x['volumeSupplyDemand'],"closeLocation":x['closeLocation'],"scoreBreakdown":{"sector":round(sec['score']*.30,2),"deviation":round(deviation_score,2),"rsi":round(rsi_score,2),"volume":round(volume_score,2),"closeLocation":round(close_location_score,2),"headroom":round(headroom_score,2),"trend":round(trend_score,2),"risk":round(risk_score,2),"liquidity":round(liquidity_score,2),"penalty":round(penalty,2)},"setup":"初動候補" if x['volumePhase'] in ('DRY_UP_REACCELERATION','BUYING_DEMAND','EARLY_ACCUMULATION') else "先回り候補","entry":f"{round(min(x['close'],x['ma5'])):,}円付近まで","invalidation":f"{round(x['low']):,}円割れ","reasons":reasons[:3],"riskFlags":earnings_flag,"earningsDate":earnings.get(x['code']),"earningsStatus":earnings_status.get(x['code'],'UNCONFIRMED'),"earningsPeriod":earnings_period.get(x['code']),"earningsDays":None,**rights.get(x['code'],{}),"metrics":{"closes":x['c'][-76:],"volumes":x['v'][-21:],"highs":x['h'][-21:],"lows":x['l'][-21:],"avgTurnover":x['at'],"activeTurnoverDays":x['activeDays']},"checks":{"price":True,"history":True,"liquidity":True,"fundamental":False,"earningsDate":x['code'] in earnings,"disclosure":False}}
   if penalty>=15: excluded.append({**item,'excludeReason':'5日上昇・25日線乖離・過熱のいずれか'})
   elif individual>=35 and sec['score']>=50: rows.append(item)
 rows.sort(key=lambda x:x['score'],reverse=True); excluded.sort(key=lambda x:x['score'],reverse=True)

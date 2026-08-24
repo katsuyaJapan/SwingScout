@@ -22,7 +22,7 @@ except (json.JSONDecodeError, FileNotFoundError):
 HISTORY_PATH = DATA / "history.json"
 LATEST_PATH = DATA / "latest.json"
 STATUS_PATH = DATA / "status.json"
-VERSION = 20
+VERSION = 21
 MAX_OPENING_GAP_PCT = 1.0
 
 JPX_HOLIDAYS = {

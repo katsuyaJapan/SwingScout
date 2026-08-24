@@ -21,6 +21,11 @@ class StaticDataTest(unittest.TestCase):
                 "ENTRY_RISK_TOO_WIDE", "RISK_REWARD_LOW",
             })
             self.assertLessEqual(row["targetPrice1"], row["targetPrice2"])
+            if "relativeVolume" in row:
+                self.assertGreaterEqual(row["relativeVolume"], 0)
+                self.assertIn(row["volumeSignal"], {"GREEN", "YELLOW", "RED"})
+                self.assertGreaterEqual(row["closeLocation"], 0)
+                self.assertLessEqual(row["closeLocation"], 1)
 
     def test_status_and_history_contract(self):
         status = json.loads((DATA / "status.json").read_text())
