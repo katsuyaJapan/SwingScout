@@ -21,7 +21,7 @@ def parse_month(s):
     m=pat.match(line.strip())
     if not m:continue
     a=[num(x) for x in m.group(4).split()]
-    if len(a)>=8 and (a[7]or a[3]):out.append((m.group(1),m.group(2)[:4],m.group(3).strip(),a[7]or a[3],None,None))
+    if len(a)>=8 and (a[7]or a[3]):out.append((m.group(1),m.group(2)[:4],m.group(3).strip(),None,None,None,a[7]or a[3],None,None))
   return out
 def parse_day(s,url):
   day=re.search(r"(\d{8})\.pdf$",url).group(1);out=[]
@@ -31,7 +31,9 @@ def parse_day(s,url):
     tok=m.group(3).split();tail=[]
     while tok and re.match(r"^(?:-?[\d,.]+|－)$",tok[-1]):tail.append(tok.pop())
     a=[num(x) for x in reversed(tail[-13:])]
-    if len(a)==13 and (a[7]or a[3]):out.append((day,m.group(1)[:4]," ".join(tok),(a[7]or a[3]),round(a[11]*1000) if a[11] else None,round(a[12]*1000) if a[12] else None))
+    if len(a)==13 and (a[7]or a[3]):
+      opens=[x for x in (a[0],a[4]) if x is not None]; highs=[x for x in (a[1],a[5]) if x is not None]; lows=[x for x in (a[2],a[6]) if x is not None]
+      out.append((day,m.group(1)[:4]," ".join(tok),opens[0] if opens else None,max(highs) if highs else None,min(lows) if lows else None,(a[7]or a[3]),round(a[11]*1000) if a[11] else None,round(a[12]*1000) if a[12] else None))
   return out
 def load(pair):
   kind,url=pair;return url,(parse_month(text(url)) if kind=="m" else parse_day(text(url),url))
@@ -54,12 +56,13 @@ def main():
       try:
         url,rows=f.result()
         if len(rows)<1000:raise ValueError(f"only {len(rows)} rows")
-        for day,code,name,close,volume,turnover in rows:db[code][day]=(name,close,volume,turnover)
+        for day,code,name,open_,high,low,close,volume,turnover in rows:db[code][day]=(name,open_,high,low,close,volume,turnover)
         print("ok",url.rsplit('/',1)[-1],len(rows),flush=True)
       except Exception as e:fails.append({"file":fs[f][1].rsplit('/',1)[-1],"error":str(e)})
   dates=sorted({d for rows in db.values() for d in rows})[-250:];sec=[]
   for code,rows in sorted(db.items()):
-    last=rows[max(rows)];sec.append({"code":code,"name":last[0],"c":[rows.get(d,(None,None,None,None))[1] for d in dates],"v":[rows.get(d,(None,None,None,None))[2] for d in dates],"t":[rows.get(d,(None,None,None,None))[3] for d in dates]})
+    last=rows[max(rows)]; empty=(None,)*7
+    sec.append({"code":code,"name":last[0],"o":[rows.get(d,empty)[1] for d in dates],"h":[rows.get(d,empty)[2] for d in dates],"l":[rows.get(d,empty)[3] for d in dates],"c":[rows.get(d,empty)[4] for d in dates],"v":[rows.get(d,empty)[5] for d in dates],"t":[rows.get(d,empty)[6] for d in dates]})
   cov=[sum(x["c"][i] is not None for x in sec) for i in range(len(dates))]
   OUT.write_text(json.dumps({"source":"JPX東京証券取引所日報","asOf":dates[-1],"dates":dates,"securities":sec,"quality":{"files":len(work),"failures":fails,"coverage":cov}},ensure_ascii=False,separators=(",",":")))
   print(json.dumps({"codes":len(sec),"days":len(dates),"latest":cov[-1],"failures":len(fails)}))

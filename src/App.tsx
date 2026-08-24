@@ -22,6 +22,11 @@ type Candidate = {
   displayScore?: number;
   technical: number;
   liquidity: number;
+  relativeVolume?: number | null;
+  volumeSignal?: "GREEN" | "YELLOW" | "RED";
+  volumePhase?: string;
+  volumeSupplyDemand?: string;
+  closeLocation?: number;
   invalidation: string;
   reasons: string[];
   provisional?: boolean;
@@ -136,6 +141,14 @@ const labels: Record<string, string> = {
 };
 const dateText = (d: string) =>
   d.length === 8 ? `${d.slice(0, 4)}/${d.slice(4, 6)}/${d.slice(6)}` : d;
+const volumeSignalDisplay = (candidate: Candidate) => {
+  const signal = candidate.volumeSignal ?? "YELLOW";
+  return {
+    icon: signal === "GREEN" ? "🟢" : signal === "RED" ? "🔴" : "🟡",
+    className: signal === "GREEN" ? "volumeGood" : signal === "RED" ? "volumeBad" : "volumeNeutral",
+    label: candidate.volumeSupplyDemand ?? "出来高通常",
+  };
+};
 const earningsDisplay = (candidate: Candidate) => {
   const flags = new Set(candidate.riskFlags ?? []);
 
@@ -428,6 +441,13 @@ export default function Home() {
                         {c.riskFlags?.includes("LOW_LIQUIDITY")
                           ? "注意：売買代金少なめ"
                           : "基準通過"}
+                      </dd>
+                    </div>
+                    <div className="volumeDemand">
+                      <dt>出来高需給</dt>
+                      <dd className={volumeSignalDisplay(c).className}>
+                        <b>{volumeSignalDisplay(c).icon} {volumeSignalDisplay(c).label}</b>
+                        {c.relativeVolume != null && <small>RVOL {c.relativeVolume.toFixed(2)}・終値位置 {Math.round((c.closeLocation ?? .5) * 100)}%</small>}
                       </dd>
                     </div>
                     <div className={c.riskFlags?.some(flag => ["EX_RIGHTS_WITHIN_3_DAYS", "RIGHTS_DATE_CONFLICT", "RIGHTS_RECENT_DISCLOSURE"].includes(flag)) ? "rightsRisk dangerBox" : "rightsRisk"}>
@@ -724,6 +744,7 @@ export default function Home() {
                     <small>
                       {c.setup}・{c.sectorPhase}
                     </small>
+                    {c.volumeSignal && <small className={volumeSignalDisplay(c).className}>{volumeSignalDisplay(c).icon} {c.volumeSupplyDemand}</small>}
                   </span>
                   <span>{c.reasons.join("・")}</span>
                   <span>{c.invalidation}</span>
