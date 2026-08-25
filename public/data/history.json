@@ -1,7 +1,51 @@
 {
-  "currentAsOf": "20260824",
+  "currentAsOf": "20260825",
   "retentionDays": 30,
   "history": [
+    {
+      "asOf": "20260825",
+      "candidates": [
+        {
+          "code": "9031",
+          "name": "西鉄",
+          "close": 3108.0,
+          "entry": "3,101円〜3,118円（現在値付近）",
+          "targetPrice": 3322,
+          "targetPrice1": 3245,
+          "targetPrice2": 3322,
+          "invalidation": "3,000円割れ",
+          "currentClose": 3108.0,
+          "changePct": 0.0,
+          "targetReached": false
+        },
+        {
+          "code": "8218",
+          "name": "コメリ",
+          "close": 3870.0,
+          "entry": "3,862円〜3,882円（現在値付近）",
+          "targetPrice": 4179,
+          "targetPrice1": 4065,
+          "targetPrice2": 4179,
+          "invalidation": "3,825円割れ",
+          "currentClose": 3870.0,
+          "changePct": 0.0,
+          "targetReached": false
+        },
+        {
+          "code": "1878",
+          "name": "大東建",
+          "close": 3331.0,
+          "entry": "3,324円〜3,371円（現在値〜前日高値抜け）",
+          "targetPrice": 3620,
+          "targetPrice1": 3601,
+          "targetPrice2": 3620,
+          "invalidation": "3,212円割れ",
+          "currentClose": 3331.0,
+          "changePct": 0.0,
+          "targetReached": false
+        }
+      ]
+    },
     {
       "asOf": "20260824",
       "candidates": [
@@ -14,8 +58,8 @@
           "targetPrice1": 3198,
           "targetPrice2": 3223,
           "invalidation": "2,926円割れ",
-          "currentClose": 3029.0,
-          "changePct": 0.0,
+          "currentClose": 3043.0,
+          "changePct": 0.5,
           "targetReached": false
         },
         {
@@ -40,8 +84,8 @@
           "targetPrice1": 812,
           "targetPrice2": 828,
           "invalidation": "755円割れ",
-          "currentClose": 783.0,
-          "changePct": 0.0,
+          "currentClose": 785.0,
+          "changePct": 0.3,
           "targetReached": false
         }
       ]
@@ -58,8 +102,8 @@
           "targetPrice1": 1855,
           "targetPrice2": 1901,
           "invalidation": "1,690円割れ",
-          "currentClose": 1762.5,
-          "changePct": -0.7,
+          "currentClose": 1788.5,
+          "changePct": 0.8,
           "targetReached": false
         },
         {
@@ -102,8 +146,8 @@
           "targetPrice1": 1346,
           "targetPrice2": 1385,
           "invalidation": "1,248円割れ",
-          "currentClose": 1291.5,
-          "changePct": -0.8,
+          "currentClose": 1296.0,
+          "changePct": -0.5,
           "targetReached": false
         },
         {
@@ -115,8 +159,8 @@
           "targetPrice1": 1350,
           "targetPrice2": 1356,
           "invalidation": "1,268円割れ",
-          "currentClose": 1340.5,
-          "changePct": 2.9,
+          "currentClose": 1341.5,
+          "changePct": 3.0,
           "targetReached": false
         }
       ]
