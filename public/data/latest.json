@@ -2,7 +2,7 @@
   "version": 21,
   "asOf": "20260824",
   "officialAsOf": "20260824",
-  "generatedAt": "2026-08-25T00:07:41.520982+00:00",
+  "generatedAt": "2026-08-25T03:18:54.963263+00:00",
   "cached": false,
   "priceStatus": "JPX_CONFIRMED",
   "status": "READY",
@@ -2545,166 +2545,166 @@
   ],
   "sectorOutflows": [
     {
-      "name": "電気機器",
-      "score": 64,
-      "level": "流出強め",
-      "action": "新規停止・利益保護",
-      "return1": 1.44,
-      "return5": -3.5,
-      "return20": 11.7,
-      "breadthChange": -30.3,
-      "turnoverRatio": 0.82,
-      "reasons": [
-        "5日 -3.5%",
-        "広がり -30.3pt",
-        "上昇モメンタム失速"
-      ]
-    },
-    {
-      "name": "情報・通信業",
-      "score": 62,
-      "level": "流出強め",
-      "action": "新規停止・利益保護",
-      "return1": -2.14,
-      "return5": -3.82,
-      "return20": 0.36,
-      "breadthChange": 9.3,
-      "turnoverRatio": 0.94,
-      "reasons": [
-        "1日 -2.1%",
-        "5日 -3.8%",
-        "上昇モメンタム失速"
-      ]
-    },
-    {
-      "name": "金属製品",
-      "score": 62,
-      "level": "流出強め",
-      "action": "新規停止・利益保護",
-      "return1": -0.58,
-      "return5": -4.7,
-      "return20": -2.37,
-      "breadthChange": -20.0,
+      "name": "繊維製品",
+      "score": 58,
+      "level": "流出開始",
+      "action": "逆指値引き上げ",
+      "return1": -1.22,
+      "return5": -2.69,
+      "return20": 4.48,
+      "breadthChange": -9.1,
       "turnoverRatio": 0.84,
       "reasons": [
-        "1日 -0.6%",
-        "5日 -4.7%",
-        "広がり -20.0pt"
+        "1日 -1.2%",
+        "5日 -2.7%",
+        "広がり -9.1pt"
       ]
     },
     {
       "name": "銀行業",
-      "score": 60,
-      "level": "流出強め",
-      "action": "新規停止・利益保護",
-      "return1": -0.33,
-      "return5": -4.75,
-      "return20": -7.13,
+      "score": 54,
+      "level": "流出開始",
+      "action": "逆指値引き上げ",
+      "return1": 0.55,
+      "return5": -4.19,
+      "return20": -7.14,
       "breadthChange": -27.3,
       "turnoverRatio": 0.91,
       "reasons": [
-        "1日 -0.3%",
-        "5日 -4.7%",
-        "広がり -27.3pt"
-      ]
-    },
-    {
-      "name": "食料品",
-      "score": 50,
-      "level": "流出開始",
-      "action": "逆指値引き上げ",
-      "return1": -0.76,
-      "return5": -2.81,
-      "return20": 4.91,
-      "breadthChange": 13.5,
-      "turnoverRatio": 0.8,
-      "reasons": [
-        "1日 -0.8%",
-        "5日 -2.8%",
+        "5日 -4.2%",
+        "広がり -27.3pt",
         "上昇モメンタム失速"
       ]
     },
     {
       "name": "非鉄金属",
-      "score": 43,
-      "level": "弱含み警戒",
-      "action": "保有を重点監視",
-      "return1": 1.24,
-      "return5": -2.19,
-      "return20": 10.78,
+      "score": 52,
+      "level": "流出開始",
+      "action": "逆指値引き上げ",
+      "return1": -0.56,
+      "return5": -1.5,
+      "return20": 11.97,
       "breadthChange": -11.8,
       "turnoverRatio": 1.04,
       "reasons": [
-        "5日 -2.2%",
-        "広がり -11.8pt",
+        "1日 -0.6%",
+        "5日 -1.5%",
+        "広がり -11.8pt"
+      ]
+    },
+    {
+      "name": "輸送用機器",
+      "score": 51,
+      "level": "流出開始",
+      "action": "逆指値引き上げ",
+      "return1": -1.13,
+      "return5": -2.58,
+      "return20": 4.92,
+      "breadthChange": 0.0,
+      "turnoverRatio": 0.83,
+      "reasons": [
+        "1日 -1.1%",
+        "5日 -2.6%",
+        "上昇モメンタム失速"
+      ]
+    },
+    {
+      "name": "金属製品",
+      "score": 51,
+      "level": "流出開始",
+      "action": "逆指値引き上げ",
+      "return1": 0.11,
+      "return5": -3.73,
+      "return20": -3.73,
+      "breadthChange": -20.0,
+      "turnoverRatio": 0.84,
+      "reasons": [
+        "5日 -3.7%",
+        "広がり -20.0pt",
+        "上昇モメンタム失速"
+      ]
+    },
+    {
+      "name": "電気機器",
+      "score": 44,
+      "level": "弱含み警戒",
+      "action": "保有を重点監視",
+      "return1": 0.08,
+      "return5": -1.56,
+      "return20": 7.6,
+      "breadthChange": -30.3,
+      "turnoverRatio": 0.82,
+      "reasons": [
+        "5日 -1.6%",
+        "広がり -30.3pt",
         "上昇モメンタム失速"
       ]
     },
     {
       "name": "精密機器",
-      "score": 43,
+      "score": 33,
       "level": "弱含み警戒",
       "action": "保有を重点監視",
-      "return1": 0.21,
-      "return5": -0.89,
-      "return20": 15.24,
+      "return1": 0.61,
+      "return5": -0.25,
+      "return20": 12.41,
       "breadthChange": -37.5,
       "turnoverRatio": 0.89,
       "reasons": [
-        "5日 -0.9%",
+        "5日 -0.3%",
         "広がり -37.5pt",
         "上昇モメンタム失速"
       ]
     },
     {
-      "name": "化学",
-      "score": 40,
+      "name": "ガラス・土石製品",
+      "score": 33,
       "level": "弱含み警戒",
       "action": "保有を重点監視",
-      "return1": -0.22,
-      "return5": -2.68,
-      "return20": -1.01,
-      "breadthChange": -11.4,
-      "turnoverRatio": 0.76,
+      "return1": -0.56,
+      "return5": -1.1,
+      "return20": -3.59,
+      "breadthChange": -52.9,
+      "turnoverRatio": 0.72,
       "reasons": [
-        "1日 -0.2%",
-        "5日 -2.7%",
-        "広がり -11.4pt"
+        "1日 -0.6%",
+        "5日 -1.1%",
+        "広がり -52.9pt"
       ]
     },
     {
-      "name": "その他製品",
+      "name": "情報・通信業",
       "score": 28,
       "level": "弱含み警戒",
       "action": "保有を重点監視",
-      "return1": 0.32,
-      "return5": -1.28,
-      "return20": 21.71,
-      "breadthChange": 6.9,
-      "turnoverRatio": 0.81,
+      "return1": 1.38,
+      "return5": -2.2,
+      "return20": 1.77,
+      "breadthChange": 9.3,
+      "turnoverRatio": 0.94,
       "reasons": [
-        "5日 -1.3%",
+        "5日 -2.2%",
         "上昇モメンタム失速"
       ]
     },
     {
-      "name": "ガラス・土石製品",
+      "name": "鉄鋼",
       "score": 28,
       "level": "弱含み警戒",
       "action": "保有を重点監視",
-      "return1": 0.54,
-      "return5": -1.06,
-      "return20": -2.48,
-      "breadthChange": -52.9,
-      "turnoverRatio": 0.72,
+      "return1": 0.26,
+      "return5": -1.22,
+      "return20": 3.9,
+      "breadthChange": -15.4,
+      "turnoverRatio": 0.83,
       "reasons": [
-        "5日 -1.1%",
-        "広がり -52.9pt",
+        "5日 -1.2%",
+        "広がり -15.4pt",
         "上昇モメンタム失速"
       ]
     }
   ],
-  "sectorOutflowAsOf": "2026-08-24",
+  "sectorOutflowAsOf": "2026-08-25",
   "excludedExtended": [
     {
       "code": "4220",
@@ -11860,11 +11860,11 @@
     "level": "CAUTION",
     "title": "地合い警戒",
     "message": "指数が弱いため、エントリー下限割れでの逆張りは避け、ポジションを抑えてください。",
-    "asOf": "2026-08-24",
-    "topix1d": 0.14,
-    "topix5d": -2.57,
-    "nikkei1d": -0.77,
-    "nikkei5d": -5.16
+    "asOf": "2026-08-25",
+    "topix1d": 0.31,
+    "topix5d": -1.16,
+    "nikkei1d": 0.04,
+    "nikkei5d": -2.82
   },
   "funnel": {
     "listed": 4104,
