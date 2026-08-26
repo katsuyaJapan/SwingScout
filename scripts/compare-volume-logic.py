@@ -111,6 +111,7 @@ def rank(universe, use_new):
         deviation = triangle(stock["d25"], 1.5, 5.0, 17.0)
         momentum = triangle(stock["rsi"], 51.0, 17.0, 15.0)
         volume = stock["volumeScore"] if use_new else triangle(stock["legacyVolumeRatio"], 1.18, .65, 14.0)
+        price_hold = stock["priceHoldScore"] if use_new else 0.0
         close_position = stock["closeLocationScore"] if use_new else 0.0
         headroom = (stock["high20"] / stock["close"] - 1) * 100
         headroom_score = triangle(headroom, 6.0, 7.0, 9.0)
@@ -118,11 +119,11 @@ def rank(universe, use_new):
         risk_width = max(0, (stock["close"] / stock["low10"] - 1) * 100)
         risk = max(0, 6 - abs(risk_width - 4) * 1.2)
         liquidity = max(0, min(8, 2 + math.log10(max(stock["avgTurnover"], 1) / 100_000_000) * 3))
-        individual = deviation + momentum + volume + close_position + headroom_score + trend + risk + liquidity
+        individual = deviation + momentum + volume + price_hold + close_position + headroom_score + trend + risk + liquidity
         penalty = max(0, stock["ret5"] - 5) * 2.5 + max(0, stock["d25"] - 6) * 3 + (12 if stock["rsi"] > 70 else 0) + (8 if stock["close"] >= stock["high20"] and stock["ret5"] > 5 else 0)
         score = max(0, min(100, sectors[stock["sector"]] * .30 + individual - penalty))
         if individual >= 35 and sectors[stock["sector"]] >= 50 and penalty < 15:
-            rows.append({**stock, "score": score})
+            rows.append({**stock, "score": score, "volumeScoreUsed": volume, "priceHoldScoreUsed": price_hold, "closeLocationScoreUsed": close_position})
     rows.sort(key=lambda x: x["score"], reverse=True)
     selected, used = [], set()
     for row in rows:
@@ -135,25 +136,49 @@ def rank(universe, use_new):
     return rows, selected
 
 
-def compact(row, old_by_code=None):
+def compact(row, old_by_code=None, forward=None):
     old = (old_by_code or {}).get(row["code"])
     return {
         "code": row["code"], "name": row["name"], "sector": row["sector"],
         "score": round(row["score"], 2),
         "scoreDelta": None if old is None else round(row["score"] - old["score"], 2),
+        "volumeScore": round(row["volumeScoreUsed"], 2),
         "relativeVolume": row["relativeVolume"], "volumeSignal": row["volumeSignal"],
+        "relativeVolumePrev": row["relativeVolumePrev"],
+        "priceHoldSignal": row["priceHoldSignal"], "lowTrend3d": row["lowTrend3d"],
+        "lowTrend3dSignal": row["lowTrend3dSignal"], "volumePhase": row["volumePhase"],
         "volumeSupplyDemand": row["volumeSupplyDemand"], "closeLocation": row["closeLocation"],
+        "overheatSuppressed": row["overheatSuppressed"],
+        "forwardReturn1d": (forward or {}).get(row["code"], {}).get("return1d"),
+        "forwardReturn3d": (forward or {}).get(row["code"], {}).get("return3d"),
     }
+
+
+def forward_returns(index):
+    result = {}
+    for security in SNAPSHOT["securities"]:
+        selected = security["c"][index]
+        if selected is None:
+            continue
+        record = {}
+        for horizon in (1, 3):
+            target_index = index + horizon
+            if target_index < len(security["c"]) and security["c"][target_index] is not None:
+                record[f"return{horizon}d"] = round((security["c"][target_index] / selected - 1) * 100, 2)
+        result[security["code"]] = record
+    return result
 
 
 def main():
     master = load_master()
     comparisons = []
-    for index in range(len(SNAPSHOT["dates"]) - 5, len(SNAPSHOT["dates"])):
+    start = max(0, len(SNAPSHOT["dates"]) - 6)
+    for index in range(start, len(SNAPSHOT["dates"]) - 1):
         universe = universe_at(index, master)
         old_rows, old_selected = rank(universe, False)
         new_rows, new_selected = rank(universe, True)
         old_by_code = {row["code"]: row for row in old_rows}
+        forward = forward_returns(index)
         phase_counts = {}
         for row in new_rows:
             phase_counts[row["volumePhase"]] = phase_counts.get(row["volumePhase"], 0) + 1
@@ -161,14 +186,16 @@ def main():
         comparisons.append({
             "date": SNAPSHOT["dates"][index], "universe": len(universe),
             "oldCandidateCount": len(old_rows), "newCandidateCount": len(new_rows),
-            "oldCandidates": [compact(row) for row in old_selected],
-            "newCandidates": [compact(row, old_by_code) for row in new_selected],
+            "oldCandidates": [compact(row, forward=forward) for row in old_selected],
+            "newCandidates": [compact(row, old_by_code, forward) for row in new_selected],
             "validation": {
                 "selectedRedCount": sum(row["volumeSignal"] == "RED" for row in new_selected),
                 "sellingPressureCandidateCount": len(selling_pressure),
                 "maxSellingPressureScore": round(max((row["score"] for row in selling_pressure), default=0), 2),
                 "dryUpReaccelerationCandidateCount": phase_counts.get("DRY_UP_REACCELERATION", 0),
                 "sellingExhaustionCandidateCount": phase_counts.get("SELLING_EXHAUSTION", 0),
+                "fallingLowVolumeMisclassifiedGreen": sum(row["volumeSignal"] == "GREEN" and row["lowTrend3dSignal"] == "FALLING" and (row["relativeVolume"] or 1) < .7 for row in new_rows),
+                "overheatedSelectedCount": sum(row["overheatSuppressed"] for row in new_selected),
             },
         })
     print(json.dumps({

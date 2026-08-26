@@ -23,10 +23,18 @@ type Candidate = {
   technical: number;
   liquidity: number;
   relativeVolume?: number | null;
+  relativeVolumePrev?: number | null;
   volumeSignal?: "GREEN" | "YELLOW" | "RED";
   volumePhase?: string;
   volumeSupplyDemand?: string;
+  volumeSupplyDemandLabel?: string;
   closeLocation?: number;
+  lowTrend3d?: number | null;
+  lowTrend3dSignal?: "RISING" | "FLAT" | "FALLING" | "UNKNOWN";
+  lowTrend3dLabel?: string;
+  priceHoldSignal?: "STRONG" | "WEAK" | "NONE" | "UNKNOWN";
+  priceHoldLabel?: string;
+  overheatSuppressed?: boolean;
   invalidation: string;
   reasons: string[];
   provisional?: boolean;
@@ -149,6 +157,10 @@ const volumeSignalDisplay = (candidate: Candidate) => {
     label: candidate.volumeSupplyDemand ?? "出来高通常",
   };
 };
+const lowTrendIcon = (candidate: Candidate) =>
+  candidate.lowTrend3dSignal === "RISING" ? "↗" : candidate.lowTrend3dSignal === "FALLING" ? "↘" : candidate.lowTrend3dSignal === "FLAT" ? "→" : "—";
+const priceHoldIcon = (candidate: Candidate) =>
+  candidate.priceHoldSignal === "STRONG" ? "○" : candidate.priceHoldSignal === "WEAK" ? "△" : candidate.priceHoldSignal === "NONE" ? "×" : "—";
 const earningsDisplay = (candidate: Candidate) => {
   const flags = new Set(candidate.riskFlags ?? []);
 
@@ -447,7 +459,7 @@ export default function Home() {
                       <dt>出来高需給</dt>
                       <dd className={volumeSignalDisplay(c).className}>
                         <b>{volumeSignalDisplay(c).icon} {volumeSignalDisplay(c).label}</b>
-                        {c.relativeVolume != null && <small>RVOL {c.relativeVolume.toFixed(2)}・終値位置 {Math.round((c.closeLocation ?? .5) * 100)}%</small>}
+                        {c.relativeVolume != null && <small>RVOL {c.relativeVolume.toFixed(2)}・CLV {Math.round((c.closeLocation ?? .5) * 100)}%・維持{priceHoldIcon(c)}・安値{lowTrendIcon(c)}</small>}
                       </dd>
                     </div>
                     <div className={c.riskFlags?.some(flag => ["EX_RIGHTS_WITHIN_3_DAYS", "RIGHTS_DATE_CONFLICT", "RIGHTS_RECENT_DISCLOSURE"].includes(flag)) ? "rightsRisk dangerBox" : "rightsRisk"}>

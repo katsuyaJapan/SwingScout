@@ -26,6 +26,9 @@ class StaticDataTest(unittest.TestCase):
                 self.assertIn(row["volumeSignal"], {"GREEN", "YELLOW", "RED"})
                 self.assertGreaterEqual(row["closeLocation"], 0)
                 self.assertLessEqual(row["closeLocation"], 1)
+                if "priceHoldSignal" in row:
+                    self.assertIn(row["priceHoldSignal"], {"STRONG", "WEAK", "NONE", "UNKNOWN"})
+                    self.assertIn(row["lowTrend3dSignal"], {"RISING", "FLAT", "FALLING", "UNKNOWN"})
 
     def test_status_and_history_contract(self):
         status = json.loads((DATA / "status.json").read_text())
