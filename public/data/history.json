@@ -1,7 +1,51 @@
 {
-  "currentAsOf": "20260825",
+  "currentAsOf": "20260826",
   "retentionDays": 30,
   "history": [
+    {
+      "asOf": "20260826",
+      "candidates": [
+        {
+          "code": "3397",
+          "name": "トリドールＨＤ",
+          "close": 4302.0,
+          "entry": "4,293円〜4,315円（現在値付近）",
+          "targetPrice": 4597,
+          "targetPrice1": 4584,
+          "targetPrice2": 4597,
+          "invalidation": "4,152円割れ",
+          "currentClose": 4302.0,
+          "changePct": 0.0,
+          "targetReached": false
+        },
+        {
+          "code": "7199",
+          "name": "プレミアグループ",
+          "close": 2133.0,
+          "entry": "2,128円〜2,140円（現在値付近）",
+          "targetPrice": 2240,
+          "targetPrice1": 2190,
+          "targetPrice2": 2240,
+          "invalidation": "2,064円割れ",
+          "currentClose": 2133.0,
+          "changePct": 0.0,
+          "targetReached": false
+        },
+        {
+          "code": "4324",
+          "name": "電通グループ",
+          "close": 3618.0,
+          "entry": "3,610円〜3,629円（現在値付近）",
+          "targetPrice": 3885,
+          "targetPrice1": 3874,
+          "targetPrice2": 3885,
+          "invalidation": "3,474円割れ",
+          "currentClose": 3618.0,
+          "changePct": 0.0,
+          "targetReached": false
+        }
+      ]
+    },
     {
       "asOf": "20260825",
       "candidates": [
@@ -14,8 +58,8 @@
           "targetPrice1": 774,
           "targetPrice2": 778,
           "invalidation": "709円割れ",
-          "currentClose": 736.0,
-          "changePct": 0.0,
+          "currentClose": 739.0,
+          "changePct": 0.4,
           "targetReached": false
         },
         {
@@ -27,8 +71,8 @@
           "targetPrice1": 5928,
           "targetPrice2": 5963,
           "invalidation": "5,549円割れ",
-          "currentClose": 5695.0,
-          "changePct": 0.0,
+          "currentClose": 5716.0,
+          "changePct": 0.4,
           "targetReached": false
         },
         {
@@ -40,8 +84,8 @@
           "targetPrice1": 3139,
           "targetPrice2": 3235,
           "invalidation": "2,920円割れ",
-          "currentClose": 3026.0,
-          "changePct": 0.0,
+          "currentClose": 2976.0,
+          "changePct": -1.7,
           "targetReached": false
         }
       ]
@@ -58,8 +102,8 @@
           "targetPrice1": 3198,
           "targetPrice2": 3223,
           "invalidation": "2,926円割れ",
-          "currentClose": 3043.0,
-          "changePct": 0.5,
+          "currentClose": 3015.0,
+          "changePct": -0.5,
           "targetReached": false
         },
         {
@@ -71,8 +115,8 @@
           "targetPrice1": 3167,
           "targetPrice2": 3218,
           "invalidation": "2,881円割れ",
-          "currentClose": 3000.0,
-          "changePct": 0.0,
+          "currentClose": 3037.0,
+          "changePct": 1.2,
           "targetReached": false
         },
         {
