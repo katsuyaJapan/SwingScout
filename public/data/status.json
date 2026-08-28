@@ -1,8 +1,8 @@
 {
-  "lastAttemptAt": "2026-08-26T12:58:24.821286+00:00",
+  "lastAttemptAt": "2026-08-28T01:08:39.513910+00:00",
   "lastAttemptStatus": "success",
-  "lastSuccessfulAt": "2026-08-26T12:58:24.821286+00:00",
-  "dataAsOf": "20260826",
-  "isPreviousBusinessDay": false,
-  "message": "日次更新成功"
+  "lastSuccessfulAt": "2026-08-28T01:08:39.513910+00:00",
+  "dataAsOf": "20260827",
+  "isPreviousBusinessDay": true,
+  "message": "更新成功（前営業日データ）"
 }
