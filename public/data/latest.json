@@ -2,7 +2,7 @@
   "version": 22,
   "asOf": "20260827",
   "officialAsOf": "20260827",
-  "generatedAt": "2026-08-28T22:02:34.611374+00:00",
+  "generatedAt": "2026-08-30T22:43:50.018137+00:00",
   "cached": false,
   "priceStatus": "JPX_CONFIRMED",
   "status": "READY",
@@ -1102,162 +1102,163 @@
   ],
   "sectorOutflows": [
     {
-      "name": "精密機器",
-      "score": 45,
-      "level": "流出開始",
-      "action": "逆指値引き上げ",
-      "return1": -0.69,
-      "return5": -1.93,
-      "return20": 8.58,
-      "breadthChange": 16.7,
-      "turnoverRatio": 0.74,
-      "reasons": [
-        "1日 -0.7%",
-        "5日 -1.9%",
-        "上昇モメンタム失速"
-      ]
-    },
-    {
-      "name": "その他製品",
-      "score": 44,
-      "level": "弱含み警戒",
-      "action": "保有を重点監視",
-      "return1": -1.2,
-      "return5": -0.55,
-      "return20": 15.48,
-      "breadthChange": 0.0,
-      "turnoverRatio": 0.78,
-      "reasons": [
-        "1日 -1.2%",
-        "5日 -0.6%",
-        "上昇モメンタム失速"
-      ]
-    },
-    {
-      "name": "小売業",
-      "score": 43,
-      "level": "弱含み警戒",
-      "action": "保有を重点監視",
-      "return1": -1.18,
-      "return5": -3.15,
-      "return20": -9.19,
-      "breadthChange": -3.6,
-      "turnoverRatio": 0.95,
-      "reasons": [
-        "1日 -1.2%",
-        "5日 -3.1%",
-        "広がり -3.6pt"
-      ]
-    },
-    {
-      "name": "輸送用機器",
-      "score": 27,
-      "level": "弱含み警戒",
-      "action": "保有を重点監視",
-      "return1": 0.39,
-      "return5": -1.94,
-      "return20": 0.33,
-      "breadthChange": -5.7,
-      "turnoverRatio": 0.79,
-      "reasons": [
-        "5日 -1.9%",
-        "広がり -5.7pt",
-        "上昇モメンタム失速"
-      ]
-    },
-    {
       "name": "海運業",
-      "score": 24,
+      "score": 34,
       "level": "弱含み警戒",
       "action": "保有を重点監視",
-      "return1": -0.67,
-      "return5": 2.1,
-      "return20": 15.3,
+      "return1": 2.28,
+      "return5": -0.99,
+      "return20": 18.22,
       "breadthChange": 0.0,
       "turnoverRatio": 1.11,
       "reasons": [
-        "1日 -0.7%",
+        "5日 -1.0%",
         "上昇モメンタム失速"
       ]
     },
     {
-      "name": "繊維製品",
-      "score": 20,
+      "name": "精密機器",
+      "score": 32,
       "level": "弱含み警戒",
       "action": "保有を重点監視",
-      "return1": 0.51,
-      "return5": -1.1,
-      "return20": 6.45,
+      "return1": -0.24,
+      "return5": -1.34,
+      "return20": 7.81,
+      "breadthChange": 16.7,
+      "turnoverRatio": 0.74,
+      "reasons": [
+        "1日 -0.2%",
+        "5日 -1.3%",
+        "上昇モメンタム失速"
+      ]
+    },
+    {
+      "name": "水産・農林業",
+      "score": 29,
+      "level": "弱含み警戒",
+      "action": "保有を重点監視",
+      "return1": -1.23,
+      "return5": -1.65,
+      "return20": -2.81,
       "breadthChange": 0.0,
       "turnoverRatio": 0.84,
       "reasons": [
-        "5日 -1.1%",
+        "1日 -1.2%",
+        "5日 -1.6%",
         "上昇モメンタム失速"
       ]
     },
     {
       "name": "ゴム製品",
-      "score": 17,
+      "score": 26,
       "level": "弱含み警戒",
       "action": "保有を重点監視",
-      "return1": -1.18,
-      "return5": -0.58,
-      "return20": -1.42,
+      "return1": -0.71,
+      "return5": -1.65,
+      "return20": -1.18,
       "breadthChange": 0.0,
       "turnoverRatio": 0.6,
       "reasons": [
-        "1日 -1.2%",
-        "5日 -0.6%",
+        "1日 -0.7%",
+        "5日 -1.6%",
         "上昇モメンタム失速"
       ]
     },
     {
-      "name": "医薬品",
-      "score": 14,
+      "name": "非鉄金属",
+      "score": 26,
       "level": "弱含み警戒",
       "action": "保有を重点監視",
-      "return1": -0.85,
-      "return5": -0.24,
-      "return20": 1.3,
+      "return1": -0.7,
+      "return5": 4.51,
+      "return20": 26.63,
+      "breadthChange": 0.0,
+      "turnoverRatio": 1.08,
+      "reasons": [
+        "1日 -0.7%",
+        "上昇モメンタム失速"
+      ]
+    },
+    {
+      "name": "鉱業",
+      "score": 25,
+      "level": "弱含み警戒",
+      "action": "保有を重点監視",
+      "return1": 0.74,
+      "return5": -0.85,
+      "return20": 6.76,
+      "breadthChange": 0.0,
+      "turnoverRatio": 1.07,
+      "reasons": [
+        "5日 -0.8%",
+        "上昇モメンタム失速"
+      ]
+    },
+    {
+      "name": "小売業",
+      "score": 22,
+      "level": "弱含み警戒",
+      "action": "保有を重点監視",
+      "return1": -0.21,
+      "return5": -2.13,
+      "return20": -7.99,
+      "breadthChange": -3.6,
+      "turnoverRatio": 0.95,
+      "reasons": [
+        "1日 -0.2%",
+        "5日 -2.1%",
+        "広がり -3.6pt"
+      ]
+    },
+    {
+      "name": "繊維製品",
+      "score": 22,
+      "level": "弱含み警戒",
+      "action": "保有を重点監視",
+      "return1": 0.35,
+      "return5": -1.15,
+      "return20": 7.98,
       "breadthChange": 0.0,
       "turnoverRatio": 0.84,
       "reasons": [
-        "1日 -0.9%",
-        "5日 -0.2%",
+        "5日 -1.2%",
         "上昇モメンタム失速"
       ]
     },
     {
-      "name": "サービス業",
-      "score": 9,
+      "name": "金属製品",
+      "score": 22,
       "level": "弱含み警戒",
       "action": "保有を重点監視",
-      "return1": -0.37,
-      "return5": 2.06,
-      "return20": 7.21,
-      "breadthChange": 7.8,
-      "turnoverRatio": 0.91,
+      "return1": -0.72,
+      "return5": -1.38,
+      "return20": -1.35,
+      "breadthChange": 0.0,
+      "turnoverRatio": 0.74,
       "reasons": [
-        "1日 -0.4%"
+        "1日 -0.7%",
+        "5日 -1.4%",
+        "上昇モメンタム失速"
       ]
     },
     {
       "name": "食料品",
-      "score": 8,
+      "score": 16,
       "level": "弱含み警戒",
       "action": "保有を重点監視",
-      "return1": -0.06,
-      "return5": 1.06,
-      "return20": 3.16,
+      "return1": -0.18,
+      "return5": -0.13,
+      "return20": 4.16,
       "breadthChange": -8.3,
       "turnoverRatio": 0.73,
       "reasons": [
-        "1日 -0.1%",
+        "1日 -0.2%",
+        "5日 -0.1%",
         "広がり -8.3pt"
       ]
     }
   ],
-  "sectorOutflowAsOf": "2026-08-27",
+  "sectorOutflowAsOf": "2026-08-28",
   "excludedExtended": [
     {
       "code": "5801",
@@ -10803,11 +10804,11 @@
     "level": "NORMAL",
     "title": "地合い通常",
     "message": "指数に強い警戒シグナルはありません。個別の無効化ラインを優先してください。",
-    "asOf": "2026-08-27",
-    "topix1d": 0.28,
-    "topix5d": 1.56,
-    "nikkei1d": -0.1,
-    "nikkei5d": -0.04
+    "asOf": "2026-08-28",
+    "topix1d": 0.61,
+    "topix5d": 1.86,
+    "nikkei1d": 0.2,
+    "nikkei5d": 0.35
   },
   "funnel": {
     "listed": 4104,
