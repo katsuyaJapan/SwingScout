@@ -17,6 +17,13 @@ class JpxSnapshotTest(unittest.TestCase):
         self.assertEqual(row[3:7], (1302.5, 1314.0, 1297.0, 1311.0))
         self.assertEqual(row[7:], (670300, 876434450))
 
+    def test_daily_ex_rights_marker(self):
+        line = "1407 D 100 ウエストＨＤ 2,723.00 2,785.00 2,684.00 2,743.00 2,739.00 2,770.00 2,730.00 2,760.00 － 33.00 2,741.3780 372.5 1,021,163.300"
+        row = parse_day(line, "https://example.test/stq_20260828.pdf")[0]
+        self.assertEqual(row[0:3], ("20260828", "1407", "ウエストＨＤ"))
+        self.assertEqual(row[3:7], (2723.0, 2785.0, 2684.0, 2760.0))
+        self.assertEqual(row[7:], (372500, 1021163300))
+
 
 if __name__ == "__main__":
     unittest.main()
