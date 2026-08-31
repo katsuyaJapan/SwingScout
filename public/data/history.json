@@ -1,7 +1,25 @@
 {
-  "currentAsOf": "20260828",
+  "currentAsOf": "20260831",
   "retentionDays": 30,
   "history": [
+    {
+      "asOf": "20260831",
+      "candidates": [
+        {
+          "code": "1961",
+          "name": "三機工",
+          "close": 2428.0,
+          "entry": "2,423円〜2,440円（現在値〜前日高値抜け）",
+          "targetPrice": 2626,
+          "targetPrice1": 2535,
+          "targetPrice2": 2626,
+          "invalidation": "2,358円割れ",
+          "currentClose": 2428.0,
+          "changePct": 0.0,
+          "targetReached": false
+        }
+      ]
+    },
     {
       "asOf": "20260828",
       "candidates": [
@@ -14,8 +32,8 @@
           "targetPrice1": 944,
           "targetPrice2": 967,
           "invalidation": "913円割れ",
-          "currentClose": 918.0,
-          "changePct": 0.0,
+          "currentClose": 911.0,
+          "changePct": -0.8,
           "targetReached": false
         },
         {
@@ -27,8 +45,8 @@
           "targetPrice1": 1603,
           "targetPrice2": 1604,
           "invalidation": "1,498円割れ",
-          "currentClose": 1521.0,
-          "changePct": 0.0,
+          "currentClose": 1528.5,
+          "changePct": 0.5,
           "targetReached": false
         }
       ]
@@ -45,8 +63,8 @@
           "targetPrice1": 2856,
           "targetPrice2": 2968,
           "invalidation": "2,599円割れ",
-          "currentClose": 2760.0,
-          "changePct": 1.2,
+          "currentClose": 2625.0,
+          "changePct": -3.7,
           "targetReached": false
         },
         {
