@@ -1,7 +1,38 @@
 {
-  "currentAsOf": "20260827",
+  "currentAsOf": "20260828",
   "retentionDays": 30,
   "history": [
+    {
+      "asOf": "20260828",
+      "candidates": [
+        {
+          "code": "1852",
+          "name": "浅沼組",
+          "close": 918.0,
+          "entry": "916円〜921円（現在値〜前日高値抜け）",
+          "targetPrice": 967,
+          "targetPrice1": 944,
+          "targetPrice2": 967,
+          "invalidation": "913円割れ",
+          "currentClose": 918.0,
+          "changePct": 0.0,
+          "targetReached": false
+        },
+        {
+          "code": "9301",
+          "name": "三菱倉",
+          "close": 1521.0,
+          "entry": "1,517円〜1,526円（現在値〜前日高値抜け）",
+          "targetPrice": 1604,
+          "targetPrice1": 1603,
+          "targetPrice2": 1604,
+          "invalidation": "1,498円割れ",
+          "currentClose": 1521.0,
+          "changePct": 0.0,
+          "targetReached": false
+        }
+      ]
+    },
     {
       "asOf": "20260827",
       "candidates": [
@@ -14,8 +45,8 @@
           "targetPrice1": 2856,
           "targetPrice2": 2968,
           "invalidation": "2,599円割れ",
-          "currentClose": 2727.0,
-          "changePct": 0.0,
+          "currentClose": 2760.0,
+          "changePct": 1.2,
           "targetReached": false
         },
         {
@@ -27,8 +58,8 @@
           "targetPrice1": 1644,
           "targetPrice2": 1688,
           "invalidation": "1,540円割れ",
-          "currentClose": 1592.5,
-          "changePct": 0.0,
+          "currentClose": 1574.0,
+          "changePct": -1.2,
           "targetReached": false
         },
         {
@@ -40,8 +71,8 @@
           "targetPrice1": 4844,
           "targetPrice2": 4945,
           "invalidation": "4,643円割れ",
-          "currentClose": 4717.0,
-          "changePct": 0.0,
+          "currentClose": 4742.0,
+          "changePct": 0.5,
           "targetReached": false
         }
       ]
@@ -58,8 +89,8 @@
           "targetPrice1": 1224,
           "targetPrice2": 1224,
           "invalidation": "1,105円割れ",
-          "currentClose": 1143.0,
-          "changePct": 0.1,
+          "currentClose": 1148.0,
+          "changePct": 0.5,
           "targetReached": false
         },
         {
@@ -71,8 +102,8 @@
           "targetPrice1": 2190,
           "targetPrice2": 2240,
           "invalidation": "2,064円割れ",
-          "currentClose": 2132.0,
-          "changePct": -0.0,
+          "currentClose": 2158.0,
+          "changePct": 1.2,
           "targetReached": false
         },
         {
@@ -84,8 +115,8 @@
           "targetPrice1": 4243,
           "targetPrice2": 4243,
           "invalidation": "3,796円割れ",
-          "currentClose": 3955.0,
-          "changePct": 0.4,
+          "currentClose": 3935.0,
+          "changePct": -0.1,
           "targetReached": false
         }
       ]
@@ -102,8 +133,8 @@
           "targetPrice1": 774,
           "targetPrice2": 778,
           "invalidation": "709円割れ",
-          "currentClose": 734.0,
-          "changePct": -0.3,
+          "currentClose": 741.0,
+          "changePct": 0.7,
           "targetReached": false
         },
         {
@@ -115,9 +146,9 @@
           "targetPrice1": 5928,
           "targetPrice2": 5963,
           "invalidation": "5,549円割れ",
-          "currentClose": 5802.0,
-          "changePct": 1.9,
-          "targetReached": false
+          "currentClose": 5990.0,
+          "changePct": 5.2,
+          "targetReached": true
         },
         {
           "code": "2897",
@@ -128,8 +159,8 @@
           "targetPrice1": 3139,
           "targetPrice2": 3235,
           "invalidation": "2,920円割れ",
-          "currentClose": 2977.5,
-          "changePct": -1.6,
+          "currentClose": 2992.5,
+          "changePct": -1.1,
           "targetReached": false
         }
       ]
@@ -146,8 +177,8 @@
           "targetPrice1": 3198,
           "targetPrice2": 3223,
           "invalidation": "2,926円割れ",
-          "currentClose": 3013.0,
-          "changePct": -0.5,
+          "currentClose": 2975.0,
+          "changePct": -1.8,
           "targetReached": false
         },
         {
@@ -159,8 +190,8 @@
           "targetPrice1": 3167,
           "targetPrice2": 3218,
           "invalidation": "2,881円割れ",
-          "currentClose": 3014.0,
-          "changePct": 0.5,
+          "currentClose": 3039.0,
+          "changePct": 1.3,
           "targetReached": false
         },
         {
@@ -172,8 +203,8 @@
           "targetPrice1": 812,
           "targetPrice2": 828,
           "invalidation": "755円割れ",
-          "currentClose": 772.0,
-          "changePct": -1.4,
+          "currentClose": 750.0,
+          "changePct": -4.2,
           "targetReached": false
         }
       ]
@@ -190,8 +221,8 @@
           "targetPrice1": 1855,
           "targetPrice2": 1901,
           "invalidation": "1,690円割れ",
-          "currentClose": 1776.5,
-          "changePct": 0.1,
+          "currentClose": 1785.0,
+          "changePct": 0.6,
           "targetReached": false
         },
         {
@@ -203,8 +234,8 @@
           "targetPrice1": 3335,
           "targetPrice2": 3335,
           "invalidation": "3,020円割れ",
-          "currentClose": 3155.0,
-          "changePct": 1.4,
+          "currentClose": 3130.0,
+          "changePct": 0.6,
           "targetReached": false
         }
       ]
@@ -221,8 +252,8 @@
           "targetPrice1": 7416,
           "targetPrice2": 7579,
           "invalidation": "6,764円割れ",
-          "currentClose": 6947.0,
-          "changePct": -2.2,
+          "currentClose": 7033.0,
+          "changePct": -1.0,
           "targetReached": false
         },
         {
@@ -234,8 +265,8 @@
           "targetPrice1": 1346,
           "targetPrice2": 1385,
           "invalidation": "1,248円割れ",
-          "currentClose": 1295.0,
-          "changePct": -0.5,
+          "currentClose": 1278.0,
+          "changePct": -1.8,
           "targetReached": false
         },
         {
@@ -247,8 +278,8 @@
           "targetPrice1": 1350,
           "targetPrice2": 1356,
           "invalidation": "1,268円割れ",
-          "currentClose": 1331.0,
-          "changePct": 2.1,
+          "currentClose": 1324.0,
+          "changePct": 1.6,
           "targetReached": false
         }
       ]
@@ -278,8 +309,8 @@
           "targetPrice1": 1378,
           "targetPrice2": 1380,
           "invalidation": "1,256円割れ",
-          "currentClose": 1310.0,
-          "changePct": 0.7,
+          "currentClose": 1295.0,
+          "changePct": -0.4,
           "targetReached": false
         }
       ]
@@ -296,8 +327,8 @@
           "targetPrice1": 1228,
           "targetPrice2": 1243,
           "invalidation": "1,122円割れ",
-          "currentClose": 1191.5,
-          "changePct": 2.0,
+          "currentClose": 1202.5,
+          "changePct": 2.9,
           "targetReached": false
         },
         {
@@ -309,8 +340,8 @@
           "targetPrice1": 2606,
           "targetPrice2": 2683,
           "invalidation": "2,422円割れ",
-          "currentClose": 2530.0,
-          "changePct": 0.7,
+          "currentClose": 2540.0,
+          "changePct": 1.1,
           "targetReached": false
         },
         {
@@ -322,8 +353,8 @@
           "targetPrice1": 6039,
           "targetPrice2": 6174,
           "invalidation": "5,572円割れ",
-          "currentClose": 5822.0,
-          "changePct": 1.3,
+          "currentClose": 5865.0,
+          "changePct": 2.1,
           "targetReached": false
         }
       ]
