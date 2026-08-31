@@ -26,7 +26,9 @@ def parse_month(s):
 def parse_day(s,url):
   day=re.search(r"(\d{8})\.pdf$",url).group(1);out=[]
   for line in s.splitlines():
-    m=re.match(r"^(\d{4}[A-Z0-9]?)\s+(\d+)\s+(.+)$",line.strip())
+    # 権利落ち日には、コードと売買単位の間に D などの権利区分記号が入る。
+    # 例: ``1407 D 100 ウエストＨＤ ...``
+    m=re.match(r"^(\d{4}[A-Z0-9]?)\s+(?:[A-Z]+\s+)?(\d+)\s+(.+)$",line.strip())
     if not m:continue
     tok=m.group(3).split();tail=[]
     while tok and re.match(r"^(?:-?[\d,.]+|－)$",tok[-1]):tail.append(tok.pop())
