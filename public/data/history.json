@@ -1,7 +1,51 @@
 {
-  "currentAsOf": "20260831",
+  "currentAsOf": "20260901",
   "retentionDays": 30,
   "history": [
+    {
+      "asOf": "20260901",
+      "candidates": [
+        {
+          "code": "7729",
+          "name": "東精密",
+          "close": 17360.0,
+          "entry": "17,320円〜17,420円（現在値付近）",
+          "targetPrice": 19270,
+          "targetPrice1": 19270,
+          "targetPrice2": 19270,
+          "invalidation": "17,290円割れ",
+          "currentClose": 17360.0,
+          "changePct": 0.0,
+          "targetReached": false
+        },
+        {
+          "code": "5331",
+          "name": "ノリタケ",
+          "close": 3655.0,
+          "entry": "3,647円〜3,686円（現在値〜前日高値抜け）",
+          "targetPrice": 3964,
+          "targetPrice1": 3900,
+          "targetPrice2": 3964,
+          "invalidation": "3,590円割れ",
+          "currentClose": 3655.0,
+          "changePct": 0.0,
+          "targetReached": false
+        },
+        {
+          "code": "5844",
+          "name": "京都ＦＧ",
+          "close": 4991.0,
+          "entry": "4,981円〜4,992円（現在値〜前日高値抜け）",
+          "targetPrice": 5382,
+          "targetPrice1": 5201,
+          "targetPrice2": 5382,
+          "invalidation": "4,775円割れ",
+          "currentClose": 4991.0,
+          "changePct": 0.0,
+          "targetReached": false
+        }
+      ]
+    },
     {
       "asOf": "20260831",
       "candidates": [
@@ -14,8 +58,8 @@
           "targetPrice1": 6026,
           "targetPrice2": 6113,
           "invalidation": "5,531円割れ",
-          "currentClose": 5707.0,
-          "changePct": 0.0,
+          "currentClose": 5738.0,
+          "changePct": 0.5,
           "targetReached": false
         },
         {
@@ -27,8 +71,8 @@
           "targetPrice1": 2672,
           "targetPrice2": 2766,
           "invalidation": "2,472円割れ",
-          "currentClose": 2516.0,
-          "changePct": 0.0,
+          "currentClose": 2544.5,
+          "changePct": 1.1,
           "targetReached": false
         },
         {
@@ -40,8 +84,8 @@
           "targetPrice1": 348,
           "targetPrice2": 356,
           "invalidation": "328円割れ",
-          "currentClose": 338.7,
-          "changePct": 0.0,
+          "currentClose": 340.1000061035156,
+          "changePct": 0.4,
           "targetReached": false
         }
       ]
@@ -102,8 +146,8 @@
           "targetPrice1": 1644,
           "targetPrice2": 1688,
           "invalidation": "1,540円割れ",
-          "currentClose": 1630.0,
-          "changePct": 2.4,
+          "currentClose": 1632.0,
+          "changePct": 2.5,
           "targetReached": false
         },
         {
