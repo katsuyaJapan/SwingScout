@@ -1,8 +1,8 @@
 {
-  "lastAttemptAt": "2026-09-01T23:16:19.688180+00:00",
-  "lastAttemptStatus": "waiting",
-  "lastSuccessfulAt": "2026-09-01T09:30:07.594119+00:00",
+  "lastAttemptAt": "2026-09-01T23:35:12.628892+00:00",
+  "lastAttemptStatus": "success",
+  "lastSuccessfulAt": "2026-09-01T23:35:12.628892+00:00",
   "dataAsOf": "20260901",
   "isPreviousBusinessDay": true,
-  "message": "JPX公式データ公開待ち（最新掲載 20260901）"
+  "message": "更新成功（前営業日データ）"
 }
