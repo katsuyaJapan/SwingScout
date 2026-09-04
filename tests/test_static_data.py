@@ -33,7 +33,7 @@ class StaticDataTest(unittest.TestCase):
     def test_status_and_history_contract(self):
         status = json.loads((DATA / "status.json").read_text())
         history = json.loads((DATA / "history.json").read_text())
-        self.assertIn(status["lastAttemptStatus"], {"success", "failed"})
+        self.assertIn(status["lastAttemptStatus"], {"success", "partial", "failed"})
         self.assertLessEqual(len(history["history"]), 30)
 
 

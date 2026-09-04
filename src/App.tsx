@@ -169,7 +169,7 @@ type VisitCounts = {
   total: number;
   today: number;
 };
-type UpdateStatus = { lastAttemptAt?: string; lastAttemptStatus: "success" | "failed"; lastSuccessfulAt?: string; dataAsOf?: string; isPreviousBusinessDay?: boolean; message?: string };
+type UpdateStatus = { lastAttemptAt?: string; lastAttemptStatus: "success" | "partial" | "failed"; lastSuccessfulAt?: string; dataAsOf?: string; isPreviousBusinessDay?: boolean; message?: string; failureStage?: string; failureReasons?: string[] };
 type PurchaseRecord = { code: string; name: string; price: number; shares: number; purchasedAt: string };
 const PURCHASE_KEY = "swing-scout-purchases-v1";
 const BASE = import.meta.env.BASE_URL;
@@ -369,10 +369,11 @@ export default function Home() {
       ) : (
         <>
           {updateStatus && (
-            <section className={`updateStatus ${updateStatus.lastAttemptStatus === "failed" ? "updateFailed" : "updateOk"}`}>
-              <b>{updateStatus.lastAttemptStatus === "success" ? "日次更新 成功" : "日次更新 失敗・前回正常データを表示"}</b>
+            <section className={`updateStatus ${updateStatus.lastAttemptStatus === "success" ? "updateOk" : "updateFailed"}`}>
+              <b>{updateStatus.lastAttemptStatus === "success" ? "日次更新 成功" : updateStatus.lastAttemptStatus === "partial" ? "価格・出口判定 更新済み（補助情報に不足）" : "日次更新 失敗・前回正常データを表示"}</b>
               <span>最終正常データ {dateText(updateStatus.dataAsOf ?? data.asOf)}{updateStatus.isPreviousBusinessDay ? "（前営業日）" : ""} / 確認 {updateStatus.lastAttemptAt ? timeText(updateStatus.lastAttemptAt) : "—"}</span>
               {updateStatus.message && <small>{updateStatus.message}</small>}
+              {!!updateStatus.failureReasons?.length && <small>確認項目：{updateStatus.failureReasons.join(" / ")}</small>}
             </section>
           )}
           {data.marketRegime && (
