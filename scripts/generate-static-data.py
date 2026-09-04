@@ -10,6 +10,8 @@ import re
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
+from exit_strategy import evaluate_exit_strategy, neutral_exit
+
 ROOT = Path(__file__).resolve().parents[1]
 DATA = ROOT / "public" / "data"
 SEED = json.loads((DATA / "analysis-seed.json").read_text())
@@ -196,19 +198,41 @@ def main() -> None:
     if not gate:
         raise RuntimeError(result["message"])
 
+    security_by_code = {x["code"]: x for x in SNAPSHOT["securities"]}
     latest_close = {x["code"]: next((p for p in reversed(x["c"]) if p is not None), None) for x in SNAPSHOT["securities"]}
     latest_close.update({x["code"]: x.get("close") for x in refreshed})
     if quotes_complete:
         latest_close.update({code: q["close"] for code, q in supplemental.items() if q and q.get("date") == effective_date})
     history_days = [x for x in history_days if x.get("asOf") != effective_date]
-    history_days.insert(0, {"asOf": effective_date, "candidates": [{k: c.get(k) for k in ("code", "name", "close", "entry", "targetPrice", "targetPrice1", "targetPrice2", "invalidation")} for c in final]})
+    history_days.insert(0, {"asOf": effective_date, "candidates": [{k: c.get(k) for k in ("code", "name", "sector", "close", "entry", "targetPrice", "targetPrice1", "targetPrice2", "invalidation")} for c in final]})
     history_days = history_days[:30]
+    sector_data = json.loads((DATA / "sector-data.json").read_text())
+    topix_prices = [x.get("close") for x in sector_data.get("topix", [])]
+    sector_by_code = {}
+    for sector_row in sector_data.get("sectors", []):
+        prices = [x.get("close") for x in sector_row.get("prices", [])]
+        for code in sector_row.get("members", []):
+            sector_by_code[code] = (sector_row.get("name"), prices)
     for day in history_days:
         for row in day.get("candidates", []):
             current = latest_close.get(row["code"])
             row["currentClose"] = current
             row["changePct"] = round((current / row["close"] - 1) * 100, 1) if current else None
             row["targetReached"] = bool(current and row.get("targetPrice") and current >= row["targetPrice"])
+            holding_days = business_days(day["asOf"], effective_date) or 0
+            security = security_by_code.get(row["code"])
+            sector_name, sector_prices = sector_by_code.get(row["code"], (row.get("sector"), []))
+            row["sector"] = row.get("sector") or sector_name
+            stop_price = invalidation_value(row.get("invalidation", "")) or None
+            if security:
+                exit_fields = evaluate_exit_strategy(
+                    closes=security.get("c", []), lows=security.get("l", []), highs=security.get("h", []),
+                    volumes=security.get("v", []), entry_price=row["close"], target_price=row.get("targetPrice"),
+                    stop_price=stop_price, holding_days=holding_days, topix=topix_prices, sector=sector_prices,
+                )
+            else:
+                exit_fields = neutral_exit(row["close"], row.get("targetPrice"), stop_price, holding_days)
+            row.update(exit_fields)
     history_payload = {"currentAsOf": effective_date, "retentionDays": 30, "history": history_days}
     jst_today = dt.datetime.now(ZoneInfo("Asia/Tokyo")).strftime("%Y%m%d")
     is_previous = effective_date != jst_today
