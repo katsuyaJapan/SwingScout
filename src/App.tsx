@@ -125,6 +125,41 @@ type HistoryCandidate = {
   targetPrice?: number;
   invalidation: string;
   targetReached: boolean;
+  sector?: string;
+  entry_price?: number;
+  target_price?: number;
+  stop_price?: number;
+  hard_stop_price?: number;
+  hard_stop_reached?: boolean;
+  hard_stop_status?: "NOT_TRIGGERED" | "HARD_STOP_TRIGGERED" | "SWING_STOP_TRIGGERED";
+  hard_stop_reason?: string | null;
+  hard_stop_triggered?: boolean;
+  swing_stop_triggered?: boolean;
+  holding_days?: number;
+  highest_price_since_entry?: number;
+  max_profit_pct?: number;
+  drawdown_from_high_pct?: number;
+  price_breakdown_signal?: "NONE" | "WEAK" | "CLEAR" | "NEUTRAL";
+  volume_exit_signal?: string;
+  down_up_volume_ratio_5d?: number | null;
+  relative_strength_topix_1d?: number | null;
+  relative_strength_topix_3d?: number | null;
+  relative_strength_topix_5d?: number | null;
+  relative_strength_sector?: number | null;
+  relative_strength_source?: "SECTOR" | "TOPIX" | "NONE";
+  ma25_deviation_pct?: number | null;
+  relative_volume_exit?: number | null;
+  clv_exit?: number | null;
+  weak_signal_days_3d?: number;
+  consecutive_weak_days?: number;
+  profit_protection_signal?: "NONE" | "CAUTION" | "PREPARE";
+  time_exit_signal?: boolean;
+  exit_risk_score?: number;
+  exit_status?: "HOLD" | "CAUTION" | "PREPARE_EXIT" | "EXIT_CANDIDATE" | "TARGET_REACHED";
+  exit_reasons?: string[];
+  price_health?: "GOOD" | "CAUTION" | "BAD" | "NEUTRAL";
+  volume_health?: "GOOD" | "BAD" | "NEUTRAL";
+  relative_strength_health?: "GOOD" | "BAD" | "NEUTRAL";
 };
 type DailyHistory = {
   asOf: string;
@@ -203,6 +238,14 @@ const timeText = (d: string) =>
     dateStyle: "medium",
     timeStyle: "short",
   }).format(new Date(d));
+const exitDisplay = (status?: HistoryCandidate["exit_status"]) => ({
+  HOLD: { icon: "🟢", label: "継続保有", className: "exitHold" },
+  CAUTION: { icon: "🟡", label: "警戒", className: "exitCaution" },
+  PREPARE_EXIT: { icon: "🟠", label: "撤退準備", className: "exitPrepare" },
+  EXIT_CANDIDATE: { icon: "🔴", label: "撤退候補", className: "exitDanger" },
+  TARGET_REACHED: { icon: "🎯", label: "目標到達・利確検討", className: "exitTarget" },
+}[status ?? "HOLD"]);
+const healthIcon = (health?: string) => health === "GOOD" ? "○" : health === "BAD" ? "×" : health === "CAUTION" ? "△" : "—";
 export default function Home() {
   const [data, setData] = useState<Analysis | null>(null),
     [history, setHistory] = useState<DailyHistory[]>([]),
@@ -478,6 +521,23 @@ export default function Home() {
                   <PurchasePanel candidate={c} record={purchases[c.code]} onSave={savePurchase} onRemove={removePurchase} />
                 </article>
               ))}
+            </section>
+          )}
+          {Object.keys(purchases).length > 0 && (
+            <section className="card holdingsCard">
+              <div className="cardHead">
+                <div><small>EXIT STRATEGY v1</small><h3>保有銘柄の出口判定</h3></div>
+                <span>{Object.keys(purchases).length}銘柄</span>
+              </div>
+              <p className="historyNote">価格構造・出来高需給・相対強弱・継続性を組み合わせた判断支援です。自動売買は行いません。</p>
+              <div className="exitHoldings">
+                {Object.values(purchases).map((record) => {
+                  const exit = history.flatMap(day => day.candidates).find(candidate => candidate.code === record.code);
+                  return exit ? <ExitStrategyPanel key={record.code} candidate={exit} record={record} /> : (
+                    <article className="exitUnavailable" key={record.code}><b>{record.name} <em>{record.code}</em></b><span>出口判定データを日次更新後に表示します。</span></article>
+                  );
+                })}
+              </div>
             </section>
           )}
           {!!data.continuedCandidates?.length && (
@@ -882,6 +942,46 @@ export default function Home() {
         </div>
       )}
     </main>
+  );
+}
+
+function ExitStrategyPanel({ candidate, record }: { candidate: HistoryCandidate; record: PurchaseRecord }) {
+  const savedStop = candidate.stop_price ?? Number(candidate.invalidation.replaceAll(",", "").match(/[\d.]+/)?.[0] ?? 0);
+  const localHardStop = record.price * .93;
+  const hardStopTriggered = Boolean(candidate.currentClose != null && candidate.currentClose <= localHardStop);
+  const swingStopTriggered = Boolean(savedStop && candidate.currentClose != null && candidate.currentClose <= savedStop);
+  const display = exitDisplay(candidate.exit_status);
+  const localMaxProfit = candidate.highest_price_since_entry == null ? candidate.max_profit_pct : (candidate.highest_price_since_entry / record.price - 1) * 100;
+  const reasons = candidate.exit_reasons ?? ["判断材料不足"];
+  return (
+    <article className={`exitPanel ${display.className}`}>
+      <div className="exitSummary">
+        <div><small>{candidate.sector ?? "保有銘柄"}</small><h4>{candidate.name} <em>{candidate.code}</em></h4></div>
+        <strong>出口判定 {display.icon} {display.label}</strong>
+      </div>
+      <p className="exitReasons">理由：{reasons.join(" / ")}</p>
+      <div className="exitHealth">
+        <span>価格 {healthIcon(candidate.price_health)}</span><span>出来高 {healthIcon(candidate.volume_health)}</span><span>相対強弱 {healthIcon(candidate.relative_strength_health)}</span>
+      </div>
+      {swingStopTriggered ? <p className="stopWarning">⚠️ 損切りライン到達</p> : hardStopTriggered ? <p className="hardStopWarning">⚠️ ハードストップ水準到達</p> : null}
+      {candidate.time_exit_signal && <p className="timeExit">🟡 時間切れ警戒</p>}
+      {candidate.profit_protection_signal !== "NONE" && <p className="profitProtection">利益保護 {candidate.profit_protection_signal === "PREPARE" ? "🟠" : "🟡"}</p>}
+      <details>
+        <summary>判定詳細</summary>
+        <dl className="exitMetrics">
+          <div><dt>取得価格 / 現在値</dt><dd>¥{record.price.toLocaleString()} / ¥{candidate.currentClose?.toLocaleString() ?? "—"}</dd></div>
+          <div><dt>目標 / 損切り</dt><dd>¥{candidate.target_price?.toLocaleString() ?? candidate.targetPrice?.toLocaleString() ?? "—"} / ¥{savedStop.toLocaleString()}</dd></div>
+          <div className="hardStopMetric"><dt>ハードストップ水準（-7%）</dt><dd>¥{Math.round(localHardStop).toLocaleString()}</dd></div>
+          <div><dt>取得後最高値</dt><dd>¥{candidate.highest_price_since_entry?.toLocaleString() ?? "—"}</dd></div>
+          <div><dt>最大含み益 / 高値から</dt><dd>{localMaxProfit == null ? "—" : `${localMaxProfit.toFixed(2)}%`} / {candidate.drawdown_from_high_pct?.toFixed(2) ?? "—"}%</dd></div>
+          <div><dt>3日安値 / 25日線乖離</dt><dd>{candidate.price_breakdown_signal ?? "—"} / {candidate.ma25_deviation_pct?.toFixed(2) ?? "—"}%</dd></div>
+          <div><dt>RVOL / 売買出来高比</dt><dd>{candidate.relative_volume_exit?.toFixed(2) ?? "—"} / {candidate.down_up_volume_ratio_5d?.toFixed(2) ?? "—"}</dd></div>
+          <div><dt>TOPIX比 1日/3日/5日</dt><dd>{candidate.relative_strength_topix_1d?.toFixed(2) ?? "—"} / {candidate.relative_strength_topix_3d?.toFixed(2) ?? "—"} / {candidate.relative_strength_topix_5d?.toFixed(2) ?? "—"}%</dd></div>
+          <div><dt>業種指数比 / CLV</dt><dd>{candidate.relative_strength_sector?.toFixed(2) ?? "—"}% / {candidate.clv_exit == null ? "—" : `${Math.round(candidate.clv_exit * 100)}%`}</dd></div>
+          <div><dt>保有営業日 / リスク</dt><dd>{candidate.holding_days ?? "—"}日 / {candidate.exit_risk_score ?? 0}</dd></div>
+        </dl>
+      </details>
+    </article>
   );
 }
 
