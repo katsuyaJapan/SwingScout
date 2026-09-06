@@ -238,13 +238,13 @@ const timeText = (d: string) =>
     dateStyle: "medium",
     timeStyle: "short",
   }).format(new Date(d));
-const exitDisplay = (status?: HistoryCandidate["exit_status"]) => ({
+const exitDisplay = (status?: HistoryCandidate["exit_status"]) => status ? ({
   HOLD: { icon: "🟢", label: "継続保有", className: "exitHold" },
   CAUTION: { icon: "🟡", label: "警戒", className: "exitCaution" },
   PREPARE_EXIT: { icon: "🟠", label: "撤退準備", className: "exitPrepare" },
   EXIT_CANDIDATE: { icon: "🔴", label: "撤退候補", className: "exitDanger" },
   TARGET_REACHED: { icon: "🎯", label: "目標到達・利確検討", className: "exitTarget" },
-}[status ?? "HOLD"]);
+}[status]) : { icon: "⚪", label: "判定保留", className: "exitUnavailable" };
 const healthIcon = (health?: string) => health === "GOOD" ? "○" : health === "BAD" ? "×" : health === "CAUTION" ? "△" : "—";
 export default function Home() {
   const [data, setData] = useState<Analysis | null>(null),
@@ -954,7 +954,7 @@ function ExitStrategyPanel({ candidate }: { candidate: HistoryCandidate }) {
   const hardStopTriggered = candidate.hard_stop_triggered ?? candidate.hard_stop_status === "HARD_STOP_TRIGGERED";
   const swingStopTriggered = candidate.swing_stop_triggered ?? candidate.hard_stop_status === "SWING_STOP_TRIGGERED";
   const display = exitDisplay(candidate.exit_status);
-  const reasons = candidate.exit_reasons ?? ["判断材料不足"];
+  const reasons = candidate.exit_reasons?.length ? candidate.exit_reasons : ["出口判定データ更新待ち"];
   return (
     <article className={`exitPanel ${display.className}`}>
       <div className="exitSummary">
@@ -968,7 +968,7 @@ function ExitStrategyPanel({ candidate }: { candidate: HistoryCandidate }) {
       </div>
       {swingStopTriggered ? <p className="stopWarning">⚠️ 損切りライン到達</p> : hardStopTriggered ? <p className="hardStopWarning">⚠️ ハードストップ水準到達</p> : null}
       {candidate.time_exit_signal && <p className="timeExit">🟡 時間切れ警戒</p>}
-      {candidate.profit_protection_signal !== "NONE" && <p className="profitProtection">利益保護 {candidate.profit_protection_signal === "PREPARE" ? "🟠" : "🟡"}</p>}
+      {candidate.profit_protection_signal && candidate.profit_protection_signal !== "NONE" && <p className="profitProtection">利益保護 {candidate.profit_protection_signal === "PREPARE" ? "🟠" : "🟡"}</p>}
       <details>
         <summary>判定詳細</summary>
         <dl className="exitMetrics">
