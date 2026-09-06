@@ -1,8 +1,13 @@
 {
-  "lastAttemptAt": "2026-09-04T15:15:20.088160+00:00",
+  "lastAttemptAt": "2026-09-06T11:22:42.943732+00:00",
   "lastAttemptStatus": "failed",
   "lastSuccessfulAt": "2026-09-02T23:50:41.924687+00:00",
   "dataAsOf": "20260902",
   "isPreviousBusinessDay": true,
-  "message": "日次更新に失敗したため、前回正常データを表示しています。"
+  "message": "日次更新に失敗したため、前回正常データを表示しています。",
+  "failureStage": "analysis_seed",
+  "failureReasons": [
+    "analysis_seed exited with code 1"
+  ],
+  "qualityDetails": {}
 }
