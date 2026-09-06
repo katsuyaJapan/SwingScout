@@ -7,17 +7,16 @@ on:
     paths-ignore:
       - "public/data/**"
   schedule:
-    # GitHub Actionsの予約実行が集中しやすい分を避け、遅延・取りこぼしを抑える。
     # 当日引け後: Yahoo補完が全候補で同期できた場合は暫定更新
-    - cron: "17 7 * * 1-5" # 16:17 JST
-    - cron: "17 8 * * 1-5" # 17:17 JST retry
-    - cron: "17 9 * * 1-5" # 18:17 JST final after-close retry
+    - cron: "10 7 * * 1-5" # 16:10 JST
+    - cron: "10 8 * * 1-5" # 17:10 JST retry
+    - cron: "10 9 * * 1-5" # 18:10 JST final after-close retry
     # JPX公式日報の掲載を軽量確認。未掲載なら全銘柄処理を起動しない。
-    - cron: "37 22 * * 0-4" # 07:37 JST next business day
-    - cron: "7 23 * * 0-4"  # 08:07 JST retry
-    - cron: "27 23 * * 0-4" # 08:27 JST retry
-    - cron: "42 23 * * 0-4" # 08:42 JST retry
-    - cron: "52 23 * * 0-4" # 08:52 JST final pre-open retry
+    - cron: "30 22 * * 0-4" # 07:30 JST next business day
+    - cron: "0 23 * * 0-4"  # 08:00 JST retry
+    - cron: "20 23 * * 0-4" # 08:20 JST retry
+    - cron: "35 23 * * 0-4" # 08:35 JST retry
+    - cron: "45 23 * * 0-4" # 08:45 JST final pre-open retry
   workflow_dispatch:
 
 permissions:
@@ -52,7 +51,7 @@ jobs:
         shell: bash
         run: |
           case "${{ github.event.schedule }}" in
-            "37 22 * * 0-4"|"7 23 * * 0-4"|"27 23 * * 0-4"|"42 23 * * 0-4"|"52 23 * * 0-4")
+            "30 22 * * 0-4"|"0 23 * * 0-4"|"20 23 * * 0-4"|"35 23 * * 0-4"|"45 23 * * 0-4")
               python scripts/check_jpx_freshness.py --mark-waiting
               ;;
             *)
@@ -72,11 +71,11 @@ jobs:
         id: refresh
         continue-on-error: true
         run: |
-          python scripts/build-jpx-snapshot.py
-          node scripts/fetch-sector-data.mjs
-          python scripts/build-analysis-seed.py
-          python scripts/generate-static-data.py
-          npm run test:data
+          python scripts/run-data-stage.py jpx_snapshot python scripts/build-jpx-snapshot.py
+          python scripts/run-data-stage.py sector_data node scripts/fetch-sector-data.mjs
+          python scripts/run-data-stage.py analysis_seed python scripts/build-analysis-seed.py
+          python scripts/run-data-stage.py static_data python scripts/generate-static-data.py
+          python scripts/run-data-stage.py data_tests npm run test:data
       - name: Preserve last good data on failure
         if: steps.refresh.outcome == 'failure'
         env:
@@ -89,9 +88,9 @@ jobs:
           if [ "${{ steps.freshness.outputs.refresh_required }}" != "true" ]; then
             git add public/data/status.json
           elif [ "${{ steps.refresh.outcome }}" = "success" ]; then
-            git add public/data/latest.json public/data/history.json public/data/status.json
+            git add public/data/latest.json public/data/history.json public/data/status.json public/data/update-diagnostics.json
           else
-            git add public/data/status.json
+            git add public/data/status.json public/data/update-diagnostics.json
           fi
           git diff --cached --quiet || git commit -m "data: daily SwingScout refresh"
           git push

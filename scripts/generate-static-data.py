@@ -24,6 +24,7 @@ except (json.JSONDecodeError, FileNotFoundError):
 HISTORY_PATH = DATA / "history.json"
 LATEST_PATH = DATA / "latest.json"
 STATUS_PATH = DATA / "status.json"
+DIAGNOSTICS_PATH = DATA / "update-diagnostics.json"
 VERSION = 22
 MAX_OPENING_GAP_PCT = 1.0
 
@@ -35,6 +36,36 @@ JPX_HOLIDAYS = {
 
 def dump(path: Path, payload: object) -> None:
     path.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n")
+
+
+def quality_diagnostics(seed: dict, effective_date: str, quotes_complete: bool) -> dict:
+    earnings = seed.get("earningsQuality", {})
+    rights = seed.get("rightsQuality", {})
+    earnings_total = max(1, earnings.get("secondaryTotal", 30))
+    rights_total = max(1, rights.get("secondaryTotal", 30))
+    checks = {
+        "snapshot_failures": not bool(seed.get("failures")),
+        "price_coverage": seed.get("latestCoverage", 0) >= 3800,
+        "history_ready": seed.get("historyReady", 0) >= 3000,
+        "price_date": effective_date == seed.get("asOf") or quotes_complete,
+        "earnings_coverage": earnings.get("secondaryCoverage", 0) >= math.ceil(earnings_total * .8),
+        "jpx_rights": rights.get("jpxRows", 0) >= 1,
+        "rights_coverage": rights.get("secondaryCoverage", 0) >= math.ceil(rights_total * .8),
+        "disclosure_coverage": rights.get("disclosureCoverage", 0) >= math.ceil(rights_total * .8),
+    }
+    return {
+        "failure_stage": "quality_gate" if not all(checks.values()) else None,
+        "failure_reasons": [name for name, passed in checks.items() if not passed],
+        "checks": checks,
+        "quality_details": {
+            "official_price_date": seed.get("asOf"), "effective_price_date": effective_date,
+            "price_coverage": seed.get("latestCoverage", 0), "history_ready": seed.get("historyReady", 0),
+            "earnings_coverage": f'{earnings.get("secondaryCoverage", 0)}/{earnings_total}',
+            "rights_coverage": f'{rights.get("secondaryCoverage", 0)}/{rights_total}',
+            "disclosure_coverage": f'{rights.get("disclosureCoverage", 0)}/{rights_total}',
+            "jpx_rights_rows": rights.get("jpxRows", 0), "quotes_complete": quotes_complete,
+        },
+    }
 
 
 def business_days(start: str, end: str) -> int | None:
@@ -168,26 +199,30 @@ def main() -> None:
     rights_quality = SEED.get("rightsQuality", {})
     rights_threshold = math.ceil(max(1, rights_quality.get("secondaryTotal", 30)) * .8)
     rights_ok = rights_quality.get("jpxRows", 0) >= 1 and rights_quality.get("secondaryCoverage", 0) >= rights_threshold and rights_quality.get("disclosureCoverage", 0) >= rights_threshold
-    gate = not SEED.get("failures") and earnings_ok and rights_ok and SEED.get("latestCoverage", 0) >= 3800 and SEED.get("historyReady", 0) >= 3000 and (effective_date == SEED["asOf"] or quotes_complete)
+    diagnostics = quality_diagnostics(SEED, effective_date, quotes_complete)
+    core_gate = all(diagnostics["checks"][name] for name in ("snapshot_failures", "price_coverage", "history_ready", "price_date"))
+    selection_gate = core_gate and earnings_ok and rights_ok
     history_days = sorted(old_history.get("history", []), key=lambda x: x["asOf"], reverse=True)
     recent_codes = {c["code"] for day in history_days[:5] if day.get("asOf", "") < effective_date for c in day.get("candidates", [])}
     hard_flags = {"EARNINGS_WITHIN_3_DAYS", "EARNINGS_DATE_UNDECIDED", "EARNINGS_DATE_CONFLICT", "EARNINGS_UNCONFIRMED", "EX_RIGHTS_WITHIN_3_DAYS", "RIGHTS_DATE_CONFLICT", "RIGHTS_RECENT_DISCLOSURE", "LOW_LIQUIDITY", "ENTRY_RISK_TOO_WIDE", "RISK_REWARD_LOW"}
     eligible = [x for x in refreshed if not hard_flags.intersection(x.get("riskFlags", []))]
     continued = [{**x, "lastSelectedDate": next((d["asOf"] for d in history_days if any(c["code"] == x["code"] for c in d.get("candidates", []))), None)} for x in eligible if x["code"] in recent_codes]
-    final = diversified([x for x in eligible if x["code"] not in recent_codes]) if gate else []
+    # 補助情報の全体照合率が不足しても、個別に安全確認できた銘柄だけで選定を継続する。
+    # 未確認銘柄は hard_flags により除外される。価格品質の失敗時だけ全更新を停止する。
+    final = diversified([x for x in eligible if x["code"] not in recent_codes]) if core_gate else []
     generated = dt.datetime.now(dt.timezone.utc).isoformat()
     result = {
         "version": VERSION, "asOf": effective_date, "officialAsOf": SEED["asOf"], "generatedAt": generated, "cached": False,
         "priceStatus": "PROVISIONAL" if effective_date > SEED["asOf"] else "JPX_CONFIRMED",
-        "status": "READY" if gate else "ANALYSIS_HELD",
-        "message": f"過去5営業日の重複を除外し、仕込み候補を{len(final)}銘柄選定しました。" if gate else "価格日・決算・権利照合の品質条件を満たさないため、前回正常データを維持します。",
+        "status": "READY" if selection_gate else ("PARTIAL_READY" if core_gate else "ANALYSIS_HELD"),
+        "message": f"過去5営業日の重複を除外し、仕込み候補を{len(final)}銘柄選定しました。" if selection_gate else (f"価格・出口判定は更新済み。補助情報未確認銘柄を除外し、候補を{len(final)}銘柄選定しました。" if core_gate else "価格品質条件を満たさないため、前回正常データを維持します。"),
         "finalCandidates": final, "continuedCandidates": continued,
         "excludedEarnings": [x for x in refreshed if {"EARNINGS_WITHIN_3_DAYS", "EARNINGS_DATE_UNDECIDED", "EARNINGS_UNCONFIRMED"}.intersection(x.get("riskFlags", []))],
         "excludedRights": [x for x in refreshed if {"EX_RIGHTS_WITHIN_3_DAYS", "RIGHTS_DATE_CONFLICT", "RIGHTS_RECENT_DISCLOSURE"}.intersection(x.get("riskFlags", []))],
         "sectorSignals": SEED.get("sectorSignals", []), "sectorOutflows": SEED.get("sectorOutflows", []), "sectorOutflowAsOf": SEED.get("sectorOutflowAsOf"),
-        "excludedExtended": SEED.get("excludedExtended", []), "technicalCandidates": refreshed if gate else [], "marketRegime": market_regime(),
+        "excludedExtended": SEED.get("excludedExtended", []), "technicalCandidates": refreshed if core_gate else [], "marketRegime": market_regime(),
         "funnel": {"listed": SEED.get("listed", 0), "latestPrice": SEED.get("latestCoverage", 0), "historyReady": SEED.get("historyReady", 0), "liquid": SEED.get("liquid", 0), "primary": SEED.get("primary", 0), "detailReview": min(10, len(eligible)), "final": len(final)},
-        "quality": {"passed": gate, "files": SEED.get("files", 0), "failures": len(SEED.get("failures", [])), "latestCoverage": SEED.get("latestCoverage", 0), "priceDate": effective_date, "officialPriceDate": SEED["asOf"], "provisionalCount": sum(bool(x.get("provisional")) for x in refreshed), "provisionalTotal": len(refreshed), "fundamental": "任意・未確認", "earningsDate": f"決算判定 {quality.get('secondaryResolved', 0)}/{quality.get('secondaryTotal', 0)}（外部ページ取得 {quality.get('secondaryCoverage', 0)}/{quality.get('secondaryTotal', 0)}）", "rightsDate": f"権利判定 JPX {rights_quality.get('jpxRows', 0)}件・Yahoo照合 {rights_quality.get('secondaryCoverage', 0)}/{rights_quality.get('secondaryTotal', 0)}・TDnet確認 {rights_quality.get('disclosureCoverage', 0)}/{rights_quality.get('secondaryTotal', 0)}", "tdnet": "基準日・株主優待変更の直近開示を確認"},
+        "quality": {"passed": selection_gate, "pricePassed": core_gate, "files": SEED.get("files", 0), "failures": len(SEED.get("failures", [])), "latestCoverage": SEED.get("latestCoverage", 0), "priceDate": effective_date, "officialPriceDate": SEED["asOf"], "provisionalCount": sum(bool(x.get("provisional")) for x in refreshed), "provisionalTotal": len(refreshed), "fundamental": "任意・未確認", "earningsDate": f"決算判定 {quality.get('secondaryResolved', 0)}/{quality.get('secondaryTotal', 0)}（外部ページ取得 {quality.get('secondaryCoverage', 0)}/{quality.get('secondaryTotal', 0)}）", "rightsDate": f"権利判定 JPX {rights_quality.get('jpxRows', 0)}件・Yahoo照合 {rights_quality.get('secondaryCoverage', 0)}/{rights_quality.get('secondaryTotal', 0)}・TDnet確認 {rights_quality.get('disclosureCoverage', 0)}/{rights_quality.get('secondaryTotal', 0)}", "tdnet": "基準日・株主優待変更の直近開示を確認"},
         "sources": [
             {"name": "JPX 東京証券取引所日報・上場銘柄一覧", "asOf": SEED["asOf"], "status": "公式値・33業種"},
             {"name": "JPX・Yahoo!ファイナンス・株予報 決算日", "asOf": effective_date, "status": "複数ソース照合済み" if earnings_ok else "照合不足"},
@@ -195,7 +230,10 @@ def main() -> None:
             {"name": "Yahoo!ファイナンス前日終値スナップショット", "asOf": effective_date, "status": f"完全同期 {len(supplemental)}/{len(candidate_rows)}" if quotes_complete else "不完全・未使用"},
         ],
     }
-    if not gate:
+    diagnostics["generated_at"] = generated
+    diagnostics["selection_quality_passed"] = selection_gate
+    dump(DIAGNOSTICS_PATH, diagnostics)
+    if not core_gate:
         raise RuntimeError(result["message"])
 
     security_by_code = {x["code"]: x for x in SNAPSHOT["securities"]}
@@ -236,7 +274,7 @@ def main() -> None:
     history_payload = {"currentAsOf": effective_date, "retentionDays": 30, "history": history_days}
     jst_today = dt.datetime.now(ZoneInfo("Asia/Tokyo")).strftime("%Y%m%d")
     is_previous = effective_date != jst_today
-    status = {"lastAttemptAt": generated, "lastAttemptStatus": "success", "lastSuccessfulAt": generated, "dataAsOf": effective_date, "isPreviousBusinessDay": is_previous, "message": "更新成功（前営業日データ）" if is_previous else "日次更新成功"}
+    status = {"lastAttemptAt": generated, "lastAttemptStatus": "success" if selection_gate else "partial", "lastSuccessfulAt": generated, "dataAsOf": effective_date, "isPreviousBusinessDay": is_previous, "message": ("更新成功（前営業日データ）" if is_previous else "日次更新成功") if selection_gate else "価格・出口判定を更新しました。補助情報未確認銘柄は候補から除外しています。", "failureReasons": diagnostics["failure_reasons"], "qualityDetails": diagnostics["quality_details"]}
     dump(LATEST_PATH, result)
     dump(HISTORY_PATH, history_payload)
     dump(STATUS_PATH, status)
