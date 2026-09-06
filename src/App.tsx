@@ -534,7 +534,7 @@ export default function Home() {
               <div className="exitHoldings">
                 {Object.values(purchases).map((record) => {
                   const exit = history.flatMap(day => day.candidates).find(candidate => candidate.code === record.code);
-                  return exit ? <ExitStrategyPanel key={record.code} candidate={exit} record={record} /> : (
+                  return exit ? <ExitStrategyPanel key={record.code} candidate={exit} /> : (
                     <article className="exitUnavailable" key={record.code}><b>{record.name} <em>{record.code}</em></b><span>出口判定データを日次更新後に表示します。</span></article>
                   );
                 })}
@@ -946,13 +946,14 @@ export default function Home() {
   );
 }
 
-function ExitStrategyPanel({ candidate, record }: { candidate: HistoryCandidate; record: PurchaseRecord }) {
+function ExitStrategyPanel({ candidate }: { candidate: HistoryCandidate }) {
+  // 出口判定は共有の選出履歴だけを基準にする。ブラウザ保存の個人購入価格は混ぜない。
+  const entryPrice = candidate.entry_price ?? candidate.close;
   const savedStop = candidate.stop_price ?? Number(candidate.invalidation.replaceAll(",", "").match(/[\d.]+/)?.[0] ?? 0);
-  const localHardStop = record.price * .93;
-  const hardStopTriggered = Boolean(candidate.currentClose != null && candidate.currentClose <= localHardStop);
-  const swingStopTriggered = Boolean(savedStop && candidate.currentClose != null && candidate.currentClose <= savedStop);
+  const hardStopPrice = candidate.hard_stop_price ?? entryPrice * .93;
+  const hardStopTriggered = candidate.hard_stop_triggered ?? candidate.hard_stop_status === "HARD_STOP_TRIGGERED";
+  const swingStopTriggered = candidate.swing_stop_triggered ?? candidate.hard_stop_status === "SWING_STOP_TRIGGERED";
   const display = exitDisplay(candidate.exit_status);
-  const localMaxProfit = candidate.highest_price_since_entry == null ? candidate.max_profit_pct : (candidate.highest_price_since_entry / record.price - 1) * 100;
   const reasons = candidate.exit_reasons ?? ["判断材料不足"];
   return (
     <article className={`exitPanel ${display.className}`}>
@@ -960,6 +961,7 @@ function ExitStrategyPanel({ candidate, record }: { candidate: HistoryCandidate;
         <div><small>{candidate.sector ?? "保有銘柄"}</small><h4>{candidate.name} <em>{candidate.code}</em></h4></div>
         <strong>出口判定 {display.icon} {display.label}</strong>
       </div>
+      <p className="historyNote">判定基準：SwingScout選出履歴（端末保存の個人購入データは使用しません）</p>
       <p className="exitReasons">理由：{reasons.join(" / ")}</p>
       <div className="exitHealth">
         <span>価格 {healthIcon(candidate.price_health)}</span><span>出来高 {healthIcon(candidate.volume_health)}</span><span>相対強弱 {healthIcon(candidate.relative_strength_health)}</span>
@@ -970,11 +972,11 @@ function ExitStrategyPanel({ candidate, record }: { candidate: HistoryCandidate;
       <details>
         <summary>判定詳細</summary>
         <dl className="exitMetrics">
-          <div><dt>取得価格 / 現在値</dt><dd>¥{record.price.toLocaleString()} / ¥{candidate.currentClose?.toLocaleString() ?? "—"}</dd></div>
+          <div><dt>選出価格 / 現在値</dt><dd>¥{entryPrice.toLocaleString()} / ¥{candidate.currentClose?.toLocaleString() ?? "—"}</dd></div>
           <div><dt>目標 / 損切り</dt><dd>¥{candidate.target_price?.toLocaleString() ?? candidate.targetPrice?.toLocaleString() ?? "—"} / ¥{savedStop.toLocaleString()}</dd></div>
-          <div className="hardStopMetric"><dt>ハードストップ水準（-7%）</dt><dd>¥{Math.round(localHardStop).toLocaleString()}</dd></div>
+          <div className="hardStopMetric"><dt>ハードストップ水準（-7%）</dt><dd>¥{Math.round(hardStopPrice).toLocaleString()}</dd></div>
           <div><dt>取得後最高値</dt><dd>¥{candidate.highest_price_since_entry?.toLocaleString() ?? "—"}</dd></div>
-          <div><dt>最大含み益 / 高値から</dt><dd>{localMaxProfit == null ? "—" : `${localMaxProfit.toFixed(2)}%`} / {candidate.drawdown_from_high_pct?.toFixed(2) ?? "—"}%</dd></div>
+          <div><dt>最大含み益 / 高値から</dt><dd>{candidate.max_profit_pct == null ? "—" : `${candidate.max_profit_pct.toFixed(2)}%`} / {candidate.drawdown_from_high_pct?.toFixed(2) ?? "—"}%</dd></div>
           <div><dt>3日安値 / 25日線乖離</dt><dd>{candidate.price_breakdown_signal ?? "—"} / {candidate.ma25_deviation_pct?.toFixed(2) ?? "—"}%</dd></div>
           <div><dt>RVOL / 売買出来高比</dt><dd>{candidate.relative_volume_exit?.toFixed(2) ?? "—"} / {candidate.down_up_volume_ratio_5d?.toFixed(2) ?? "—"}</dd></div>
           <div><dt>TOPIX比 1日/3日/5日</dt><dd>{candidate.relative_strength_topix_1d?.toFixed(2) ?? "—"} / {candidate.relative_strength_topix_3d?.toFixed(2) ?? "—"} / {candidate.relative_strength_topix_5d?.toFixed(2) ?? "—"}%</dd></div>
