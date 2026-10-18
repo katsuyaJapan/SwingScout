@@ -3,7 +3,7 @@ import concurrent.futures, datetime, json, math, re, subprocess, tempfile, urlli
 from pathlib import Path
 from zoneinfo import ZoneInfo
 from rights_sources import fetch_yahoo_rights
-from jpx_listed_master import fetch_master
+from jpx_listed_master import fetch_master, has_current_listing_and_price
 from volume_signals import analyze_volume_supply_demand
 
 ROOT=Path(__file__).resolve().parents[1]
@@ -61,6 +61,7 @@ def rsi(xs,n=14):
 def triangle(value, center, half_width, maximum): return max(0.0, maximum*(1-abs(value-center)/half_width))
 universe=[]; history=0; liquid=0
 for s in raw["securities"]:
+  if not has_current_listing_and_price(s, master): continue
   aligned=[row for row in zip(s["c"],s["v"],s["t"],s.get("o",[None]*len(s["c"])),s.get("h",[None]*len(s["c"])),s.get("l",[None]*len(s["c"]))) if row[0] is not None and row[1] is not None and row[2] is not None][-250:]
   c=[row[0] for row in aligned]; v=[row[1] for row in aligned]; t=[row[2] for row in aligned]; o=[row[3] for row in aligned]; h=[row[4] for row in aligned]; l=[row[5] for row in aligned]
   if len(c)<200 or len(v)<20 or len(t)<20: continue
