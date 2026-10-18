@@ -6,13 +6,11 @@ import argparse
 import datetime as dt
 import json
 import re
-import urllib.request
+from jpx_daily_sources import latest_publication_date
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 STATUS_PATH = ROOT / "public" / "data" / "status.json"
-JPX_DAILY_URL = "https://www.jpx.co.jp/markets/statistics-equities/daily/index.html"
-USER_AGENT = {"User-Agent": "SwingScout/2.0 JPX freshness check"}
 
 
 def extract_latest_date(html: str) -> str:
@@ -56,9 +54,7 @@ def main() -> None:
     status = read_status()
     stored_date = str(status.get("dataAsOf") or "00000000")
     try:
-        request = urllib.request.Request(JPX_DAILY_URL, headers=USER_AGENT)
-        with urllib.request.urlopen(request, timeout=30) as response:
-            jpx_date = extract_latest_date(response.read().decode("utf-8", "replace"))
+        jpx_date = latest_publication_date()
         refresh_required = jpx_date > stored_date
         if args.mark_waiting and not refresh_required:
             mark_waiting(status, jpx_date)

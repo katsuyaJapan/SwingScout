@@ -3,13 +3,23 @@ import importlib.util
 import sys
 import tempfile
 import unittest
+from unittest.mock import patch
 from pathlib import Path
 
 SCRIPTS = Path(__file__).resolve().parents[1] / "scripts"
 sys.path.insert(0, str(SCRIPTS))
 spec = importlib.util.spec_from_file_location("generate_static_data", SCRIPTS / "generate-static-data.py")
 static_data = importlib.util.module_from_spec(spec)
-spec.loader.exec_module(static_data)
+# These unit tests exercise explicit seed arguments, not generated local inputs.
+original_read_text = Path.read_text
+
+def read_test_input(path, *args, **kwargs):
+    if path.name == "analysis-seed.json":
+        return "{}"
+    return original_read_text(path, *args, **kwargs)
+
+with patch.object(Path, "read_text", read_test_input):
+    spec.loader.exec_module(static_data)
 
 
 class UpdateDiagnosticsTest(unittest.TestCase):
