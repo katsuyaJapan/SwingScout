@@ -1,20 +1,15 @@
 #!/usr/bin/env python3
 import datetime as dt
-import json
 import os
 from pathlib import Path
+from update_state import mark_failure, read_json
 
-path = Path(__file__).resolve().parents[1] / "public" / "data" / "status.json"
-diagnostics_path = path.with_name("update-diagnostics.json")
-status = json.loads(path.read_text()) if path.exists() else {}
-diagnostics = json.loads(diagnostics_path.read_text()) if diagnostics_path.exists() else {}
-status.update({
-    "lastAttemptAt": dt.datetime.now(dt.timezone.utc).isoformat(),
-    "lastAttemptStatus": "failed",
-    "isPreviousBusinessDay": True,
-    "message": os.environ.get("SWINGSCOUT_FAILURE_MESSAGE", "日次更新に失敗したため、前回正常データを表示しています。")[:300],
-    "failureStage": diagnostics.get("failure_stage", os.environ.get("SWINGSCOUT_FAILURE_STAGE", "unknown")),
-    "failureReasons": diagnostics.get("failure_reasons", []),
-    "qualityDetails": diagnostics.get("quality_details", {}),
-})
-path.write_text(json.dumps(status, ensure_ascii=False, indent=2) + "\n")
+if __name__ == "__main__":
+    data = Path(__file__).resolve().parents[1] / "public" / "data"
+    stage = os.environ.get("SWINGSCOUT_FAILURE_STAGE")
+    message = os.environ.get("SWINGSCOUT_FAILURE_MESSAGE", "日次更新に失敗したため、前回正常データを表示しています。")
+    diagnostics = read_json(data / "update-diagnostics.json")
+    if stage:
+        diagnostics = {"generated_at": dt.datetime.now(dt.timezone.utc).isoformat(),
+                       "failure_stage": stage, "failure_reasons": [message], "quality_details": {}}
+    mark_failure(data, diagnostics, message)

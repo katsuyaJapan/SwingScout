@@ -29,12 +29,13 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  update-and-publish:
+  prepare_data:
+    name: Update and validate data
     runs-on: ubuntu-latest
     timeout-minutes: 30
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+    outputs:
+      state: ${{ steps.result.outputs.state }}
+      artifact_ready: ${{ steps.artifact.outputs.artifact-id != '' }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -58,44 +59,91 @@ jobs:
               echo "refresh_required=true" >> "$GITHUB_OUTPUT"
               ;;
           esac
-      - name: Install app dependencies
-        run: npm ci
-      - name: Install full data dependencies
+      - name: Install data dependencies
         if: steps.freshness.outputs.refresh_required == 'true'
+        id: dependencies
+        continue-on-error: true
         run: |
+          npm ci
           sudo apt-get update
           sudo apt-get install -y poppler-utils
           python -m pip install --disable-pip-version-check xlrd openpyxl
-      - name: Fetch, screen and generate data
-        if: steps.freshness.outputs.refresh_required == 'true'
+      - name: Generate and validate complete data update
+        if: steps.freshness.outputs.refresh_required == 'true' && steps.dependencies.outcome == 'success'
         id: refresh
         continue-on-error: true
-        run: |
-          python scripts/run-data-stage.py jpx_snapshot python scripts/build-jpx-snapshot.py
-          python scripts/run-data-stage.py sector_data node scripts/fetch-sector-data.mjs
-          python scripts/run-data-stage.py analysis_seed python scripts/build-analysis-seed.py
-          python scripts/run-data-stage.py static_data python scripts/generate-static-data.py
-          python scripts/run-data-stage.py data_tests npm run test:data
-      - name: Preserve last good data on failure
-        if: steps.refresh.outcome == 'failure'
+        run: python scripts/run-data-pipeline.py
+      - name: Record dependency failure
+        if: steps.dependencies.outcome == 'failure'
         env:
-          SWINGSCOUT_FAILURE_MESSAGE: 日次更新に失敗したため、前回正常データを表示しています。
+          SWINGSCOUT_FAILURE_STAGE: dependencies
+          SWINGSCOUT_FAILURE_MESSAGE: 更新用の依存関係の準備に失敗したため、前回正常データを表示しています。
         run: python scripts/write-failure-status.py
+      - name: Record data result
+        id: result
+        shell: bash
+        env:
+          REFRESH_REQUIRED: ${{ steps.freshness.outputs.refresh_required }}
+          REFRESH_OUTCOME: ${{ steps.refresh.outcome }}
+        run: |
+          if [ "$REFRESH_REQUIRED" != "true" ]; then
+            state=waiting
+          elif [ "$REFRESH_OUTCOME" = "success" ]; then
+            state=success
+          else
+            state=failed
+          fi
+          echo "state=$state" >> "$GITHUB_OUTPUT"
+          echo "### Data update: $state" >> "$GITHUB_STEP_SUMMARY"
+          python -c 'import json; s=json.load(open("public/data/status.json")); print("Data date:", s.get("dataAsOf")); print("Reason:", s.get("message")); print("Stage:", s.get("failureStage"))' >> "$GITHUB_STEP_SUMMARY"
       - name: Commit update state
         run: |
           git config user.name "swing-scout-bot"
           git config user.email "swing-scout-bot@users.noreply.github.com"
-          if [ "${{ steps.freshness.outputs.refresh_required }}" != "true" ]; then
-            git add public/data/status.json
-          elif [ "${{ steps.refresh.outcome }}" = "success" ]; then
-            git add public/data/latest.json public/data/history.json public/data/status.json public/data/update-diagnostics.json
-          else
-            git add public/data/status.json public/data/update-diagnostics.json
-          fi
+          git add public/data/latest.json public/data/history.json public/data/status.json public/data/update-diagnostics.json
           git diff --cached --quiet || git commit -m "data: daily SwingScout refresh"
           git push
-      - name: Build static site
-        run: npm run build
+      - name: Upload validated or restored public data
+        id: artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: swingscout-public-data
+          retention-days: 1
+          if-no-files-found: error
+          path: |
+            public/data/latest.json
+            public/data/history.json
+            public/data/status.json
+            public/data/update-diagnostics.json
+      - name: Fail data update independently of publishing
+        if: steps.result.outputs.state == 'failed'
+        run: exit 1
+
+  publish:
+    name: Publish site
+    timeout-minutes: 15
+    needs: prepare_data
+    if: ${{ !cancelled() && needs.prepare_data.outputs.artifact_ready == 'true' }}
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Clear checked-out data before downloading complete published set
+        run: python3 -c 'import shutil; shutil.rmtree("public/data")'
+      - uses: actions/download-artifact@v4
+        with:
+          name: swingscout-public-data
+          path: public/data
+      - name: Install app dependencies and build
+        run: |
+          npm ci
+          npm run build
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
@@ -103,6 +151,9 @@ jobs:
       - name: Deploy GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
-      - name: Mark data job failed after publishing fallback
-        if: steps.refresh.outcome == 'failure'
-        run: exit 1
+      - name: Record publication result
+        env:
+          DATA_STATE: ${{ needs.prepare_data.outputs.state }}
+        run: |
+          echo "### Pages publication: success" >> "$GITHUB_STEP_SUMMARY"
+          echo "Data update: $DATA_STATE" >> "$GITHUB_STEP_SUMMARY"
