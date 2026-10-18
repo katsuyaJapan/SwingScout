@@ -3,17 +3,15 @@ import concurrent.futures, datetime, json, math, re, subprocess, tempfile, urlli
 from pathlib import Path
 from zoneinfo import ZoneInfo
 from rights_sources import fetch_yahoo_rights
+from jpx_listed_master import fetch_master
 from volume_signals import analyze_volume_supply_demand
 
 ROOT=Path(__file__).resolve().parents[1]
 POST_EARNINGS_SAFE_DAYS=45
 raw=json.loads((ROOT/"public/data/jpx-snapshot.json").read_text())
 sector_proxy=json.loads((ROOT/"public/data/sector-data.json").read_text())
-with tempfile.NamedTemporaryFile(suffix='.xls') as f:
-  f.write(urllib.request.urlopen('https://www.jpx.co.jp/markets/statistics-equities/misc/tvdivq0000001vg2-att/data_j.xls',timeout=30).read()); f.flush()
-  sheet=xlrd.open_workbook(f.name).sheet_by_index(0); headers=[str(sheet.cell_value(0,i)).strip() for i in range(sheet.ncols)]
-  ci=headers.index('コード'); si=headers.index('33業種区分'); mi=headers.index('市場・商品区分')
-  master={str(sheet.cell_value(r,ci)).split('.')[0].zfill(4):(str(sheet.cell_value(r,si)).strip(),str(sheet.cell_value(r,mi)).strip()) for r in range(1,sheet.nrows)}
+master, master_quality = fetch_master()
+print(json.dumps({"listedMaster": master_quality}), flush=True)
 earnings={}; earnings_status={}; earnings_period={}; earnings_failures=[]; earnings_rows=0
 earnings_index='https://www.jpx.co.jp/listing/event-schedules/financial-announcement/index.html'
 earnings_page=urllib.request.urlopen(earnings_index,timeout=30).read().decode('utf-8','replace')
@@ -206,6 +204,6 @@ quote_dates=[q["date"] for q in quotes.values() if q]
 quote_date_set=set(quote_dates)
 quotes_complete=len(quotes)==len(top) and all(quotes.get(x['code']) for x in top) and len(quote_date_set)==1
 supplemental_date=next(iter(quote_date_set)) if quotes_complete else raw["asOf"]
-seed={"source":raw["source"],"asOf":raw["asOf"],"supplementalDate":supplemental_date,"supplementalComplete":quotes_complete,"supplementalQuotes":quotes,"listed":len(raw["securities"]),"latestCoverage":raw["quality"]["coverage"][-1],"historyReady":history,"liquid":liquid,"primary":len(rows),"files":raw["quality"]["files"],"failures":raw["quality"]["failures"],"earningsQuality":{"files":len(earnings_urls),"rows":earnings_rows,"confirmed":len(earnings),"undecided":sum(x=='UNDECIDED' for x in earnings_status.values()),"secondaryCoverage":secondary_coverage,"secondaryTotal":len(top),"secondaryResolved":secondary_future_dates+secondary_recently_reported,"secondaryFutureDates":secondary_future_dates,"secondaryRecentlyReported":secondary_recently_reported,"postEarningsSafeDays":POST_EARNINGS_SAFE_DAYS,"failures":earnings_failures},"rightsQuality":{"jpxRows":rights_rows,"jpxRowErrors":len(rights_row_errors),"secondaryCoverage":rights_secondary_coverage,"disclosureCoverage":rights_disclosure_coverage,"secondaryTotal":len(top),"failures":rights_secondary_errors},"sectorSignals":sectors[:10],"sectorOutflows":outflows[:10],"sectorOutflowAsOf":sector_proxy.get('asOf',raw["asOf"]),"technicalCandidates":top,"excludedExtended":excluded[:10]}
+seed={"listedMasterQuality":master_quality,"source":raw["source"],"asOf":raw["asOf"],"supplementalDate":supplemental_date,"supplementalComplete":quotes_complete,"supplementalQuotes":quotes,"listed":len(raw["securities"]),"latestCoverage":raw["quality"]["coverage"][-1],"historyReady":history,"liquid":liquid,"primary":len(rows),"files":raw["quality"]["files"],"failures":raw["quality"]["failures"],"earningsQuality":{"files":len(earnings_urls),"rows":earnings_rows,"confirmed":len(earnings),"undecided":sum(x=='UNDECIDED' for x in earnings_status.values()),"secondaryCoverage":secondary_coverage,"secondaryTotal":len(top),"secondaryResolved":secondary_future_dates+secondary_recently_reported,"secondaryFutureDates":secondary_future_dates,"secondaryRecentlyReported":secondary_recently_reported,"postEarningsSafeDays":POST_EARNINGS_SAFE_DAYS,"failures":earnings_failures},"rightsQuality":{"jpxRows":rights_rows,"jpxRowErrors":len(rights_row_errors),"secondaryCoverage":rights_secondary_coverage,"disclosureCoverage":rights_disclosure_coverage,"secondaryTotal":len(top),"failures":rights_secondary_errors},"sectorSignals":sectors[:10],"sectorOutflows":outflows[:10],"sectorOutflowAsOf":sector_proxy.get('asOf',raw["asOf"]),"technicalCandidates":top,"excludedExtended":excluded[:10]}
 (ROOT/"public/data/analysis-seed.json").write_text(json.dumps(seed,ensure_ascii=False,separators=(",",":")))
 print(json.dumps({"size":(ROOT/"public/data/analysis-seed.json").stat().st_size,"primary":len(rows),"top":len(top),"supplementalDate":seed["supplementalDate"],"quotes":sum(q is not None for q in quotes.values())}))
