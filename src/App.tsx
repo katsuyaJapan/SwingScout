@@ -227,6 +227,7 @@ const earningsDisplay = (candidate: Candidate) => {
   return { className: "pending", text: "決算日を確認中" };
 };
 const rightsRiskText = (candidate: Candidate) => {
+  if (candidate.riskFlags?.includes("RIGHTS_UNCONFIRMED")) return "⚠️ 権利情報未確認・候補から除外";
   if (candidate.riskFlags?.includes("RIGHTS_DATE_CONFLICT")) return "⚠️ 情報源間で権利日が不一致";
   if (candidate.riskFlags?.includes("RIGHTS_RECENT_DISCLOSURE")) return "⚠️ 権利関連の直近開示あり・要確認";
   if (candidate.riskFlags?.includes("EX_RIGHTS_WITHIN_3_DAYS")) return `⚠️ 権利落ちまで${candidate.exRightsDays}営業日`;
@@ -506,7 +507,7 @@ export default function Home() {
                         {c.relativeVolume != null && <small>RVOL {c.relativeVolume.toFixed(2)}・CLV {Math.round((c.closeLocation ?? .5) * 100)}%・維持{priceHoldIcon(c)}・安値{lowTrendIcon(c)}</small>}
                       </dd>
                     </div>
-                    <div className={c.riskFlags?.some(flag => ["EX_RIGHTS_WITHIN_3_DAYS", "RIGHTS_DATE_CONFLICT", "RIGHTS_RECENT_DISCLOSURE"].includes(flag)) ? "rightsRisk dangerBox" : "rightsRisk"}>
+                    <div className={c.riskFlags?.some(flag => ["EX_RIGHTS_WITHIN_3_DAYS", "RIGHTS_DATE_CONFLICT", "RIGHTS_RECENT_DISCLOSURE", "RIGHTS_UNCONFIRMED"].includes(flag)) ? "rightsRisk dangerBox" : "rightsRisk"}>
                       <dt>権利落ち回避</dt>
                       {c.exRightsDate ? (
                         <dd>

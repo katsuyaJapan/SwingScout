@@ -77,6 +77,14 @@ class UpdateDiagnosticsTest(unittest.TestCase):
             diagnostic = json.loads((data / "diagnostic.json").read_text())
             self.assertIn("no_date_regression", diagnostic["failure_reasons"])
 
+    def test_missing_rights_source_marks_candidate_unconfirmed(self):
+        row = {"score": 60, "riskFlags": [], "rightsCheckedSources": ["JPX"]}
+        result = static_data.apply_swing_risk(row, "20261015")
+        self.assertIn("RIGHTS_UNCONFIRMED", result["riskFlags"])
+        row["rightsCheckedSources"] += ["Yahoo!ファイナンス株主優待", "TDnet掲載一覧"]
+        result = static_data.apply_swing_risk(row, "20261015")
+        self.assertNotIn("RIGHTS_UNCONFIRMED", result["riskFlags"])
+
 
 if __name__ == "__main__":
     unittest.main()

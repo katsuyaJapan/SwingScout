@@ -89,11 +89,14 @@ jobs:
           if [ "$REFRESH_REQUIRED" != "true" ]; then
             state=waiting
           elif [ "$REFRESH_OUTCOME" = "success" ]; then
-            state=success
+            state=$(python -c 'import json; print(json.load(open("public/data/status.json")).get("lastAttemptStatus", "failed"))')
           else
             state=failed
           fi
           echo "state=$state" >> "$GITHUB_OUTPUT"
+          if [ "$state" = "partial" ]; then
+            echo "::warning::価格・出口判定は更新済み。補助情報の不足により候補を保留しています。"
+          fi
           echo "### Data update: $state" >> "$GITHUB_STEP_SUMMARY"
           python -c 'import json; s=json.load(open("public/data/status.json")); print("Data date:", s.get("dataAsOf")); print("Reason:", s.get("message")); print("Stage:", s.get("failureStage"))' >> "$GITHUB_STEP_SUMMARY"
       - name: Commit update state

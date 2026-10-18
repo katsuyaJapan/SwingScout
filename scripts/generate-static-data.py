@@ -119,7 +119,10 @@ def apply_swing_risk(candidate: dict, as_of: str) -> dict:
     row = copy.deepcopy(candidate)
     earnings_days = business_days(as_of, row["earningsDate"]) if row.get("earningsDate") else None
     rights_days = business_days(as_of, row["exRightsDate"]) if row.get("exRightsDate") else None
-    flags = [x for x in row.get("riskFlags", []) if x not in {"EARNINGS_WITHIN_3_DAYS", "EX_RIGHTS_WITHIN_3_DAYS"}]
+    flags = [x for x in row.get("riskFlags", []) if x not in {"EARNINGS_WITHIN_3_DAYS", "EX_RIGHTS_WITHIN_3_DAYS", "RIGHTS_UNCONFIRMED"}]
+    required_rights_sources = {"JPX", "Yahoo!ファイナンス株主優待", "TDnet掲載一覧"}
+    if not required_rights_sources.issubset(set(row.get("rightsCheckedSources", []))):
+        flags.append("RIGHTS_UNCONFIRMED")
     if rights_days is not None and rights_days <= 3:
         flags.append("EX_RIGHTS_WITHIN_3_DAYS")
     if earnings_days is not None and earnings_days <= 3:
@@ -207,7 +210,7 @@ def main() -> None:
     selection_gate = core_gate and earnings_ok and rights_ok
     history_days = sorted(old_history.get("history", []), key=lambda x: x["asOf"], reverse=True)
     recent_codes = {c["code"] for day in history_days[:5] if day.get("asOf", "") < effective_date for c in day.get("candidates", [])}
-    hard_flags = {"EARNINGS_WITHIN_3_DAYS", "EARNINGS_DATE_UNDECIDED", "EARNINGS_DATE_CONFLICT", "EARNINGS_UNCONFIRMED", "EX_RIGHTS_WITHIN_3_DAYS", "RIGHTS_DATE_CONFLICT", "RIGHTS_RECENT_DISCLOSURE", "LOW_LIQUIDITY", "ENTRY_RISK_TOO_WIDE", "RISK_REWARD_LOW"}
+    hard_flags = {"EARNINGS_WITHIN_3_DAYS", "EARNINGS_DATE_UNDECIDED", "EARNINGS_DATE_CONFLICT", "EARNINGS_UNCONFIRMED", "EX_RIGHTS_WITHIN_3_DAYS", "RIGHTS_DATE_CONFLICT", "RIGHTS_RECENT_DISCLOSURE", "RIGHTS_UNCONFIRMED", "LOW_LIQUIDITY", "ENTRY_RISK_TOO_WIDE", "RISK_REWARD_LOW"}
     eligible = [x for x in refreshed if not hard_flags.intersection(x.get("riskFlags", []))]
     continued = [{**x, "lastSelectedDate": next((d["asOf"] for d in history_days if any(c["code"] == x["code"] for c in d.get("candidates", []))), None)} for x in eligible if x["code"] in recent_codes]
     # 補助情報の全体照合率が不足しても、個別に安全確認できた銘柄だけで選定を継続する。
@@ -221,7 +224,7 @@ def main() -> None:
         "message": f"過去5営業日の重複を除外し、仕込み候補を{len(final)}銘柄選定しました。" if selection_gate else (f"価格・出口判定は更新済み。補助情報未確認銘柄を除外し、候補を{len(final)}銘柄選定しました。" if core_gate else "価格品質条件を満たさないため、前回正常データを維持します。"),
         "finalCandidates": final, "continuedCandidates": continued,
         "excludedEarnings": [x for x in refreshed if {"EARNINGS_WITHIN_3_DAYS", "EARNINGS_DATE_UNDECIDED", "EARNINGS_UNCONFIRMED"}.intersection(x.get("riskFlags", []))],
-        "excludedRights": [x for x in refreshed if {"EX_RIGHTS_WITHIN_3_DAYS", "RIGHTS_DATE_CONFLICT", "RIGHTS_RECENT_DISCLOSURE"}.intersection(x.get("riskFlags", []))],
+        "excludedRights": [x for x in refreshed if {"EX_RIGHTS_WITHIN_3_DAYS", "RIGHTS_DATE_CONFLICT", "RIGHTS_RECENT_DISCLOSURE", "RIGHTS_UNCONFIRMED"}.intersection(x.get("riskFlags", []))],
         "sectorSignals": SEED.get("sectorSignals", []), "sectorOutflows": SEED.get("sectorOutflows", []), "sectorOutflowAsOf": SEED.get("sectorOutflowAsOf"),
         "excludedExtended": SEED.get("excludedExtended", []), "technicalCandidates": refreshed if core_gate else [], "marketRegime": market_regime(),
         "funnel": {"listed": SEED.get("listed", 0), "latestPrice": SEED.get("latestCoverage", 0), "historyReady": SEED.get("historyReady", 0), "liquid": SEED.get("liquid", 0), "primary": SEED.get("primary", 0), "detailReview": min(10, len(eligible)), "final": len(final)},
