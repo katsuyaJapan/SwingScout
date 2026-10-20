@@ -1,13 +1,24 @@
 {
-  "lastAttemptAt": "2026-10-20T02:05:20.574850+00:00",
-  "lastAttemptStatus": "failed",
-  "lastSuccessfulAt": "2026-09-02T23:50:41.924687+00:00",
-  "dataAsOf": "20260902",
   "isPreviousBusinessDay": true,
-  "message": "日次更新に失敗したため、前回正常データを表示しています。",
-  "failureStage": "analysis_seed",
-  "failureReasons": [
-    "analysis_seed exited with code 1"
-  ],
-  "qualityDetails": {}
+  "dataLagBusinessDays": 0,
+  "isStale": false,
+  "lastAttemptAt": "2026-10-20T03:08:53.566745+00:00",
+  "lastAttemptStatus": "success",
+  "lastSuccessfulAt": "2026-10-20T03:08:53.566745+00:00",
+  "dataAsOf": "20261019",
+  "message": "更新成功（前営業日データ）",
+  "failureReasons": [],
+  "qualityDetails": {
+    "official_price_date": "20261019",
+    "sector_price_date": "2026-10-19",
+    "effective_price_date": "20261019",
+    "price_coverage": 4183,
+    "history_ready": 4040,
+    "earnings_coverage": "30/30",
+    "rights_coverage": "30/30",
+    "disclosure_coverage": "30/30",
+    "jpx_rights_rows": 149,
+    "quotes_complete": false,
+    "previous_price_date": "20260902"
+  }
 }
