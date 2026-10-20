@@ -103,3 +103,10 @@ def fetch_master() -> tuple[dict, dict]:
     url = discover_url(download(INDEX_URL).decode("utf-8", "replace"))
     master, as_of = parse_master(download(url), url)
     return master, {"url": url, "asOf": as_of, "rows": len(master)}
+
+
+def has_current_listing_and_price(security: dict, master: dict) -> bool:
+    """Historical rows for delisted or unpriced securities are not current candidates."""
+    return security.get("code") in master and all(
+        security.get(field) and security[field][-1] is not None for field in ("c", "v", "t")
+    )

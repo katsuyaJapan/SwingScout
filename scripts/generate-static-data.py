@@ -11,6 +11,7 @@ from pathlib import Path
 from zoneinfo import ZoneInfo
 
 from exit_strategy import evaluate_exit_strategy, neutral_exit
+from market_calendar import business_days, data_age
 
 ROOT = Path(__file__).resolve().parents[1]
 DATA = ROOT / "public" / "data"
@@ -28,11 +29,6 @@ DIAGNOSTICS_PATH = DATA / "update-diagnostics.json"
 VERSION = 22
 MAX_OPENING_GAP_PCT = 1.0
 
-JPX_HOLIDAYS = {
-    "20260101", "20260102", "20260112", "20260211", "20260223", "20260320", "20260429", "20260504", "20260505", "20260506", "20260720", "20260811", "20260921", "20260922", "20260923", "20261012", "20261103", "20261123", "20261231",
-    "20270101", "20270111", "20270211", "20270223", "20270322", "20270429", "20270503", "20270504", "20270505", "20270719", "20270811", "20270920", "20270923", "20271011", "20271103", "20271123", "20271231",
-}
-
 
 def dump(path: Path, payload: object) -> None:
     path.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n")
@@ -45,9 +41,10 @@ def quality_diagnostics(seed: dict, effective_date: str, quotes_complete: bool) 
     rights_total = max(1, rights.get("secondaryTotal", 30))
     checks = {
         "snapshot_failures": not bool(seed.get("failures")),
+        "sector_date": str(seed.get("sectorOutflowAsOf", "")).replace("-", "") == seed.get("asOf"),
         "price_coverage": seed.get("latestCoverage", 0) >= 3800,
         "history_ready": seed.get("historyReady", 0) >= 3000,
-        "price_date": effective_date == seed.get("asOf") or quotes_complete,
+        "price_date": effective_date >= seed.get("asOf", "") and (effective_date == seed.get("asOf") or quotes_complete),
         "earnings_coverage": earnings.get("secondaryCoverage", 0) >= math.ceil(earnings_total * .8),
         "jpx_rights": rights.get("jpxRows", 0) >= 1,
         "rights_coverage": rights.get("secondaryCoverage", 0) >= math.ceil(rights_total * .8),
@@ -58,7 +55,7 @@ def quality_diagnostics(seed: dict, effective_date: str, quotes_complete: bool) 
         "failure_reasons": [name for name, passed in checks.items() if not passed],
         "checks": checks,
         "quality_details": {
-            "official_price_date": seed.get("asOf"), "effective_price_date": effective_date,
+            "official_price_date": seed.get("asOf"), "sector_price_date": seed.get("sectorOutflowAsOf"), "effective_price_date": effective_date,
             "price_coverage": seed.get("latestCoverage", 0), "history_ready": seed.get("historyReady", 0),
             "earnings_coverage": f'{earnings.get("secondaryCoverage", 0)}/{earnings_total}',
             "rights_coverage": f'{rights.get("secondaryCoverage", 0)}/{rights_total}',
@@ -66,21 +63,6 @@ def quality_diagnostics(seed: dict, effective_date: str, quotes_complete: bool) 
             "jpx_rights_rows": rights.get("jpxRows", 0), "quotes_complete": quotes_complete,
         },
     }
-
-
-def business_days(start: str, end: str) -> int | None:
-    a = dt.datetime.strptime(start, "%Y%m%d").date()
-    b = dt.datetime.strptime(end, "%Y%m%d").date()
-    if b < a:
-        return None
-    count = 0
-    day = a + dt.timedelta(days=1)
-    while day <= b:
-        key = day.strftime("%Y%m%d")
-        if day.weekday() < 5 and key not in JPX_HOLIDAYS:
-            count += 1
-        day += dt.timedelta(days=1)
-    return count
 
 
 def tick_size(price: float) -> int:
@@ -137,7 +119,10 @@ def apply_swing_risk(candidate: dict, as_of: str) -> dict:
     row = copy.deepcopy(candidate)
     earnings_days = business_days(as_of, row["earningsDate"]) if row.get("earningsDate") else None
     rights_days = business_days(as_of, row["exRightsDate"]) if row.get("exRightsDate") else None
-    flags = [x for x in row.get("riskFlags", []) if x not in {"EARNINGS_WITHIN_3_DAYS", "EX_RIGHTS_WITHIN_3_DAYS"}]
+    flags = [x for x in row.get("riskFlags", []) if x not in {"EARNINGS_WITHIN_3_DAYS", "EX_RIGHTS_WITHIN_3_DAYS", "RIGHTS_UNCONFIRMED"}]
+    required_rights_sources = {"JPX", "Yahoo!ファイナンス株主優待", "TDnet掲載一覧"}
+    if not required_rights_sources.issubset(set(row.get("rightsCheckedSources", []))):
+        flags.append("RIGHTS_UNCONFIRMED")
     if rights_days is not None and rights_days <= 3:
         flags.append("EX_RIGHTS_WITHIN_3_DAYS")
     if earnings_days is not None and earnings_days <= 3:
@@ -177,12 +162,27 @@ def market_regime() -> dict:
     }
 
 
+def supplemental_complete(seed: dict, now=None) -> bool:
+    date = seed.get("supplementalDate", "")
+    official = seed.get("asOf", "")
+    today = (now or dt.datetime.now(ZoneInfo("Asia/Tokyo"))).strftime("%Y%m%d")
+    if not re.fullmatch(r"\d{8}", date) or not official < date <= today:
+        return False
+    candidates = seed.get("technicalCandidates", [])
+    quotes = seed.get("supplementalQuotes", {})
+    return bool(candidates) and all(
+        (quote := quotes.get(row["code"]) or {}).get("date") == date
+        and isinstance(quote.get("close"), (int, float)) and math.isfinite(quote["close"]) and quote["close"] > 0
+        for row in candidates
+    )
+
+
 def main() -> None:
     old_history = json.loads(HISTORY_PATH.read_text()) if HISTORY_PATH.exists() else {"history": []}
     supplemental = SEED.get("supplementalQuotes", {})
     candidate_rows = SEED.get("technicalCandidates", [])
     supplemental_date = SEED.get("supplementalDate", SEED["asOf"])
-    quotes_complete = bool(candidate_rows) and all((supplemental.get(x["code"]) or {}).get("date") == supplemental_date for x in candidate_rows)
+    quotes_complete = supplemental_complete(SEED)
     effective_date = supplemental_date if quotes_complete else SEED["asOf"]
     refreshed = []
     for candidate in candidate_rows:
@@ -200,11 +200,17 @@ def main() -> None:
     rights_threshold = math.ceil(max(1, rights_quality.get("secondaryTotal", 30)) * .8)
     rights_ok = rights_quality.get("jpxRows", 0) >= 1 and rights_quality.get("secondaryCoverage", 0) >= rights_threshold and rights_quality.get("disclosureCoverage", 0) >= rights_threshold
     diagnostics = quality_diagnostics(SEED, effective_date, quotes_complete)
-    core_gate = all(diagnostics["checks"][name] for name in ("snapshot_failures", "price_coverage", "history_ready", "price_date"))
+    previous_date = json.loads(LATEST_PATH.read_text()).get("asOf", "") if LATEST_PATH.exists() else ""
+    diagnostics["checks"]["no_date_regression"] = effective_date >= previous_date
+    diagnostics["quality_details"]["previous_price_date"] = previous_date
+    if effective_date < previous_date:
+        diagnostics["failure_stage"] = "quality_gate"
+        diagnostics["failure_reasons"].append("no_date_regression")
+    core_gate = all(diagnostics["checks"][name] for name in ("snapshot_failures", "price_coverage", "history_ready", "price_date", "sector_date", "no_date_regression"))
     selection_gate = core_gate and earnings_ok and rights_ok
     history_days = sorted(old_history.get("history", []), key=lambda x: x["asOf"], reverse=True)
     recent_codes = {c["code"] for day in history_days[:5] if day.get("asOf", "") < effective_date for c in day.get("candidates", [])}
-    hard_flags = {"EARNINGS_WITHIN_3_DAYS", "EARNINGS_DATE_UNDECIDED", "EARNINGS_DATE_CONFLICT", "EARNINGS_UNCONFIRMED", "EX_RIGHTS_WITHIN_3_DAYS", "RIGHTS_DATE_CONFLICT", "RIGHTS_RECENT_DISCLOSURE", "LOW_LIQUIDITY", "ENTRY_RISK_TOO_WIDE", "RISK_REWARD_LOW"}
+    hard_flags = {"EARNINGS_WITHIN_3_DAYS", "EARNINGS_DATE_UNDECIDED", "EARNINGS_DATE_CONFLICT", "EARNINGS_UNCONFIRMED", "EX_RIGHTS_WITHIN_3_DAYS", "RIGHTS_DATE_CONFLICT", "RIGHTS_RECENT_DISCLOSURE", "RIGHTS_UNCONFIRMED", "LOW_LIQUIDITY", "ENTRY_RISK_TOO_WIDE", "RISK_REWARD_LOW"}
     eligible = [x for x in refreshed if not hard_flags.intersection(x.get("riskFlags", []))]
     continued = [{**x, "lastSelectedDate": next((d["asOf"] for d in history_days if any(c["code"] == x["code"] for c in d.get("candidates", []))), None)} for x in eligible if x["code"] in recent_codes]
     # 補助情報の全体照合率が不足しても、個別に安全確認できた銘柄だけで選定を継続する。
@@ -218,7 +224,7 @@ def main() -> None:
         "message": f"過去5営業日の重複を除外し、仕込み候補を{len(final)}銘柄選定しました。" if selection_gate else (f"価格・出口判定は更新済み。補助情報未確認銘柄を除外し、候補を{len(final)}銘柄選定しました。" if core_gate else "価格品質条件を満たさないため、前回正常データを維持します。"),
         "finalCandidates": final, "continuedCandidates": continued,
         "excludedEarnings": [x for x in refreshed if {"EARNINGS_WITHIN_3_DAYS", "EARNINGS_DATE_UNDECIDED", "EARNINGS_UNCONFIRMED"}.intersection(x.get("riskFlags", []))],
-        "excludedRights": [x for x in refreshed if {"EX_RIGHTS_WITHIN_3_DAYS", "RIGHTS_DATE_CONFLICT", "RIGHTS_RECENT_DISCLOSURE"}.intersection(x.get("riskFlags", []))],
+        "excludedRights": [x for x in refreshed if {"EX_RIGHTS_WITHIN_3_DAYS", "RIGHTS_DATE_CONFLICT", "RIGHTS_RECENT_DISCLOSURE", "RIGHTS_UNCONFIRMED"}.intersection(x.get("riskFlags", []))],
         "sectorSignals": SEED.get("sectorSignals", []), "sectorOutflows": SEED.get("sectorOutflows", []), "sectorOutflowAsOf": SEED.get("sectorOutflowAsOf"),
         "excludedExtended": SEED.get("excludedExtended", []), "technicalCandidates": refreshed if core_gate else [], "marketRegime": market_regime(),
         "funnel": {"listed": SEED.get("listed", 0), "latestPrice": SEED.get("latestCoverage", 0), "historyReady": SEED.get("historyReady", 0), "liquid": SEED.get("liquid", 0), "primary": SEED.get("primary", 0), "detailReview": min(10, len(eligible)), "final": len(final)},
@@ -272,9 +278,9 @@ def main() -> None:
                 exit_fields = neutral_exit(row["close"], row.get("targetPrice"), stop_price, holding_days)
             row.update(exit_fields)
     history_payload = {"currentAsOf": effective_date, "retentionDays": 30, "history": history_days}
-    jst_today = dt.datetime.now(ZoneInfo("Asia/Tokyo")).strftime("%Y%m%d")
-    is_previous = effective_date != jst_today
-    status = {"lastAttemptAt": generated, "lastAttemptStatus": "success" if selection_gate else "partial", "lastSuccessfulAt": generated, "dataAsOf": effective_date, "isPreviousBusinessDay": is_previous, "message": ("更新成功（前営業日データ）" if is_previous else "日次更新成功") if selection_gate else "価格・出口判定を更新しました。補助情報未確認銘柄は候補から除外しています。", "failureReasons": diagnostics["failure_reasons"], "qualityDetails": diagnostics["quality_details"]}
+    age = data_age(effective_date)
+    is_previous = age["isPreviousBusinessDay"]
+    status = {**age, "lastAttemptAt": generated, "lastAttemptStatus": "success" if selection_gate else "partial", "lastSuccessfulAt": generated, "dataAsOf": effective_date, "isPreviousBusinessDay": is_previous, "message": ("更新成功（前営業日データ）" if is_previous else "日次更新成功") if selection_gate else "価格・出口判定を更新しました。補助情報未確認銘柄は候補から除外しています。", "failureReasons": diagnostics["failure_reasons"], "qualityDetails": diagnostics["quality_details"]}
     dump(LATEST_PATH, result)
     dump(HISTORY_PATH, history_payload)
     dump(STATUS_PATH, status)

@@ -69,6 +69,13 @@ class ListedMasterTest(unittest.TestCase):
         self.assertIn("1000", rows)
         self.assertEqual(date, "20260930")
 
+    def test_delisted_or_missing_latest_quote_is_not_a_candidate(self):
+        listed = {"1332": ("水産・農林業", "プライム（内国株式）")}
+        current = {"code": "1332", "c": [100, 101], "v": [1000, 1000], "t": [100000, 101000]}
+        self.assertTrue(master.has_current_listing_and_price(current, listed))
+        self.assertFalse(master.has_current_listing_and_price({**current, "code": "5202"}, listed))
+        self.assertFalse(master.has_current_listing_and_price({**current, "c": [100, None]}, listed))
+
 
 if __name__ == "__main__":
     unittest.main()

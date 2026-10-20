@@ -7,6 +7,7 @@ import datetime as dt
 import json
 import re
 from jpx_daily_sources import latest_publication_date
+from market_calendar import data_age
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -41,7 +42,8 @@ def mark_waiting(status: dict, jpx_date: str) -> None:
     status.update({
         "lastAttemptAt": dt.datetime.now(dt.timezone.utc).isoformat(),
         "lastAttemptStatus": "waiting",
-        "isPreviousBusinessDay": True,
+        **data_age(status.get("dataAsOf")),
+        "failureStage": None, "failureReasons": [],
         "message": f"JPX公式データ公開待ち（最新掲載 {jpx_date}）",
     })
     STATUS_PATH.write_text(json.dumps(status, ensure_ascii=False, indent=2) + "\n")

@@ -17,7 +17,7 @@ class StaticDataTest(unittest.TestCase):
                 "EARNINGS_WITHIN_3_DAYS", "EARNINGS_DATE_UNDECIDED",
                 "EARNINGS_DATE_CONFLICT", "EARNINGS_UNCONFIRMED",
                 "EX_RIGHTS_WITHIN_3_DAYS", "RIGHTS_DATE_CONFLICT",
-                "RIGHTS_RECENT_DISCLOSURE", "LOW_LIQUIDITY",
+                "RIGHTS_RECENT_DISCLOSURE", "RIGHTS_UNCONFIRMED", "LOW_LIQUIDITY",
                 "ENTRY_RISK_TOO_WIDE", "RISK_REWARD_LOW",
             })
             self.assertLessEqual(row["targetPrice1"], row["targetPrice2"])
@@ -33,7 +33,7 @@ class StaticDataTest(unittest.TestCase):
     def test_status_and_history_contract(self):
         status = json.loads((DATA / "status.json").read_text())
         history = json.loads((DATA / "history.json").read_text())
-        self.assertIn(status["lastAttemptStatus"], {"success", "partial", "failed"})
+        self.assertIn(status["lastAttemptStatus"], {"success", "partial", "failed", "waiting"})
         self.assertLessEqual(len(history["history"]), 30)
 
 

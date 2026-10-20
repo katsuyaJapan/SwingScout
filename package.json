@@ -7,7 +7,7 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint src --max-warnings=0",
-    "test:data": "python -m unittest discover -s tests -p 'test_*.py'"
+    "test:data": "python -m unittest discover -s tests -p 'test_*.py' && node --test tests/test_sector_data.mjs"
   },
   "dependencies": {
     "@vitejs/plugin-react": "latest",
