@@ -2,12 +2,15 @@
   "isPreviousBusinessDay": false,
   "dataLagBusinessDays": 0,
   "isStale": false,
-  "lastAttemptAt": "2026-10-21T12:58:58.196766+00:00",
-  "lastAttemptStatus": "success",
-  "lastSuccessfulAt": "2026-10-21T12:58:58.196766+00:00",
+  "lastAttemptAt": "2026-10-21T13:46:55.013793+00:00",
+  "lastAttemptStatus": "partial",
+  "lastSuccessfulAt": "2026-10-21T13:46:55.013793+00:00",
   "dataAsOf": "20261021",
-  "message": "日次更新成功",
-  "failureReasons": [],
+  "message": "価格・出口判定を更新しました。補助情報未確認銘柄は候補から除外しています。",
+  "failureReasons": [
+    "rights_coverage",
+    "disclosure_coverage"
+  ],
   "qualityDetails": {
     "official_price_date": "20261020",
     "sector_price_date": "2026-10-20",
@@ -15,10 +18,10 @@
     "price_coverage": 4188,
     "history_ready": 4044,
     "earnings_coverage": "30/30",
-    "rights_coverage": "26/30",
-    "disclosure_coverage": "30/30",
+    "rights_coverage": "0/30",
+    "disclosure_coverage": "0/30",
     "jpx_rights_rows": 143,
     "quotes_complete": true,
-    "previous_price_date": "20261020"
+    "previous_price_date": "20261021"
   }
 }
