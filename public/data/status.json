@@ -2,9 +2,9 @@
   "isPreviousBusinessDay": false,
   "dataLagBusinessDays": 0,
   "isStale": false,
-  "lastAttemptAt": "2026-10-22T13:49:41.724619+00:00",
+  "lastAttemptAt": "2026-10-22T14:36:43.078070+00:00",
   "lastAttemptStatus": "success",
-  "lastSuccessfulAt": "2026-10-22T13:49:41.724619+00:00",
+  "lastSuccessfulAt": "2026-10-22T14:36:43.078070+00:00",
   "dataAsOf": "20261022",
   "message": "日次更新成功",
   "failureReasons": [],
@@ -19,6 +19,6 @@
     "disclosure_coverage": "30/30",
     "jpx_rights_rows": 139,
     "quotes_complete": true,
-    "previous_price_date": "20261021"
+    "previous_price_date": "20261022"
   }
 }
