@@ -14,18 +14,18 @@
     "no_date_regression": true
   },
   "quality_details": {
-    "official_price_date": "20261022",
-    "sector_price_date": "2026-10-22",
-    "effective_price_date": "20261023",
-    "price_coverage": 4174,
-    "history_ready": 4036,
+    "official_price_date": "20261023",
+    "sector_price_date": "2026-10-23",
+    "effective_price_date": "20261026",
+    "price_coverage": 4197,
+    "history_ready": 4049,
     "earnings_coverage": "30/30",
     "rights_coverage": "30/30",
     "disclosure_coverage": "30/30",
-    "jpx_rights_rows": 140,
+    "jpx_rights_rows": 128,
     "quotes_complete": true,
     "previous_price_date": "20261023"
   },
-  "generated_at": "2026-10-23T14:18:50.194171+00:00",
+  "generated_at": "2026-10-26T14:17:41.407311+00:00",
   "selection_quality_passed": true
 }
