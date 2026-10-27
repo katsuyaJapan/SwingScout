@@ -1,32 +1,24 @@
 {
-  "isPreviousBusinessDay": true,
+  "isPreviousBusinessDay": false,
   "dataLagBusinessDays": 0,
   "isStale": false,
-  "lastAttemptAt": "2026-10-27T02:24:46.694039+00:00",
-  "lastAttemptStatus": "waiting",
-  "lastSuccessfulAt": "2026-10-26T14:17:41.407311+00:00",
-  "dataAsOf": "20261026",
-  "message": "JPX公式データ公開待ち（最新掲載 20261026）",
+  "lastAttemptAt": "2026-10-27T13:14:27.319639+00:00",
+  "lastAttemptStatus": "success",
+  "lastSuccessfulAt": "2026-10-27T13:14:27.319639+00:00",
+  "dataAsOf": "20261027",
+  "message": "日次更新成功",
   "failureReasons": [],
   "qualityDetails": {
-    "official_price_date": "20261023",
-    "sector_price_date": "2026-10-23",
-    "effective_price_date": "20261023",
-    "price_coverage": 4197,
-    "history_ready": 4049,
+    "official_price_date": "20261026",
+    "sector_price_date": "2026-10-26",
+    "effective_price_date": "20261027",
+    "price_coverage": 4195,
+    "history_ready": 4042,
     "earnings_coverage": "30/30",
     "rights_coverage": "30/30",
     "disclosure_coverage": "30/30",
-    "jpx_rights_rows": 128,
-    "quotes_complete": false,
-    "previous_price_date": "20261026",
-    "command": [
-      "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
-      "scripts/generate-static-data.py"
-    ],
-    "exit_code": 1,
-    "error_log_tail": "Traceback (most recent call last):\n  File \"/home/runner/work/SwingScout/SwingScout/scripts/generate-static-data.py\", line 291, in <module>\n    main()\n  File \"/home/runner/work/SwingScout/SwingScout/scripts/generate-static-data.py\", line 243, in main\n    raise RuntimeError(result[\"message\"])\nRuntimeError: 価格品質条件を満たさないため、前回正常データを維持します。\n",
-    "source_urls": []
-  },
-  "failureStage": null
+    "jpx_rights_rows": 145,
+    "quotes_complete": true,
+    "previous_price_date": "20261026"
+  }
 }
