@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-30T15:05:51.236651+00:00",
+  "generated_at": "2026-10-30T15:58:38.454378+00:00",
   "failure_stage": "quality_gate",
   "failure_reasons": [
     "no_date_regression"
