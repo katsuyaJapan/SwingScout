@@ -9,7 +9,7 @@ from types import SimpleNamespace
 
 SCRIPTS = Path(__file__).resolve().parents[1] / "scripts"
 sys.path.insert(0, str(SCRIPTS))
-from market_calendar import data_age
+from market_calendar import data_age, last_completed_session
 from update_state import mark_failure
 
 
@@ -88,6 +88,20 @@ sys.exit(1)''']
             status = json.loads((data / "status.json").read_text())
             self.assertEqual(status["failureStage"], "analysis_seed")
             self.assertIn("cannot start", status["failureReasons"])
+
+    def test_last_completed_session_across_midnight_weekend_and_holiday(self):
+        jst = dt.timezone(dt.timedelta(hours=9))
+        for timestamp, expected in (
+            ((2026, 10, 30, 15, 29), "20261029"),
+            ((2026, 10, 30, 15, 30), "20261030"),
+            ((2026, 10, 30, 23, 59), "20261030"),
+            ((2026, 10, 31, 0, 0), "20261030"),
+            ((2026, 11, 2, 10, 0), "20261030"),
+            ((2026, 11, 3, 16, 0), "20261102"),
+        ):
+            with self.subTest(timestamp=timestamp):
+                now = dt.datetime(*timestamp, tzinfo=jst)
+                self.assertEqual(last_completed_session(now).strftime("%Y%m%d"), expected)
 
     def test_weekend_and_holiday_data_age(self):
         sunday = dt.datetime(2026, 10, 18, 4, 0, tzinfo=dt.timezone.utc)

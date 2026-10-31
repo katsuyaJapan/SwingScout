@@ -9,9 +9,11 @@ import re
 from jpx_daily_sources import latest_publication_date
 from market_calendar import data_age
 from pathlib import Path
+from update_state import read_json
 
 ROOT = Path(__file__).resolve().parents[1]
 STATUS_PATH = ROOT / "public" / "data" / "status.json"
+LATEST_PATH = ROOT / "public" / "data" / "latest.json"
 
 
 def extract_latest_date(html: str) -> str:
@@ -57,7 +59,13 @@ def main() -> None:
     stored_date = str(status.get("dataAsOf") or "00000000")
     try:
         jpx_date = latest_publication_date()
-        refresh_required = jpx_date > stored_date
+        latest = read_json(LATEST_PATH)
+        official_date = latest.get("officialAsOf") or stored_date
+        refresh_required = jpx_date > stored_date or (
+            latest.get("priceStatus") == "PROVISIONAL"
+            and jpx_date == stored_date
+            and jpx_date > official_date
+        )
         if args.mark_waiting and not refresh_required:
             mark_waiting(status, jpx_date)
         write_output("jpx_date", jpx_date)
