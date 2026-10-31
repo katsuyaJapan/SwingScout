@@ -29,12 +29,18 @@ def previous_business_day(day: dt.date) -> dt.date:
     return day
 
 
+def last_completed_session(now: dt.datetime | None = None) -> dt.date:
+    now = (now or dt.datetime.now(dt.timezone.utc)).astimezone(ZoneInfo("Asia/Tokyo"))
+    today = now.date()
+    if today.weekday() >= 5 or today.strftime("%Y%m%d") in JPX_HOLIDAYS or (now.hour, now.minute) < (15, 30):
+        return previous_business_day(today)
+    return today
+
+
 def data_age(as_of: str | None, now: dt.datetime | None = None) -> dict:
     now = (now or dt.datetime.now(dt.timezone.utc)).astimezone(ZoneInfo("Asia/Tokyo"))
     today = now.date()
-    expected = today
-    if today.weekday() >= 5 or today.strftime("%Y%m%d") in JPX_HOLIDAYS or (now.hour, now.minute) < (15, 30):
-        expected = previous_business_day(today)
+    expected = last_completed_session(now)
     try:
         parsed = dt.datetime.strptime(as_of or "", "%Y%m%d").date()
         lag = business_days(parsed.strftime("%Y%m%d"), expected.strftime("%Y%m%d"))

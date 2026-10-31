@@ -6,6 +6,7 @@ import tempfile
 import unittest
 from unittest.mock import patch
 from pathlib import Path
+import copy
 
 SCRIPTS = Path(__file__).resolve().parents[1] / "scripts"
 sys.path.insert(0, str(SCRIPTS))
@@ -76,6 +77,95 @@ class UpdateDiagnosticsTest(unittest.TestCase):
             self.assertEqual(latest.read_text(), before)
             diagnostic = json.loads((data / "diagnostic.json").read_text())
             self.assertIn("no_date_regression", diagnostic["failure_reasons"])
+
+    def test_retains_healthy_provisional_snapshot_but_rejects_quality_failures(self):
+        seed = {
+            "asOf": "20261029", "sectorOutflowAsOf": "2026-10-29",
+            "latestCoverage": 4152, "historyReady": 4021, "failures": [],
+            "technicalCandidates": [],
+            "supplementalQuotes": {"1332": {"date": "20261030", "close": 1000}},
+            "earningsQuality": {"secondaryCoverage": 30, "secondaryTotal": 30},
+            "rightsQuality": {"jpxRows": 150, "secondaryCoverage": 30,
+                              "disclosureCoverage": 30, "secondaryTotal": 30},
+        }
+        previous = {"asOf": "20261030", "officialAsOf": "20261029",
+                    "priceStatus": "PROVISIONAL", "status": "READY",
+                    "quality": {"pricePassed": True}, "finalCandidates": []}
+        status = {"dataAsOf": "20261030", "lastSuccessfulAt": "original-success"}
+        history = {"currentAsOf": "20261030", "history": [{"asOf": "20261030", "candidates": []}]}
+        cases = ("healthy", "coverage", "snapshot", "sector", "unhealthy_previous", "history_mismatch", "stale", "quotes_outage")
+        for case in cases:
+            with self.subTest(case=case), tempfile.TemporaryDirectory() as directory:
+                data = Path(directory)
+                trial = copy.deepcopy(seed)
+                old = copy.deepcopy(previous)
+                old_history = copy.deepcopy(history)
+                if case == "coverage": trial["latestCoverage"] = 100
+                if case == "snapshot": trial["failures"] = ["download"]
+                if case == "sector": trial["sectorOutflowAsOf"] = "2026-10-28"
+                if case == "quotes_outage": trial["supplementalQuotes"] = {"1332": None}
+                if case == "unhealthy_previous": old["quality"]["pricePassed"] = False
+                if case == "history_mismatch": old_history["currentAsOf"] = "20261029"
+                for name, payload in (("latest", old), ("history", old_history), ("status", status)):
+                    (data / (name + ".json")).write_text(json.dumps(payload))
+                before = [(data / (name + ".json")).read_bytes() for name in ("latest", "history")]
+                with patch.multiple(static_data, SEED=trial, DATA=data,
+                                    LATEST_PATH=data / "latest.json", HISTORY_PATH=data / "history.json",
+                                    STATUS_PATH=data / "status.json", DIAGNOSTICS_PATH=data / "diagnostic.json",
+                                    market_regime=lambda: {}), \
+                     patch.object(static_data, "data_age", return_value={"isStale": case == "stale"}):
+                    if case == "healthy":
+                        static_data.main()
+                        result = json.loads((data / "status.json").read_text())
+                        self.assertEqual(result["lastAttemptStatus"], "waiting")
+                        self.assertEqual(result["dataAsOf"], "20261030")
+                        self.assertEqual(result["lastSuccessfulAt"], "original-success")
+                        self.assertIn("lastAttemptAt", result)
+                        diagnostic = json.loads((data / "diagnostic.json").read_text())
+                        self.assertEqual(diagnostic["failure_reasons"], [])
+                        self.assertFalse(diagnostic["checks"]["no_date_regression"])
+                    else:
+                        with self.assertRaises(RuntimeError): static_data.main()
+                self.assertEqual(before, [(data / (name + ".json")).read_bytes() for name in ("latest", "history")])
+
+    def test_supplemental_prices_respect_session_close_and_midnight(self):
+        seed = {"asOf": "20261029", "supplementalDate": "20261030",
+                "technicalCandidates": [{"code": "1332"}],
+                "supplementalQuotes": {"1332": {"date": "20261030", "close": 1000}}}
+        jst = dt.timezone(dt.timedelta(hours=9))
+        self.assertFalse(static_data.supplemental_complete(seed, dt.datetime(2026, 10, 30, 10, tzinfo=jst)))
+        self.assertTrue(static_data.supplemental_complete(seed, dt.datetime(2026, 10, 30, 15, 30, tzinfo=jst)))
+        self.assertTrue(static_data.supplemental_complete(seed, dt.datetime(2026, 10, 31, 0, 5, tzinfo=jst)))
+        for close in (0, -1, float("nan"), float("inf"), None):
+            seed["supplementalQuotes"]["1332"]["close"] = close
+            self.assertFalse(static_data.supplemental_complete(seed, dt.datetime(2026, 10, 31, tzinfo=jst)))
+        seed["supplementalQuotes"]["1332"] = {"date": "20261102", "close": 1000}
+        seed["supplementalDate"] = "20261102"
+        self.assertFalse(static_data.supplemental_complete(seed, dt.datetime(2026, 10, 31, tzinfo=jst)))
+
+    def test_same_day_official_prices_replace_provisional_snapshot(self):
+        seed = {"asOf": "20261030", "sectorOutflowAsOf": "2026-10-30",
+                "latestCoverage": 4152, "historyReady": 4021, "failures": [],
+                "earningsQuality": {"secondaryCoverage": 30, "secondaryTotal": 30},
+                "rightsQuality": {"jpxRows": 150, "secondaryCoverage": 30,
+                                  "disclosureCoverage": 30, "secondaryTotal": 30}}
+        with tempfile.TemporaryDirectory() as directory:
+            data = Path(directory)
+            (data / "latest.json").write_text(json.dumps({"asOf": "20261030", "priceStatus": "PROVISIONAL"}))
+            (data / "history.json").write_text(json.dumps({"currentAsOf": "20261030", "history": [
+                {"asOf": "20261030", "candidates": []}]}))
+            (data / "sector-data.json").write_text("{}")
+            with patch.multiple(static_data, SEED=seed, SNAPSHOT={"securities": []}, DATA=data,
+                                LATEST_PATH=data / "latest.json", HISTORY_PATH=data / "history.json",
+                                STATUS_PATH=data / "status.json", DIAGNOSTICS_PATH=data / "diagnostic.json",
+                                market_regime=lambda: {"level": "NORMAL"}):
+                static_data.main()
+            latest = json.loads((data / "latest.json").read_text())
+            self.assertEqual(latest["asOf"], "20261030")
+            self.assertEqual(latest["priceStatus"], "JPX_CONFIRMED")
+            self.assertEqual(json.loads((data / "status.json").read_text())["lastAttemptStatus"], "success")
+            history = json.loads((data / "history.json").read_text())
+            self.assertEqual(len(history["history"]), 1)
 
     def test_missing_rights_source_marks_candidate_unconfirmed(self):
         row = {"score": 60, "riskFlags": [], "rightsCheckedSources": ["JPX"]}

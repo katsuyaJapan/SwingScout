@@ -32,6 +32,22 @@ class JpxFreshnessTests(unittest.TestCase):
         output.assert_any_call("jpx_date", "20261015")
         output.assert_any_call("refresh_required", "true")
 
+    def test_same_day_official_confirmation_runs_once(self):
+        for price_status, official, expected in (
+            ("PROVISIONAL", "20261029", "true"),
+            ("JPX_CONFIRMED", "20261030", "false"),
+            ("PROVISIONAL", "20261029", "false"),
+        ):
+            publication = "20261029" if expected == "false" and price_status == "PROVISIONAL" else "20261030"
+            with self.subTest(price_status=price_status, publication=publication), \
+                 patch.object(MODULE.argparse.ArgumentParser, "parse_args", return_value=argparse.Namespace(mark_waiting=False)), \
+                 patch.object(MODULE, "read_status", return_value={"dataAsOf": "20261030"}), \
+                 patch.object(MODULE, "read_json", return_value={"priceStatus": price_status, "officialAsOf": official}), \
+                 patch.object(MODULE, "latest_publication_date", return_value=publication), \
+                 patch.object(MODULE, "write_output") as output:
+                MODULE.main()
+            output.assert_any_call("refresh_required", expected)
+
 
 if __name__ == "__main__":
     unittest.main()

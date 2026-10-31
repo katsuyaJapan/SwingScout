@@ -8,10 +8,10 @@ import json
 import math
 import re
 from pathlib import Path
-from zoneinfo import ZoneInfo
 
 from exit_strategy import evaluate_exit_strategy, neutral_exit
-from market_calendar import business_days, data_age
+from market_calendar import business_days, data_age, last_completed_session
+from update_state import read_json
 
 ROOT = Path(__file__).resolve().parents[1]
 DATA = ROOT / "public" / "data"
@@ -165,8 +165,8 @@ def market_regime() -> dict:
 def supplemental_complete(seed: dict, now=None) -> bool:
     date = seed.get("supplementalDate", "")
     official = seed.get("asOf", "")
-    today = (now or dt.datetime.now(ZoneInfo("Asia/Tokyo"))).strftime("%Y%m%d")
-    if not re.fullmatch(r"\d{8}", date) or not official < date <= today:
+    completed = last_completed_session(now).strftime("%Y%m%d")
+    if not re.fullmatch(r"\d{8}", date) or not official < date <= completed:
         return False
     candidates = seed.get("technicalCandidates", [])
     quotes = seed.get("supplementalQuotes", {})
@@ -200,12 +200,54 @@ def main() -> None:
     rights_threshold = math.ceil(max(1, rights_quality.get("secondaryTotal", 30)) * .8)
     rights_ok = rights_quality.get("jpxRows", 0) >= 1 and rights_quality.get("secondaryCoverage", 0) >= rights_threshold and rights_quality.get("disclosureCoverage", 0) >= rights_threshold
     diagnostics = quality_diagnostics(SEED, effective_date, quotes_complete)
-    previous_date = json.loads(LATEST_PATH.read_text()).get("asOf", "") if LATEST_PATH.exists() else ""
+    previous = json.loads(LATEST_PATH.read_text()) if LATEST_PATH.exists() else {}
+    previous_date = previous.get("asOf", "")
     diagnostics["checks"]["no_date_regression"] = effective_date >= previous_date
     diagnostics["quality_details"]["previous_price_date"] = previous_date
     if effective_date < previous_date:
         diagnostics["failure_stage"] = "quality_gate"
         diagnostics["failure_reasons"].append("no_date_regression")
+        # A healthy provisional snapshot can outlive an incomplete retry.
+        # Never relabel the older prices with the retained snapshot's date.
+        previous_status = read_json(STATUS_PATH)
+        if (
+            not quotes_complete
+            and effective_date == SEED["asOf"]
+            and previous.get("priceStatus") == "PROVISIONAL"
+            and previous.get("status") in {"READY", "PARTIAL_READY"}
+            and previous.get("quality", {}).get("pricePassed") is True
+            and previous.get("officialAsOf", "") <= effective_date
+            and previous_status.get("dataAsOf") == previous_date
+            and previous_status.get("lastSuccessfulAt")
+            and any(
+                q and q.get("date") == previous_date
+                and isinstance(q.get("close"), (int, float))
+                and math.isfinite(q["close"]) and q["close"] > 0
+                for q in supplemental.values()
+            )
+            and old_history.get("currentAsOf") == previous_date
+            and isinstance(old_history.get("history"), list)
+            and any(day.get("asOf") == previous_date for day in old_history["history"])
+            and not data_age(previous_date)["isStale"]
+            and all(passed for name, passed in diagnostics["checks"].items() if name != "no_date_regression")
+        ):
+            generated = dt.datetime.now(dt.timezone.utc).isoformat()
+            diagnostics.update({
+                "generated_at": generated, "failure_stage": None, "failure_reasons": [],
+                "retention_reason": "awaiting_complete_prices",
+                "selection_quality_passed": False,
+            })
+            dump(DIAGNOSTICS_PATH, diagnostics)
+            previous_status.update({
+                **data_age(previous_date), "lastAttemptAt": generated,
+                "lastAttemptStatus": "waiting", "failureStage": None, "failureReasons": [],
+                "qualityDetails": diagnostics["quality_details"],
+                "message": "補完価格の完全同期・JPX公式データ待ちのため、前回正常データを維持しています。",
+            })
+            dump(STATUS_PATH, previous_status)
+            print(json.dumps({"state": "waiting", "dataAsOf": previous_date,
+                              "reason": "awaiting_complete_prices"}))
+            return
     core_gate = all(diagnostics["checks"][name] for name in ("snapshot_failures", "price_coverage", "history_ready", "price_date", "sector_date", "no_date_regression"))
     selection_gate = core_gate and earnings_ok and rights_ok
     history_days = sorted(old_history.get("history", []), key=lambda x: x["asOf"], reverse=True)

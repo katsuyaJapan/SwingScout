@@ -5,6 +5,7 @@ from zoneinfo import ZoneInfo
 from rights_sources import fetch_yahoo_rights
 from jpx_listed_master import fetch_master, has_current_listing_and_price
 from volume_signals import analyze_volume_supply_demand
+from market_calendar import last_completed_session
 
 ROOT=Path(__file__).resolve().parents[1]
 POST_EARNINGS_SAFE_DAYS=45
@@ -141,6 +142,7 @@ def quote(row):
     timestamps=chart.get('timestamp') or []; values=chart['indicators']['quote'][0]; closes=values.get('close') or []; highs=values.get('high') or []; volumes=values.get('volume') or []
     if not timestamps or not closes or closes[-1] is None:return row["code"],None
     day=datetime.datetime.fromtimestamp(timestamps[-1],ZoneInfo('Asia/Tokyo')).strftime('%Y%m%d')
+    if day != completed_date: return row["code"],None
     return row["code"],{"date":day,"high":float(highs[-1] or closes[-1]),"close":float(closes[-1]),"volume":int(volumes[-1] or 0)}
   except Exception:return row["code"],None
 representatives=[]; seen=set()
@@ -195,9 +197,8 @@ for row in top:
     flags.append('RIGHTS_RECENT_DISCLOSURE')
     evidence.extend({'name':'TDnet','status':title} for title in disclosures)
   row['rightsSources']=evidence; row['rightsCheckedSources']=checked; row['rightsSourceErrors']=result.get('errors',[]); row['rightsStatus']='CONFIRMED' if current_ex else 'NO_NEAR_TERM_EVENT'; row['riskFlags']=list(dict.fromkeys(flags))
-jst_now=datetime.datetime.now(ZoneInfo("Asia/Tokyo"))
-after_close=(jst_now.hour,jst_now.minute)>=(15,30)
-if after_close:
+completed_date=last_completed_session().strftime('%Y%m%d')
+if raw["asOf"] < completed_date:
   with concurrent.futures.ThreadPoolExecutor(max_workers=6) as ex: quotes=dict(ex.map(quote,top))
 else:
   quotes={x['code']:None for x in top}
