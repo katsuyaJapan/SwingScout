@@ -82,7 +82,8 @@ class UpdateDiagnosticsTest(unittest.TestCase):
         seed = {
             "asOf": "20261029", "sectorOutflowAsOf": "2026-10-29",
             "latestCoverage": 4152, "historyReady": 4021, "failures": [],
-            "technicalCandidates": [],
+            "technicalCandidates": [{"code": "1332", "close": 1000, "score": 70},
+                                    {"code": "1333", "close": 1000, "score": 65}],
             "supplementalQuotes": {"1332": {"date": "20261030", "close": 1000}},
             "earningsQuality": {"secondaryCoverage": 30, "secondaryTotal": 30},
             "rightsQuality": {"jpxRows": 150, "secondaryCoverage": 30,
