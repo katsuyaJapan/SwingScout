@@ -26,4 +26,5 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
+      - run: python -m pip install --disable-pip-version-check openpyxl xlrd
       - run: npm run test:data
