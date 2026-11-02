@@ -2,7 +2,7 @@
   "version": 22,
   "asOf": "20261030",
   "officialAsOf": "20261030",
-  "generatedAt": "2026-11-02T01:46:34.835108+00:00",
+  "generatedAt": "2026-11-02T17:06:22.599886+00:00",
   "cached": false,
   "priceStatus": "JPX_CONFIRMED",
   "status": "READY",
@@ -2288,6 +2288,10 @@
         },
         {
           "name": "Yahoo!ファイナンス",
+          "date": "20261102"
+        },
+        {
+          "name": "株予報",
           "date": "20261102"
         }
       ],
@@ -12299,6 +12303,10 @@
         {
           "name": "Yahoo!ファイナンス",
           "date": "20261102"
+        },
+        {
+          "name": "株予報",
+          "date": "20261102"
         }
       ],
       "earningsCheckedSources": [
@@ -12373,7 +12381,7 @@
     "provisionalTotal": 30,
     "fundamental": "任意・未確認",
     "earningsDate": "決算判定 30/30（外部ページ取得 30/30）",
-    "rightsDate": "権利判定 JPX 150件・Yahoo照合 30/30・TDnet確認 30/30",
+    "rightsDate": "権利判定 JPX 33件・Yahoo照合 30/30・TDnet確認 30/30",
     "tdnet": "基準日・株主優待変更の直近開示を確認"
   },
   "sources": [
