@@ -16,16 +16,16 @@
   "quality_details": {
     "official_price_date": "20261030",
     "sector_price_date": "2026-10-30",
-    "effective_price_date": "20261030",
+    "effective_price_date": "20261102",
     "price_coverage": 4191,
     "history_ready": 4038,
     "earnings_coverage": "30/30",
     "rights_coverage": "30/30",
     "disclosure_coverage": "30/30",
     "jpx_rights_rows": 33,
-    "quotes_complete": false,
+    "quotes_complete": true,
     "previous_price_date": "20261030"
   },
-  "generated_at": "2026-11-02T19:32:47.153863+00:00",
+  "generated_at": "2026-11-03T15:09:43.208259+00:00",
   "selection_quality_passed": true
 }
