@@ -14,11 +14,11 @@
     "no_date_regression": true
   },
   "quality_details": {
-    "official_price_date": "20261102",
-    "sector_price_date": "2026-11-02",
-    "effective_price_date": "20261102",
-    "price_coverage": 4193,
-    "history_ready": 4047,
+    "official_price_date": "20261104",
+    "sector_price_date": "2026-11-04",
+    "effective_price_date": "20261104",
+    "price_coverage": 4202,
+    "history_ready": 4050,
     "earnings_coverage": "30/30",
     "rights_coverage": "30/30",
     "disclosure_coverage": "30/30",
@@ -26,6 +26,6 @@
     "quotes_complete": false,
     "previous_price_date": "20261102"
   },
-  "generated_at": "2026-11-04T17:17:05.577748+00:00",
+  "generated_at": "2026-11-05T02:46:29.614042+00:00",
   "selection_quality_passed": true
 }
