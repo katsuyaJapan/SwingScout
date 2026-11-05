@@ -22,10 +22,10 @@
     "earnings_coverage": "30/30",
     "rights_coverage": "30/30",
     "disclosure_coverage": "30/30",
-    "jpx_rights_rows": 34,
+    "jpx_rights_rows": 36,
     "quotes_complete": false,
-    "previous_price_date": "20261102"
+    "previous_price_date": "20261104"
   },
-  "generated_at": "2026-11-05T02:46:29.614042+00:00",
+  "generated_at": "2026-11-05T15:32:17.024091+00:00",
   "selection_quality_passed": true
 }
