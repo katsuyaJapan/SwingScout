@@ -2,15 +2,12 @@
   "isPreviousBusinessDay": true,
   "dataLagBusinessDays": 0,
   "isStale": false,
-  "lastAttemptAt": "2026-11-09T01:56:45.070439+00:00",
-  "lastAttemptStatus": "partial",
+  "lastAttemptAt": "2026-11-09T02:30:49.316622+00:00",
+  "lastAttemptStatus": "waiting",
   "lastSuccessfulAt": "2026-11-09T01:56:45.070439+00:00",
   "dataAsOf": "20261106",
-  "message": "価格・出口判定を更新しました。補助情報未確認銘柄は候補から除外しています。",
-  "failureReasons": [
-    "rights_coverage",
-    "disclosure_coverage"
-  ],
+  "message": "JPX公式データ公開待ち（最新掲載 20261106）",
+  "failureReasons": [],
   "qualityDetails": {
     "official_price_date": "20261106",
     "sector_price_date": "2026-11-06",
@@ -23,5 +20,6 @@
     "jpx_rights_rows": 43,
     "quotes_complete": false,
     "previous_price_date": "20261105"
-  }
+  },
+  "failureStage": null
 }
