@@ -1,9 +1,6 @@
 {
-  "failure_stage": "quality_gate",
-  "failure_reasons": [
-    "rights_coverage",
-    "disclosure_coverage"
-  ],
+  "failure_stage": null,
+  "failure_reasons": [],
   "checks": {
     "snapshot_failures": true,
     "sector_date": true,
@@ -12,8 +9,8 @@
     "price_date": true,
     "earnings_coverage": true,
     "jpx_rights": true,
-    "rights_coverage": false,
-    "disclosure_coverage": false,
+    "rights_coverage": true,
+    "disclosure_coverage": true,
     "no_date_regression": true
   },
   "quality_details": {
@@ -23,12 +20,12 @@
     "price_coverage": 4225,
     "history_ready": 4062,
     "earnings_coverage": "30/30",
-    "rights_coverage": "0/30",
-    "disclosure_coverage": "0/30",
-    "jpx_rights_rows": 43,
+    "rights_coverage": "30/30",
+    "disclosure_coverage": "30/30",
+    "jpx_rights_rows": 42,
     "quotes_complete": false,
-    "previous_price_date": "20261105"
+    "previous_price_date": "20261106"
   },
-  "generated_at": "2026-11-09T01:56:45.070439+00:00",
-  "selection_quality_passed": false
+  "generated_at": "2026-11-09T17:30:03.912082+00:00",
+  "selection_quality_passed": true
 }

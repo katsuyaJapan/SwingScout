@@ -1,12 +1,12 @@
 {
-  "isPreviousBusinessDay": true,
-  "dataLagBusinessDays": 0,
-  "isStale": false,
-  "lastAttemptAt": "2026-11-09T02:57:51.562603+00:00",
-  "lastAttemptStatus": "waiting",
-  "lastSuccessfulAt": "2026-11-09T01:56:45.070439+00:00",
+  "isPreviousBusinessDay": false,
+  "dataLagBusinessDays": 1,
+  "isStale": true,
+  "lastAttemptAt": "2026-11-09T17:30:03.912082+00:00",
+  "lastAttemptStatus": "success",
+  "lastSuccessfulAt": "2026-11-09T17:30:03.912082+00:00",
   "dataAsOf": "20261106",
-  "message": "JPX公式データ公開待ち（最新掲載 20261106）",
+  "message": "日次更新成功",
   "failureReasons": [],
   "qualityDetails": {
     "official_price_date": "20261106",
@@ -15,11 +15,10 @@
     "price_coverage": 4225,
     "history_ready": 4062,
     "earnings_coverage": "30/30",
-    "rights_coverage": "0/30",
-    "disclosure_coverage": "0/30",
-    "jpx_rights_rows": 43,
+    "rights_coverage": "30/30",
+    "disclosure_coverage": "30/30",
+    "jpx_rights_rows": 42,
     "quotes_complete": false,
-    "previous_price_date": "20261105"
-  },
-  "failureStage": null
+    "previous_price_date": "20261106"
+  }
 }
