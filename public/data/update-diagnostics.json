@@ -1,31 +1,8 @@
 {
-  "failure_stage": null,
-  "failure_reasons": [],
-  "checks": {
-    "snapshot_failures": true,
-    "sector_date": true,
-    "price_coverage": true,
-    "history_ready": true,
-    "price_date": true,
-    "earnings_coverage": true,
-    "jpx_rights": true,
-    "rights_coverage": true,
-    "disclosure_coverage": true,
-    "no_date_regression": true
-  },
-  "quality_details": {
-    "official_price_date": "20261110",
-    "sector_price_date": "2026-11-10",
-    "effective_price_date": "20261110",
-    "price_coverage": 4213,
-    "history_ready": 4060,
-    "earnings_coverage": "30/30",
-    "rights_coverage": "30/30",
-    "disclosure_coverage": "30/30",
-    "jpx_rights_rows": 41,
-    "quotes_complete": false,
-    "previous_price_date": "20261109"
-  },
-  "generated_at": "2026-11-11T02:09:29.480563+00:00",
-  "selection_quality_passed": true
+  "generated_at": "2026-11-11T15:14:01.902974+00:00",
+  "failure_stage": "dependencies",
+  "failure_reasons": [
+    "更新用の依存関係の準備に失敗したため、前回正常データを表示しています。"
+  ],
+  "quality_details": {}
 }
