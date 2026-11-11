@@ -2,7 +2,7 @@
   "version": 22,
   "asOf": "20261110",
   "officialAsOf": "20261110",
-  "generatedAt": "2026-11-11T02:09:29.480563+00:00",
+  "generatedAt": "2026-11-11T17:10:22.524918+00:00",
   "cached": false,
   "priceStatus": "JPX_CONFIRMED",
   "status": "READY",
@@ -1224,6 +1224,10 @@
         {
           "name": "Yahoo!ファイナンス",
           "date": "20261111"
+        },
+        {
+          "name": "株予報",
+          "date": "20261111"
         }
       ],
       "earningsCheckedSources": [
@@ -1748,6 +1752,10 @@
         },
         {
           "name": "Yahoo!ファイナンス",
+          "date": "20261111"
+        },
+        {
+          "name": "株予報",
           "date": "20261111"
         }
       ],
@@ -3048,6 +3056,10 @@
         {
           "name": "Yahoo!ファイナンス",
           "date": "20261111"
+        },
+        {
+          "name": "株予報",
+          "date": "20261111"
         }
       ],
       "earningsCheckedSources": [
@@ -3299,6 +3311,10 @@
         },
         {
           "name": "Yahoo!ファイナンス",
+          "date": "20261111"
+        },
+        {
+          "name": "株予報",
           "date": "20261111"
         }
       ],
@@ -4076,6 +4092,10 @@
         },
         {
           "name": "Yahoo!ファイナンス",
+          "date": "20261111"
+        },
+        {
+          "name": "株予報",
           "date": "20261111"
         }
       ],
@@ -11280,6 +11300,10 @@
         {
           "name": "Yahoo!ファイナンス",
           "date": "20261111"
+        },
+        {
+          "name": "株予報",
+          "date": "20261111"
         }
       ],
       "earningsCheckedSources": [
@@ -11804,6 +11828,10 @@
         },
         {
           "name": "Yahoo!ファイナンス",
+          "date": "20261111"
+        },
+        {
+          "name": "株予報",
           "date": "20261111"
         }
       ],
@@ -13354,6 +13382,10 @@
         {
           "name": "Yahoo!ファイナンス",
           "date": "20261111"
+        },
+        {
+          "name": "株予報",
+          "date": "20261111"
         }
       ],
       "earningsCheckedSources": [
@@ -13605,6 +13637,10 @@
         },
         {
           "name": "Yahoo!ファイナンス",
+          "date": "20261111"
+        },
+        {
+          "name": "株予報",
           "date": "20261111"
         }
       ],
@@ -14383,6 +14419,10 @@
         {
           "name": "Yahoo!ファイナンス",
           "date": "20261111"
+        },
+        {
+          "name": "株予報",
+          "date": "20261111"
         }
       ],
       "earningsCheckedSources": [
@@ -14956,7 +14996,7 @@
     "provisionalTotal": 30,
     "fundamental": "任意・未確認",
     "earningsDate": "決算判定 29/30（外部ページ取得 30/30）",
-    "rightsDate": "権利判定 JPX 41件・Yahoo照合 30/30・TDnet確認 30/30",
+    "rightsDate": "権利判定 JPX 27件・Yahoo照合 30/30・TDnet確認 30/30",
     "tdnet": "基準日・株主優待変更の直近開示を確認"
   },
   "sources": [
