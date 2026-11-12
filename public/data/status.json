@@ -2,7 +2,7 @@
   "isPreviousBusinessDay": true,
   "dataLagBusinessDays": 0,
   "isStale": false,
-  "lastAttemptAt": "2026-11-12T03:49:44.874735+00:00",
+  "lastAttemptAt": "2026-11-12T04:01:27.801914+00:00",
   "lastAttemptStatus": "waiting",
   "lastSuccessfulAt": "2026-11-12T03:18:12.040830+00:00",
   "dataAsOf": "20261111",
