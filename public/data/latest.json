@@ -2,7 +2,7 @@
   "version": 22,
   "asOf": "20261112",
   "officialAsOf": "20261112",
-  "generatedAt": "2026-11-13T02:54:02.757048+00:00",
+  "generatedAt": "2026-11-13T15:26:06.189488+00:00",
   "cached": false,
   "priceStatus": "JPX_CONFIRMED",
   "status": "READY",
@@ -2284,6 +2284,10 @@
         },
         {
           "name": "Yahoo!ファイナンス",
+          "date": "20261113"
+        },
+        {
+          "name": "株予報",
           "date": "20261113"
         }
       ],
@@ -13024,6 +13028,10 @@
         },
         {
           "name": "Yahoo!ファイナンス",
+          "date": "20261113"
+        },
+        {
+          "name": "株予報",
           "date": "20261113"
         }
       ],
