@@ -2,23 +2,34 @@
   "isPreviousBusinessDay": false,
   "dataLagBusinessDays": 1,
   "isStale": true,
-  "lastAttemptAt": "2026-11-16T19:37:51.570317+00:00",
-  "lastAttemptStatus": "success",
+  "lastAttemptAt": "2026-11-17T04:47:48.456459+00:00",
+  "lastAttemptStatus": "failed",
   "lastSuccessfulAt": "2026-11-16T19:37:51.570317+00:00",
   "dataAsOf": "20261113",
-  "message": "日次更新成功",
-  "failureReasons": [],
+  "message": "日次更新に失敗したため、前回正常データを表示しています。",
+  "failureReasons": [
+    "static_data exited with code 1",
+    "Traceback (most recent call last):\n  File \"/opt/hostedtoolcache/Python/3.12.16/x64/lib/python3.12/statistics.py\", line 327, in _exact_ratio\n    return (x.numerator, x.denominator)\n            ^^^^^^^^^^^\nAttributeError: 'NoneType' object has no attribute 'numerator'\n\nDuring handling of the above exception, another exception occurred:\n\nTraceback (most recent call last):\n  File \"/home/runner/work/SwingScout/SwingScout/scripts/generate-static-data.py\", line 333, in <module>\n    main()\n  File \"/home/runner/work/SwingScout/SwingScout/scripts/generate-static-data.py\", line 314, in main\n    exit_fields = evaluate_exit_strategy(\n                  ^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/runner/work/SwingScout/SwingScout/scripts/exit_strategy.py\", line 87, in evaluate_exit_strategy\n    ma25 = mean(closes[-25:])\n           ^^^^^^^^^^^^^^^^^^\n  File \"/opt/hostedtoolcache/Python/3.12.16/x64/lib/python3.12/statistics.py\", line 484, in mean\n    T, total, n = _sum(data)\n                  ^^^^^^^^^^\n  File \"/opt/hostedtoolcache/Python/3.12.16/x64/lib/python3.12/statistics.py\", line 193, in _sum\n    for n, d in map(_exact_ratio, values):\n                ^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/hostedtoolcache/Python/3.12.16/x64/lib/python3.12/statistics.py\", line 330, in _exact_ratio\n    raise TypeError(msg)\nTypeError: can't convert type 'NoneType' to numerator/denominator\n"
+  ],
   "qualityDetails": {
-    "official_price_date": "20261113",
-    "sector_price_date": "2026-11-13",
-    "effective_price_date": "20261113",
-    "price_coverage": 4197,
-    "history_ready": 4055,
+    "official_price_date": "20261116",
+    "sector_price_date": "2026-11-16",
+    "effective_price_date": "20261116",
+    "price_coverage": 4214,
+    "history_ready": 4064,
     "earnings_coverage": "30/30",
     "rights_coverage": "30/30",
     "disclosure_coverage": "30/30",
-    "jpx_rights_rows": 171,
+    "jpx_rights_rows": 173,
     "quotes_complete": false,
-    "previous_price_date": "20261113"
-  }
+    "previous_price_date": "20261113",
+    "command": [
+      "/opt/hostedtoolcache/Python/3.12.16/x64/bin/python",
+      "scripts/generate-static-data.py"
+    ],
+    "exit_code": 1,
+    "error_log_tail": "Traceback (most recent call last):\n  File \"/opt/hostedtoolcache/Python/3.12.16/x64/lib/python3.12/statistics.py\", line 327, in _exact_ratio\n    return (x.numerator, x.denominator)\n            ^^^^^^^^^^^\nAttributeError: 'NoneType' object has no attribute 'numerator'\n\nDuring handling of the above exception, another exception occurred:\n\nTraceback (most recent call last):\n  File \"/home/runner/work/SwingScout/SwingScout/scripts/generate-static-data.py\", line 333, in <module>\n    main()\n  File \"/home/runner/work/SwingScout/SwingScout/scripts/generate-static-data.py\", line 314, in main\n    exit_fields = evaluate_exit_strategy(\n                  ^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/runner/work/SwingScout/SwingScout/scripts/exit_strategy.py\", line 87, in evaluate_exit_strategy\n    ma25 = mean(closes[-25:])\n           ^^^^^^^^^^^^^^^^^^\n  File \"/opt/hostedtoolcache/Python/3.12.16/x64/lib/python3.12/statistics.py\", line 484, in mean\n    T, total, n = _sum(data)\n                  ^^^^^^^^^^\n  File \"/opt/hostedtoolcache/Python/3.12.16/x64/lib/python3.12/statistics.py\", line 193, in _sum\n    for n, d in map(_exact_ratio, values):\n                ^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/hostedtoolcache/Python/3.12.16/x64/lib/python3.12/statistics.py\", line 330, in _exact_ratio\n    raise TypeError(msg)\nTypeError: can't convert type 'NoneType' to numerator/denominator\n",
+    "source_urls": []
+  },
+  "failureStage": "static_data"
 }
