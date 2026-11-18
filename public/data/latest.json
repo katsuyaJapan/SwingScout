@@ -2,7 +2,7 @@
   "version": 22,
   "asOf": "20261117",
   "officialAsOf": "20261117",
-  "generatedAt": "2026-11-18T03:50:16.464078+00:00",
+  "generatedAt": "2026-11-18T16:29:29.932756+00:00",
   "cached": false,
   "priceStatus": "JPX_CONFIRMED",
   "status": "READY",
@@ -10701,7 +10701,7 @@
     "provisionalTotal": 30,
     "fundamental": "任意・未確認",
     "earningsDate": "決算判定 30/30（外部ページ取得 30/30）",
-    "rightsDate": "権利判定 JPX 173件・Yahoo照合 30/30・TDnet確認 30/30",
+    "rightsDate": "権利判定 JPX 176件・Yahoo照合 30/30・TDnet確認 30/30",
     "tdnet": "基準日・株主優待変更の直近開示を確認"
   },
   "sources": [
