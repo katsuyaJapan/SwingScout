@@ -1,10 +1,10 @@
 {
   "version": 22,
-  "asOf": "20261119",
+  "asOf": "20261120",
   "officialAsOf": "20261119",
-  "generatedAt": "2026-11-20T17:51:19.727632+00:00",
+  "generatedAt": "2026-11-23T19:15:25.610822+00:00",
   "cached": false,
-  "priceStatus": "JPX_CONFIRMED",
+  "priceStatus": "PROVISIONAL",
   "status": "READY",
   "message": "過去5営業日の重複を除外し、仕込み候補を0銘柄選定しました。",
   "finalCandidates": [],
@@ -2421,7 +2421,7 @@
       "sector": "倉庫・運輸関連業",
       "sectorPhase": "様子見",
       "sectorScore": 52,
-      "close": 3220.0,
+      "close": 3199.0,
       "score": 67.471,
       "displayScore": 67,
       "technical": 51.871,
@@ -2453,7 +2453,7 @@
         "penalty": 0.0
       },
       "setup": "先回り候補",
-      "entry": "3,213円〜3,230円（現在値付近）",
+      "entry": "3,192円〜3,209円（現在値付近）",
       "invalidation": "3,081円割れ",
       "reasons": [
         "RSI 49で過熱前",
@@ -2644,17 +2644,19 @@
       ],
       "rightsSourceErrors": [],
       "rightsStatus": "NO_NEAR_TERM_EVENT",
-      "entryLower": 3213,
-      "entryUpper": 3230,
+      "provisional": true,
+      "priceDate": "20261120",
+      "entryLower": 3192,
+      "entryUpper": 3209,
       "entryType": "現在値付近",
-      "entryRiskPct": 4.6,
-      "riskReward": 0.81,
-      "targetPrice": 3351,
-      "targetPrice1": 3291,
-      "targetPrice2": 3351,
-      "maxOpeningPrice": 3230,
+      "entryRiskPct": 4.0,
+      "riskReward": 0.95,
+      "targetPrice": 3330,
+      "targetPrice1": 3283,
+      "targetPrice2": 3330,
+      "maxOpeningPrice": 3209,
       "maxOpeningGapPct": 1.0,
-      "openingRule": "9:00の寄り付きが3,230円を超えた場合は見送り",
+      "openingRule": "9:00の寄り付きが3,209円を超えた場合は見送り",
       "exRightsDays": null
     },
     {
@@ -2663,7 +2665,7 @@
       "sector": "倉庫・運輸関連業",
       "sectorPhase": "様子見",
       "sectorScore": 52,
-      "close": 4935.0,
+      "close": 4875.0,
       "score": 58.988,
       "displayScore": 59,
       "technical": 45.414,
@@ -2695,7 +2697,7 @@
         "penalty": 2.03
       },
       "setup": "先回り候補",
-      "entry": "4,925円〜4,950円（現在値付近）",
+      "entry": "4,865円〜4,890円（現在値付近）",
       "invalidation": "4,566円割れ",
       "reasons": [
         "25日線乖離 +2.8%"
@@ -2886,17 +2888,19 @@
       ],
       "rightsSourceErrors": [],
       "rightsStatus": "NO_NEAR_TERM_EVENT",
-      "entryLower": 4925,
-      "entryUpper": 4950,
+      "provisional": true,
+      "priceDate": "20261120",
+      "entryLower": 4865,
+      "entryUpper": 4890,
       "entryType": "現在値付近",
-      "entryRiskPct": 7.8,
-      "riskReward": 0.68,
-      "targetPrice": 5210,
-      "targetPrice1": 5083,
-      "targetPrice2": 5210,
-      "maxOpeningPrice": 4950,
+      "entryRiskPct": 6.6,
+      "riskReward": 0.8,
+      "targetPrice": 5150,
+      "targetPrice1": 5023,
+      "targetPrice2": 5150,
+      "maxOpeningPrice": 4890,
       "maxOpeningGapPct": 1.0,
-      "openingRule": "9:00の寄り付きが4,950円を超えた場合は見送り",
+      "openingRule": "9:00の寄り付きが4,890円を超えた場合は見送り",
       "exRightsDays": null
     }
   ],
@@ -2925,9 +2929,9 @@
     "files": 250,
     "failures": 0,
     "latestCoverage": 4180,
-    "priceDate": "20261119",
+    "priceDate": "20261120",
     "officialPriceDate": "20261119",
-    "provisionalCount": 0,
+    "provisionalCount": 2,
     "provisionalTotal": 2,
     "fundamental": "任意・未確認",
     "earningsDate": "決算判定 2/2（外部ページ取得 2/2）",
@@ -2942,18 +2946,18 @@
     },
     {
       "name": "JPX・Yahoo!ファイナンス・株予報 決算日",
-      "asOf": "20261119",
+      "asOf": "20261120",
       "status": "複数ソース照合済み"
     },
     {
       "name": "JPX・Yahoo!ファイナンス・TDnet 権利情報",
-      "asOf": "20261119",
+      "asOf": "20261120",
       "status": "複数ソース照合済み"
     },
     {
       "name": "Yahoo!ファイナンス前日終値スナップショット",
-      "asOf": "20261119",
-      "status": "不完全・未使用"
+      "asOf": "20261120",
+      "status": "完全同期 2/2"
     }
   ]
 }
