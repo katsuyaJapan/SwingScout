@@ -2,9 +2,9 @@
   "isPreviousBusinessDay": false,
   "dataLagBusinessDays": 1,
   "isStale": true,
-  "lastAttemptAt": "2026-11-25T18:02:13.439329+00:00",
+  "lastAttemptAt": "2026-11-25T18:42:10.432545+00:00",
   "lastAttemptStatus": "partial",
-  "lastSuccessfulAt": "2026-11-25T18:02:13.439329+00:00",
+  "lastSuccessfulAt": "2026-11-25T18:42:10.432545+00:00",
   "dataAsOf": "20261124",
   "message": "価格・出口判定を更新しました。補助情報未確認銘柄は候補から除外しています。",
   "failureReasons": [
