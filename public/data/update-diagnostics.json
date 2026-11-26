@@ -1,35 +1,31 @@
 {
-  "failure_stage": "quality_gate",
-  "failure_reasons": [
-    "earnings_coverage",
-    "rights_coverage",
-    "disclosure_coverage"
-  ],
+  "failure_stage": null,
+  "failure_reasons": [],
   "checks": {
     "snapshot_failures": true,
     "sector_date": true,
     "price_coverage": true,
     "history_ready": true,
     "price_date": true,
-    "earnings_coverage": false,
+    "earnings_coverage": true,
     "jpx_rights": true,
-    "rights_coverage": false,
-    "disclosure_coverage": false,
+    "rights_coverage": true,
+    "disclosure_coverage": true,
     "no_date_regression": true
   },
   "quality_details": {
-    "official_price_date": "20261124",
-    "sector_price_date": "2026-11-24",
-    "effective_price_date": "20261124",
-    "price_coverage": 4214,
-    "history_ready": 4062,
-    "earnings_coverage": "0/1",
-    "rights_coverage": "0/1",
-    "disclosure_coverage": "0/1",
-    "jpx_rights_rows": 184,
+    "official_price_date": "20261125",
+    "sector_price_date": "2026-11-25",
+    "effective_price_date": "20261125",
+    "price_coverage": 4207,
+    "history_ready": 4055,
+    "earnings_coverage": "3/3",
+    "rights_coverage": "3/3",
+    "disclosure_coverage": "3/3",
+    "jpx_rights_rows": 188,
     "quotes_complete": false,
     "previous_price_date": "20261124"
   },
-  "generated_at": "2026-11-25T19:15:10.751832+00:00",
-  "selection_quality_passed": false
+  "generated_at": "2026-11-26T04:20:32.535807+00:00",
+  "selection_quality_passed": true
 }
