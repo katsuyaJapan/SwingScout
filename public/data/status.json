@@ -2,11 +2,11 @@
   "isPreviousBusinessDay": true,
   "dataLagBusinessDays": 0,
   "isStale": false,
-  "lastAttemptAt": "2026-11-26T04:20:32.535807+00:00",
-  "lastAttemptStatus": "success",
+  "lastAttemptAt": "2026-11-26T04:49:53.685826+00:00",
+  "lastAttemptStatus": "waiting",
   "lastSuccessfulAt": "2026-11-26T04:20:32.535807+00:00",
   "dataAsOf": "20261125",
-  "message": "更新成功（前営業日データ）",
+  "message": "JPX公式データ公開待ち（最新掲載 20261125）",
   "failureReasons": [],
   "qualityDetails": {
     "official_price_date": "20261125",
@@ -20,5 +20,6 @@
     "jpx_rights_rows": 188,
     "quotes_complete": false,
     "previous_price_date": "20261124"
-  }
+  },
+  "failureStage": null
 }
